@@ -110,7 +110,6 @@ def load_data(file=None):
     except FileNotFoundError:
         st.error("❌ CSV file not found! Please upload a CSV in the sidebar or place 'ligue1_final.csv' in data/processed/")
         return pd.DataFrame()
-
 # HEADER
 logo_b64 = img_to_b64("assets/brentford_logo.png")
 logo_html = f'<img class="header-logo" src="data:image/png;base64,{logo_b64}"/>' if logo_b64 else '<div style="font-size:3rem;flex-shrink:0;">⚽</div>'
@@ -164,7 +163,6 @@ st.markdown(f"""
   </div>
 </div>
 """, unsafe_allow_html=True)
-
 # SIDEBAR
 with st.sidebar:
     st.markdown('<div style="font-family:\'Bebas Neue\',sans-serif;font-size:1.3rem;color:white;letter-spacing:2px;margin-bottom:1rem;padding-bottom:0.7rem;border-bottom:1px solid rgba(224,58,62,0.25);">⚙️ SCOUT FILTERS</div>', unsafe_allow_html=True)
