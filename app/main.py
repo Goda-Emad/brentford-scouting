@@ -112,9 +112,45 @@ def load_data(file=None):
         return pd.DataFrame()
 
 # HEADER
-logo_b64=img_to_b64("assets/rentford_logo.jpg")
-logo_html=f'<img class="header-logo" src="data:image/png;base64,{logo_b64}"/>' if logo_b64 else '<div style="font-size:3rem;flex-shrink:0;">⚽</div>'
+logo_b64 = img_to_b64("assets/brentford_logo.png")
+logo_html = f'<img class="header-logo" src="data:image/png;base64,{logo_b64}"/>' if logo_b64 else '<div style="font-size:3rem;flex-shrink:0;">⚽</div>'
+
 st.markdown(f"""
+<style>
+.header-wrap {{
+    display: flex;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-image: url('assets/bg_stadium.jpg');
+    background-size: cover;
+    background-position: center;
+    color: white;
+    border-radius: 10px;
+}}
+
+.header-logo {{
+    width: 80px;
+    height: auto;
+    margin-right: 1rem;
+}}
+
+.main-title {{
+    font-size: 2rem;
+    font-weight: bold;
+}}
+
+.main-sub {{
+    font-size: 1rem;
+    opacity: 0.9;
+}}
+
+.social-links a {{
+    margin-right: 1rem;
+    text-decoration: none;
+    color: white;
+}}
+</style>
+
 <div class="header-wrap">
   {logo_html}
   <div>
@@ -126,7 +162,8 @@ st.markdown(f"""
       <a class="social-btn" href="tel:+201126242932">📞 +20 112 624 2932</a>
     </div>
   </div>
-</div>""", unsafe_allow_html=True)
+</div>
+""", unsafe_allow_html=True)
 
 # SIDEBAR
 with st.sidebar:
