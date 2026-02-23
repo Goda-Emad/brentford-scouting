@@ -99,59 +99,29 @@ def recalculate(df):
     df['Final_Score']=(df['Value_Score_norm']*df['Age_bonus']).round(1)
     return df
 
-import os
-
-# تحديد المسار الرئيسي للمشروع (الرجوع خطوة للخلف من مجلد app)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 @st.cache_data
 def load_data(file=None):
     if file is not None:
-        df = pd.read_csv(file)
+        df=pd.read_csv(file)
     else:
-        # تحديد المسارات الممكنة للملف بدقة
-        possible_paths = [
-            os.path.join(BASE_DIR, "data", "processed", "ligue1_final.csv"),
-            os.path.join(BASE_DIR, "ligue1_final.csv"),
-            "data/processed/ligue1_final.csv",
-            "ligue1_final.csv"
-        ]
-        
-        df = None
-        for path in possible_paths:
-            if os.path.exists(path):
-                df = pd.read_csv(path)
-                break
-        
-        if df is None:
-            # رسالة خطأ واضحة للمستخدم بدلاً من الانهيار
-            st.error(f"❌ تعذر العثور على ملف البيانات. يرجى التأكد من وجوده في المسار: {possible_paths[0]}")
-            return pd.DataFrame() # إرجاع جدول فارغ لتجنب توقف باقي الكود
-            
+        try: df=pd.read_csv("data/processed/ligue1_final.csv")
+        except: df=pd.read_csv("ligue1_final.csv")
     return recalculate(df)
-import os
-import base64
 
-# 1. تحديد المسار الرئيسي للمشروع (الرجوع خطوة من مجلد app)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-# 2. تعريف دالة تحويل الصورة (تأكد أنها معرفة قبل استخدامها)
-def img_to_b64(relative_path):
-    # بناء المسار الكامل بشكل ديناميكي
-    full_path = os.path.join(BASE_DIR, relative_path)
+def img_to_b64(path):
     try:
-        if os.path.exists(full_path):
-            with open(full_path, "rb") as f:
-                return base64.b64encode(f.read()).decode()
-        return None
-    except Exception:
-        return None
+        with open(path,"rb") as f: return base64.b64encode(f.read()).decode()
+    except: return None
 
-# 3. استخدام الدالة لجلب اللوجو
-logo_b64 = img_to_b64("assets/brentford_logo.png")
-logo_html = f'<img class="header-logo" src="data:image/png;base64,{logo_b64}"/>' if logo_b64 else '<div style="font-size:3rem;flex-shrink:0;">⚽</div>'
+LAYOUT=dict(plot_bgcolor='#141414',paper_bgcolor='#1a1a1a',
+    font=dict(color='#e8e8e8',family='Inter'),
+    title_font=dict(color='white',family='Bebas Neue',size=20),
+    legend=dict(bgcolor='rgba(0,0,0,0)',font=dict(color='#777')),
+    margin=dict(t=50,b=30,l=10,r=10))
 
-# 4. عرض الـ Header الخاص بك
+# HEADER
+logo_b64=img_to_b64("assets/brentford_logo.png")
+logo_html=f'<img class="header-logo" src="data:image/png;base64,{logo_b64}"/>' if logo_b64 else '<div style="font-size:3rem;flex-shrink:0;">⚽</div>'
 st.markdown(f"""
 <div class="header-wrap">
   {logo_html}
@@ -165,6 +135,7 @@ st.markdown(f"""
     </div>
   </div>
 </div>""", unsafe_allow_html=True)
+
 # SIDEBAR
 with st.sidebar:
     st.markdown('<div style="font-family:\'Bebas Neue\',sans-serif;font-size:1.3rem;color:white;letter-spacing:2px;margin-bottom:1rem;padding-bottom:0.7rem;border-bottom:1px solid rgba(224,58,62,0.25);">⚙️ SCOUT FILTERS</div>', unsafe_allow_html=True)
