@@ -112,7 +112,7 @@ def load_data(file=None):
         return pd.DataFrame()
 
 # HEADER
-logo_b64=img_to_b64("assets/brentford_logo.png")
+logo_b64=img_to_b64("assets/rentford_logo.jpg")
 logo_html=f'<img class="header-logo" src="data:image/png;base64,{logo_b64}"/>' if logo_b64 else '<div style="font-size:3rem;flex-shrink:0;">⚽</div>'
 st.markdown(f"""
 <div class="header-wrap">
