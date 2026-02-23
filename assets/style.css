@@ -1,1 +1,355 @@
+/* ═══════════════════════════════════════════════
+   BRENTFORD FC — SCOUTING DASHBOARD
+   style.css
+   ═══════════════════════════════════════════════ */
 
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap');
+
+/* ─── VARIABLES ─────────────────────────────── */
+:root {
+    --red:        #e03a3e;
+    --red-dark:   #8b1a1a;
+    --red-glow:   rgba(224, 58, 62, 0.20);
+    --black:      #0d0d0d;
+    --dark:       #141414;
+    --card:       #1a1a1a;
+    --card-hover: #1f1f1f;
+    --border:     rgba(224, 58, 62, 0.25);
+    --border-sub: rgba(255, 255, 255, 0.06);
+    --text:       #e8e8e8;
+    --muted:      #888888;
+    --muted-dark: #444444;
+}
+
+/* ─── BASE ──────────────────────────────────── */
+html, body,
+[data-testid="stAppViewContainer"],
+[data-testid="stMain"] {
+    background-color: var(--black) !important;
+    color: var(--text) !important;
+    font-family: 'Inter', sans-serif !important;
+}
+
+[data-testid="stSidebar"] {
+    background: var(--dark) !important;
+    border-right: 1px solid var(--border) !important;
+}
+
+/* ─── HEADER ────────────────────────────────── */
+.main-header {
+    background: linear-gradient(135deg, #0d0d0d 0%, #1a0505 50%, #0d0d0d 100%);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 2.2rem 2.8rem;
+    margin-bottom: 1.8rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.main-header::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -40px;
+    width: 320px; height: 320px;
+    background: radial-gradient(circle, var(--red-glow) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.main-header .logo {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    object-fit: contain;
+    margin-bottom: 0.8rem;
+}
+
+.main-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3.2rem;
+    color: white;
+    letter-spacing: 4px;
+    margin: 0;
+    line-height: 1;
+}
+
+.main-title span { color: var(--red); }
+
+.main-subtitle {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.78rem;
+    color: var(--muted);
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    margin-top: 0.5rem;
+}
+
+/* ─── GLASSMORPHISM CARD ────────────────────── */
+.glass-card {
+    background: rgba(26, 26, 26, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.4rem 1.6rem;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.25s, box-shadow 0.25s;
+}
+
+.glass-card:hover {
+    border-color: rgba(224, 58, 62, 0.55);
+    box-shadow: 0 0 24px rgba(224, 58, 62, 0.12);
+}
+
+.glass-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 100%; height: 2px;
+    background: linear-gradient(90deg, var(--red), transparent);
+}
+
+/* ─── KPI CARDS ─────────────────────────────── */
+.kpi-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.2rem 1.4rem;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.kpi-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--red);
+}
+
+.kpi-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 100%; height: 2px;
+    background: var(--red);
+}
+
+.kpi-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.4rem;
+    color: white;
+    line-height: 1;
+}
+
+.kpi-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.68rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1.8px;
+    margin-top: 0.35rem;
+}
+
+/* ─── PLAYER CARDS ──────────────────────────── */
+.player-card {
+    background: var(--card);
+    border: 1px solid var(--border-sub);
+    border-radius: 10px;
+    padding: 1.2rem 1.4rem;
+    margin-bottom: 0.75rem;
+    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+    cursor: default;
+}
+
+.player-card:hover {
+    background: var(--card-hover);
+    border-color: var(--border);
+    box-shadow: 0 4px 20px rgba(224, 58, 62, 0.08);
+}
+
+.player-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.35rem;
+    color: white;
+    letter-spacing: 1.2px;
+    line-height: 1.1;
+}
+
+.player-squad {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-top: 0.2rem;
+    letter-spacing: 0.5px;
+}
+
+/* ─── SCORE BAR ─────────────────────────────── */
+.score-bar-bg {
+    background: #222;
+    border-radius: 4px;
+    height: 5px;
+    margin-top: 0.9rem;
+    overflow: hidden;
+}
+
+.score-bar-fill {
+    background: linear-gradient(90deg, var(--red-dark), var(--red), #ff6b6b);
+    border-radius: 4px;
+    height: 5px;
+    transition: width 0.4s ease;
+}
+
+/* ─── BADGES ────────────────────────────────── */
+.badge {
+    display: inline-block;
+    background: rgba(224, 58, 62, 0.12);
+    border: 1px solid var(--border);
+    color: var(--red);
+    font-size: 0.65rem;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    padding: 2px 9px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    margin-right: 5px;
+    vertical-align: middle;
+}
+
+.badge-gray {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: var(--border-sub);
+    color: var(--muted);
+}
+
+.badge-green {
+    background: rgba(126, 211, 33, 0.10);
+    border-color: rgba(126, 211, 33, 0.25);
+    color: #7ed321;
+}
+
+.badge-yellow {
+    background: rgba(245, 166, 35, 0.10);
+    border-color: rgba(245, 166, 35, 0.25);
+    color: #f5a623;
+}
+
+/* ─── SECTION TITLE ─────────────────────────── */
+.section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    color: white;
+    letter-spacing: 2.5px;
+    border-left: 3px solid var(--red);
+    padding-left: 0.9rem;
+    margin: 1.6rem 0 1.1rem 0;
+    line-height: 1;
+}
+
+/* ─── STADIUM BACKGROUND ────────────────────── */
+.stadium-bg {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-image: url('./assets/bg_stadium.jpg');
+    background-size: cover;
+    background-position: center;
+    opacity: 0.04;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* ─── SIDEBAR LABELS ────────────────────────── */
+[data-testid="stSelectbox"] label,
+[data-testid="stSlider"] label,
+[data-testid="stMultiSelect"] label,
+[data-testid="stFileUploader"] label {
+    color: var(--muted) !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.72rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1.5px !important;
+}
+
+/* ─── SELECTBOX ─────────────────────────────── */
+div[data-baseweb="select"] > div {
+    background-color: #1a1a1a !important;
+    border-color: var(--border) !important;
+    color: white !important;
+    border-radius: 8px !important;
+}
+
+/* ─── FILE UPLOADER ─────────────────────────── */
+[data-testid="stFileUploader"] {
+    background: var(--card) !important;
+    border: 1px dashed var(--border) !important;
+    border-radius: 10px !important;
+    padding: 0.5rem !important;
+}
+
+/* ─── TABS ───────────────────────────────────── */
+[data-testid="stTabs"] [data-baseweb="tab-list"] {
+    background: transparent !important;
+    border-bottom: 1px solid var(--border-sub) !important;
+    gap: 0.2rem;
+}
+
+[data-testid="stTabs"] [data-baseweb="tab"] {
+    background: transparent !important;
+    color: var(--muted) !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.8rem !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.5px !important;
+    border-radius: 6px 6px 0 0 !important;
+    padding: 0.6rem 1.2rem !important;
+    transition: color 0.2s !important;
+}
+
+[data-testid="stTabs"] [aria-selected="true"] {
+    color: white !important;
+    border-bottom: 2px solid var(--red) !important;
+}
+
+/* ─── DATAFRAME ─────────────────────────────── */
+[data-testid="stDataFrame"] {
+    border: 1px solid var(--border-sub) !important;
+    border-radius: 10px !important;
+    overflow: hidden !important;
+}
+
+/* ─── DOWNLOAD BUTTON ───────────────────────── */
+[data-testid="stDownloadButton"] button {
+    background: transparent !important;
+    border: 1px solid var(--border) !important;
+    color: var(--red) !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.78rem !important;
+    letter-spacing: 1px !important;
+    border-radius: 8px !important;
+    transition: background 0.2s !important;
+}
+
+[data-testid="stDownloadButton"] button:hover {
+    background: var(--red-glow) !important;
+}
+
+/* ─── DIVIDER ───────────────────────────────── */
+hr {
+    border: none !important;
+    border-top: 1px solid var(--border-sub) !important;
+    margin: 1.5rem 0 !important;
+}
+
+/* ─── FOOTER ────────────────────────────────── */
+.footer {
+    text-align: center;
+    padding: 2rem 0 1rem;
+    color: var(--muted-dark);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    border-top: 1px solid var(--border-sub);
+    margin-top: 3rem;
+}
