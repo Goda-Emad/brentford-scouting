@@ -3,9 +3,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import numpy as np
-import base64
-import pathlib
-import os
+import base64, pathlib
 
 st.set_page_config(
     page_title="Brentford FC | Scouting Intelligence",
@@ -104,43 +102,26 @@ def recalculate(df):
 @st.cache_data
 def load_data(file=None):
     if file is not None:
-        df = pd.read_csv(file)
+        df=pd.read_csv(file)
     else:
-        base_path = os.path.dirname(os.path.dirname(__file__))
-        data_path = os.path.join(base_path, "data", "processed", "ligue1_final.csv")
-        st.write(f"Loading data from: {data_path}")  # مسار ملف البيانات
-        if not os.path.exists(data_path):
-            st.error(f"Data file not found at {data_path}")
-            return pd.DataFrame()  # إرجاع DataFrame فارغ لتجنب الكراش
-        df = pd.read_csv(data_path)
+        try: df=pd.read_csv("data/processed/ligue1_final.csv")
+        except: df=pd.read_csv("ligue1_final.csv")
     return recalculate(df)
 
 def img_to_b64(path):
     try:
-        base_path = os.path.dirname(os.path.dirname(__file__))
-        full_path = os.path.join(base_path, path)
-        st.write(f"Loading image from: {full_path}")  # مسار الصورة
-        if not os.path.exists(full_path):
-            st.warning(f"Image not found: {full_path}")
-            return None
-        with open(full_path, "rb") as f:
-            return base64.b64encode(f.read()).decode()
-    except Exception as e:
-        st.error(f"Error loading image: {e}")
-        return None
+        with open(path,"rb") as f: return base64.b64encode(f.read()).decode()
+    except: return None
 
-LAYOUT = dict(
-    plot_bgcolor='#141414',
-    paper_bgcolor='#1a1a1a',
-    font=dict(color='#e8e8e8', family='Inter'),
-    title_font=dict(color='white', family='Bebas Neue', size=20),
-    legend=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='#777')),
-    margin=dict(t=50, b=30, l=10, r=10)
-)
+LAYOUT=dict(plot_bgcolor='#141414',paper_bgcolor='#1a1a1a',
+    font=dict(color='#e8e8e8',family='Inter'),
+    title_font=dict(color='white',family='Bebas Neue',size=20),
+    legend=dict(bgcolor='rgba(0,0,0,0)',font=dict(color='#777')),
+    margin=dict(t=50,b=30,l=10,r=10))
 
 # HEADER
-logo_b64 = img_to_b64("assets/brentford_logo.png")
-logo_html = f'<img class="header-logo" src="data:image/png;base64,{logo_b64}"/>' if logo_b64 else '<div style="font-size:3rem;flex-shrink:0;">⚽</div>'
+logo_b64=img_to_b64("assets/brentford_logo.png")
+logo_html=f'<img class="header-logo" src="data:image/png;base64,{logo_b64}"/>' if logo_b64 else '<div style="font-size:3rem;flex-shrink:0;">⚽</div>'
 st.markdown(f"""
 <div class="header-wrap">
   {logo_html}
@@ -158,17 +139,17 @@ st.markdown(f"""
 # SIDEBAR
 with st.sidebar:
     st.markdown('<div style="font-family:\'Bebas Neue\',sans-serif;font-size:1.3rem;color:white;letter-spacing:2px;margin-bottom:1rem;padding-bottom:0.7rem;border-bottom:1px solid rgba(224,58,62,0.25);">⚙️ SCOUT FILTERS</div>', unsafe_allow_html=True)
-    uploaded = st.file_uploader("📂 Add New League CSV", type=["csv"], help="Upload CSV with same format — new league auto-merges")
-    df_base = load_data(uploaded)
-    leagues = sorted(df_base['League'].dropna().unique()) if 'League' in df_base.columns else ['Ligue 1']
-    sel_league = st.multiselect("🌍 League", leagues, default=leagues)
-    positions = sorted(df_base['Pos_primary'].dropna().unique()) if 'Pos_primary' in df_base.columns else []
-    sel_pos = st.multiselect("📍 Position", positions, default=positions)
-    age_range = st.slider("🎂 Age Range", int(df_base['Age_num'].min()), int(df_base['Age_num'].max()), (int(df_base['Age_num'].min()), int(df_base['Age_num'].max())))
-    budget = st.slider("💶 Max Market Value (€m)", 1.0, float(df_base['Market_Value_M'].max()), float(df_base['Market_Value_M'].max()))
-    min_90s = st.slider("⏱️ Min 90s Played", 0.0, float(df_base['90s'].max()), 3.0, step=0.5)
+    uploaded=st.file_uploader("📂 Add New League CSV",type=["csv"],help="Upload CSV with same format — new league auto-merges")
+    df_base=load_data(uploaded)
+    leagues=sorted(df_base['League'].dropna().unique()) if 'League' in df_base.columns else ['Ligue 1']
+    sel_league=st.multiselect("🌍 League",leagues,default=leagues)
+    positions=sorted(df_base['Pos_primary'].dropna().unique())
+    sel_pos=st.multiselect("📍 Position",positions,default=positions)
+    age_range=st.slider("🎂 Age Range",int(df_base['Age_num'].min()),int(df_base['Age_num'].max()),(int(df_base['Age_num'].min()),int(df_base['Age_num'].max())))
+    budget=st.slider("💶 Max Market Value (€m)",1.0,float(df_base['Market_Value_M'].max()),float(df_base['Market_Value_M'].max()))
+    min_90s=st.slider("⏱️ Min 90s Played",0.0,float(df_base['90s'].max()),3.0,step=0.5)
     st.markdown("---")
-    top_n = st.selectbox("📊 Show Top N Targets", [10,15,20,30,50], index=2)
+    top_n=st.selectbox("📊 Show Top N Targets",[10,15,20,30,50],index=2)
     st.markdown("""<div style="margin-top:1.5rem;padding:1rem;background:rgba(224,58,62,0.06);border:1px solid rgba(224,58,62,0.15);border-radius:8px;">
     <div style="font-family:'Bebas Neue',sans-serif;font-size:0.9rem;color:#e03a3e;letter-spacing:1.5px;margin-bottom:0.5rem;">VALUE SCORE FORMULA</div>
     <div style="font-family:'Inter',sans-serif;font-size:0.65rem;color:#555;line-height:1.9;">
@@ -177,27 +158,21 @@ with st.sidebar:
     st.markdown('<div style="margin-top:1rem;font-family:Inter,sans-serif;font-size:0.65rem;color:#333;text-align:center;">Data: FBref + Transfermarkt<br>Dec 2025 • Ligue 1 2025-26</div>', unsafe_allow_html=True)
 
 # FILTER
-df = df_base.copy()
-if sel_league and 'League' in df.columns: df = df[df['League'].isin(sel_league)]
-if sel_pos: df = df[df['Pos_primary'].isin(sel_pos)]
-df = df[(df['Age_num']>=age_range[0]) & (df['Age_num']<=age_range[1]) & (df['Market_Value_M']<=budget) & (df['90s']>=min_90s)].sort_values('Final_Score', ascending=False).reset_index(drop=True)
+df=df_base.copy()
+if sel_league and 'League' in df.columns: df=df[df['League'].isin(sel_league)]
+if sel_pos: df=df[df['Pos_primary'].isin(sel_pos)]
+df=df[(df['Age_num']>=age_range[0])&(df['Age_num']<=age_range[1])&(df['Market_Value_M']<=budget)&(df['90s']>=min_90s)].sort_values('Final_Score',ascending=False).reset_index(drop=True)
 
 # KPIs
-k1, k2, k3, k4, k5 = st.columns(5)
-kpis = [
-    (len(df), "Players Scouted"),
-    (f"€{df['Market_Value_M'].mean():.1f}m", "Avg Market Value"),
-    (f"{df['Final_Score'].max():.0f}", "Top Value Score"),
-    (f"{df['Gls_p90'].mean():.2f}", "Avg Goals / 90"),
-    (f"{df['SoT%'].mean():.1f}%", "Avg Shot Accuracy"),
-]
-for col, (val, lbl) in zip([k1, k2, k3, k4, k5], kpis):
+k1,k2,k3,k4,k5=st.columns(5)
+kpis=[(len(df),"Players Scouted"),(f"€{df['Market_Value_M'].mean():.1f}m","Avg Market Value"),(f"{df['Final_Score'].max():.0f}","Top Value Score"),(f"{df['Gls_p90'].mean():.2f}","Avg Goals / 90"),(f"{df['SoT%'].mean():.1f}%","Avg Shot Accuracy")]
+for col,(val,lbl) in zip([k1,k2,k3,k4,k5],kpis):
     with col:
-        st.markdown(f'<div class="kpi-card"><div class="kpi-val">{val}</div><div class="kpi-lbl">{lbl}</div></div>', unsafe_allow_html=True)
-st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown(f'<div class="kpi-card"><div class="kpi-val">{val}</div><div class="kpi-lbl">{lbl}</div></div>',unsafe_allow_html=True)
+st.markdown("<br>",unsafe_allow_html=True)
 
 # TABS
-tab1, tab2, tab3, tab4 = st.tabs(["🎯  Top Targets", "📊  Value Analysis", "🔬  Player Deep Dive", "📋  Full Dataset"])
+tab1,tab2,tab3,tab4=st.tabs(["🎯  Top Targets","📊  Value Analysis","🔬  Player Deep Dive","📋  Full Dataset"])
 
 # TAB1
 with tab1:
