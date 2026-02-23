@@ -99,20 +99,19 @@ def recalculate(df):
     df['Final_Score']=(df['Value_Score_norm']*df['Age_bonus']).round(1)
     return df
 
+import os
+
 @st.cache_data
 def load_data(file=None):
     if file is not None:
-        df=pd.read_csv(file)
+        df = pd.read_csv(file)
     else:
-        try: df=pd.read_csv("data/processed/ligue1_final.csv")
-        except: df=pd.read_csv("ligue1_final.csv")
+        # يحدد جذر المشروع مهما كان مكان التشغيل (Local أو Cloud)
+        base_path = os.path.dirname(os.path.dirname(__file__))
+        data_path = os.path.join(base_path, "data", "processed", "ligue1_final.csv")
+        df = pd.read_csv(data_path)
+
     return recalculate(df)
-
-def img_to_b64(path):
-    try:
-        with open(path,"rb") as f: return base64.b64encode(f.read()).decode()
-    except: return None
-
 LAYOUT=dict(plot_bgcolor='#141414',paper_bgcolor='#1a1a1a',
     font=dict(color='#e8e8e8',family='Inter'),
     title_font=dict(color='white',family='Bebas Neue',size=20),
