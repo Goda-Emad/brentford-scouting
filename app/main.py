@@ -101,55 +101,28 @@ def recalculate(df):
 
 @st.cache_data
 def load_data(file=None):
+    if file is not None:
+        df=pd.read_csv(file)
+    else:
+        try: df=pd.read_csv("data/processed/ligue1_final.csv")
+        except: df=pd.read_csv("ligue1_final.csv")
+    return recalculate(df)
+
+def img_to_b64(path):
     try:
-        if file is not None:
-            df = pd.read_csv(file)
-        else:
-            df = pd.read_csv("data/processed/ligue1_final.csv")  # صحح المسار
-        return recalculate(df)
-    except FileNotFoundError:
-        st.error("❌ CSV file not found! Please upload a CSV in the sidebar or place 'ligue1_final.csv' in data/processed/")
-        return pd.DataFrame()
+        with open(path,"rb") as f: return base64.b64encode(f.read()).decode()
+    except: return None
+
+LAYOUT=dict(plot_bgcolor='#141414',paper_bgcolor='#1a1a1a',
+    font=dict(color='#e8e8e8',family='Inter'),
+    title_font=dict(color='white',family='Bebas Neue',size=20),
+    legend=dict(bgcolor='rgba(0,0,0,0)',font=dict(color='#777')),
+    margin=dict(t=50,b=30,l=10,r=10))
+
 # HEADER
-logo_b64 = img_to_b64("assets/brentford_logo.png")
-logo_html = f'<img class="header-logo" src="data:image/png;base64,{logo_b64}"/>' if logo_b64 else '<div style="font-size:3rem;flex-shrink:0;">⚽</div>'
-
+logo_b64=img_to_b64("assets/brentford_logo.png")
+logo_html=f'<img class="header-logo" src="data:image/png;base64,{logo_b64}"/>' if logo_b64 else '<div style="font-size:3rem;flex-shrink:0;">⚽</div>'
 st.markdown(f"""
-<style>
-.header-wrap {{
-    display: flex;
-    align-items: center;
-    padding: 1rem 2rem;
-    background-image: url('assets/bg_stadium.jpg');
-    background-size: cover;
-    background-position: center;
-    color: white;
-    border-radius: 10px;
-}}
-
-.header-logo {{
-    width: 80px;
-    height: auto;
-    margin-right: 1rem;
-}}
-
-.main-title {{
-    font-size: 2rem;
-    font-weight: bold;
-}}
-
-.main-sub {{
-    font-size: 1rem;
-    opacity: 0.9;
-}}
-
-.social-links a {{
-    margin-right: 1rem;
-    text-decoration: none;
-    color: white;
-}}
-</style>
-
 <div class="header-wrap">
   {logo_html}
   <div>
@@ -161,8 +134,8 @@ st.markdown(f"""
       <a class="social-btn" href="tel:+201126242932">📞 +20 112 624 2932</a>
     </div>
   </div>
-</div>
-""", unsafe_allow_html=True)
+</div>""", unsafe_allow_html=True)
+
 # SIDEBAR
 with st.sidebar:
     st.markdown('<div style="font-family:\'Bebas Neue\',sans-serif;font-size:1.3rem;color:white;letter-spacing:2px;margin-bottom:1rem;padding-bottom:0.7rem;border-bottom:1px solid rgba(224,58,62,0.25);">⚙️ SCOUT FILTERS</div>', unsafe_allow_html=True)
