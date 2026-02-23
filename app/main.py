@@ -101,23 +101,15 @@ def recalculate(df):
 
 @st.cache_data
 def load_data(file=None):
-    if file is not None:
-        df=pd.read_csv(file)
-    else:
-        try: df=pd.read_csv("data/processed/ligue1_final.csv")
-        except: df=pd.read_csv("ligue1_final.csv")
-    return recalculate(df)
-
-def img_to_b64(path):
     try:
-        with open(path,"rb") as f: return base64.b64encode(f.read()).decode()
-    except: return None
-
-LAYOUT=dict(plot_bgcolor='#141414',paper_bgcolor='#1a1a1a',
-    font=dict(color='#e8e8e8',family='Inter'),
-    title_font=dict(color='white',family='Bebas Neue',size=20),
-    legend=dict(bgcolor='rgba(0,0,0,0)',font=dict(color='#777')),
-    margin=dict(t=50,b=30,l=10,r=10))
+        if file is not None:
+            df = pd.read_csv(file)
+        else:
+            df = pd.read_csv("data/processed/ligue1_final.csv")  # صحح المسار
+        return recalculate(df)
+    except FileNotFoundError:
+        st.error("❌ CSV file not found! Please upload a CSV in the sidebar or place 'ligue1_final.csv' in data/processed/")
+        return pd.DataFrame()
 
 # HEADER
 logo_b64=img_to_b64("assets/brentford_logo.png")
