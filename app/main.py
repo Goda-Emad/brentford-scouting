@@ -129,9 +129,29 @@ def load_data(file=None):
             return pd.DataFrame() # إرجاع جدول فارغ لتجنب توقف باقي الكود
             
     return recalculate(df)
-# HEADER
-logo_b64=img_to_b64("assets/brentford_logo.png")
-logo_html=f'<img class="header-logo" src="data:image/png;base64,{logo_b64}"/>' if logo_b64 else '<div style="font-size:3rem;flex-shrink:0;">⚽</div>'
+import os
+import base64
+
+# 1. تحديد المسار الرئيسي للمشروع (الرجوع خطوة من مجلد app)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# 2. تعريف دالة تحويل الصورة (تأكد أنها معرفة قبل استخدامها)
+def img_to_b64(relative_path):
+    # بناء المسار الكامل بشكل ديناميكي
+    full_path = os.path.join(BASE_DIR, relative_path)
+    try:
+        if os.path.exists(full_path):
+            with open(full_path, "rb") as f:
+                return base64.b64encode(f.read()).decode()
+        return None
+    except Exception:
+        return None
+
+# 3. استخدام الدالة لجلب اللوجو
+logo_b64 = img_to_b64("assets/brentford_logo.png")
+logo_html = f'<img class="header-logo" src="data:image/png;base64,{logo_b64}"/>' if logo_b64 else '<div style="font-size:3rem;flex-shrink:0;">⚽</div>'
+
+# 4. عرض الـ Header الخاص بك
 st.markdown(f"""
 <div class="header-wrap">
   {logo_html}
@@ -145,7 +165,6 @@ st.markdown(f"""
     </div>
   </div>
 </div>""", unsafe_allow_html=True)
-
 # SIDEBAR
 with st.sidebar:
     st.markdown('<div style="font-family:\'Bebas Neue\',sans-serif;font-size:1.3rem;color:white;letter-spacing:2px;margin-bottom:1rem;padding-bottom:0.7rem;border-bottom:1px solid rgba(224,58,62,0.25);">⚙️ SCOUT FILTERS</div>', unsafe_allow_html=True)
