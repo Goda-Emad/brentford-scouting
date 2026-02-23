@@ -7,7 +7,7 @@ import base64, pathlib, os
 
 # ─── PAGE CONFIG ─────────────────────────────────────────────────────────────
 st.set_page_config(
-    page_title=tl("Brentford FC | Scouting Intelligence"),
+    page_title="Brentford FC | Scouting Intelligence",
     page_icon="🐝",
     layout="wide",
     initial_sidebar_state="expanded",
