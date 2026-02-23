@@ -22,10 +22,9 @@ def load_css():
 
 load_css()
 
-# CSS (نفس الكود السابق - مختصر للعرض)
+# CSS (مختصر للعرض)
 st.markdown("""
 <style>
-/* نفس الـ CSS السابق */
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap');
 :root { --red: #e03a3e; --black: #0d0d0d; --dark: #141414; --card: #1a1a1a; --border: rgba(224,58,62,0.22); --text: #e8e8e8; --muted: #777; }
 html, body, [data-testid="stAppViewContainer"] { background: var(--black) !important; color: var(--text) !important; }
@@ -69,7 +68,7 @@ hr { border: none !important; border-top: 1px solid rgba(255,255,255,0.05) !impo
 """, unsafe_allow_html=True)
 
 def normalize_col(col):
-    """تطبيع العمود ليكون بين 0 و 1 مع معالجة الأخطاء"""
+    """تطبيع العمود ليكون بين 0 و 1"""
     if col is None or len(col) == 0:
         return pd.Series([])
     
@@ -89,7 +88,8 @@ def recalculate(df):
     df = df.copy()
     
     # التأكد من وجود الأعمدة
-    for col in ['Gls_p90', 'SoT%', 'Ast', 'PrgP_proxy', 'Scoring_Context_Bonus', 'Market_Value_M', 'Age_num', '90s']:
+    required_cols = ['Gls_p90', 'SoT%', 'Ast', 'PrgP_proxy', 'Scoring_Context_Bonus', 'Market_Value_M', 'Age_num', '90s']
+    for col in required_cols:
         if col not in df.columns:
             df[col] = 0
     
@@ -143,14 +143,13 @@ def load_data(file=None):
             df = pd.read_csv(file)
             st.success(f"✅ تم تحميل الملف: {file.name}")
         else:
-            # البحث عن ملف البيانات الحقيقي
+            # البحث عن ملف البيانات
             possible_paths = [
                 "data/processed/lique1_final.csv",
                 "data/processed/ligue1_final.csv",
                 "lique1_final.csv",
                 "ligue1_final.csv",
-                "./data/processed/lique1_final.csv",
-                "../data/processed/lique1_final.csv"
+                "./data/processed/lique1_final.csv"
             ]
             
             df = None
@@ -161,76 +160,56 @@ def load_data(file=None):
                     break
             
             if df is None:
-                # استخدام بيانات حقيقية من الـ CSV المرفق في السؤال
-                st.warning("⚠️ جاري تحميل بيانات Ligue 1 الحقيقية...")
-                
-                # بيانات حقيقية من الملف الذي أرسلته
+                # بيانات تجريبية
+                st.info("📊 استخدام بيانات تجريبية")
                 data = {
-                    'Player': ['Pierre-Emerick Aubameyang', 'Ansu Fati', 'Adrien Thomasson', 'Gauthier Hein', 'Afonso Moreira'],
+                    'Player': ['أوباميانج', 'فاتي', 'توماسون', 'هاين', 'موريرا'],
                     'Nation': ['GAB', 'ESP', 'FRA', 'FRA', 'POR'],
                     'Pos_primary': ['FW', 'MF', 'MF', 'MF', 'MF'],
-                    'Squad': ['Marseille', 'Monaco', 'Lens', 'Metz', 'Lyon'],
+                    'Squad': ['مرسيليا', 'موناكو', 'لنس', 'ميتز', 'ليون'],
                     'Age_num': [36, 23, 32, 29, 20],
                     'League': ['Ligue 1', 'Ligue 1', 'Ligue 1', 'Ligue 1', 'Ligue 1'],
-                    'Season': ['2025-26', '2025-26', '2025-26', '2025-26', '2025-26'],
                     '90s': [13.6, 6.4, 21.3, 17.7, 11.2],
                     'Gls': [6, 8, 2, 6, 2],
                     'Ast': [5, 0, 6, 4, 6],
                     'Gls_p90': [0.44, 1.25, 0.09, 0.34, 0.18],
-                    'Sh': [31, 24, 28, 27, 23],
-                    'SoT': [19, 14, 8, 9, 8],
                     'SoT%': [61.3, 58.3, 28.6, 33.3, 34.8],
                     'Market_Value_M': [4, 6, 5, 5, 8],
                     'Defense_Hardness': [0.59, 0.41, 0.69, 0.0, 0.72]
                 }
                 df = pd.DataFrame(data)
-                st.info("📊 تم استخدام بيانات Ligue 1 التجريبية (5 لاعبين)")
         
         return recalculate(df)
         
     except Exception as e:
-        st.error(f"❌ خطأ: {str(e)}")
-        # بيانات طارئة
-        data = {
-            'Player': ['Test Player'],
-            'Age_num': [25],
-            'Gls': [5],
-            'Ast': [3],
-            'Gls_p90': [0.5],
-            'SoT%': [50],
-            'Market_Value_M': [5],
-            '90s': [10]
-        }
+        st.error(f"❌ خطأ في تحميل البيانات: {str(e)}")
+        # بيانات احتياطية
+        data = {'Player': ['خطأ'], 'Age_num': [25], 'Gls': [0], 'Ast': [0], 
+                'Gls_p90': [0], 'SoT%': [0], 'Market_Value_M': [1], '90s': [1]}
         df = pd.DataFrame(data)
         return recalculate(df)
 
 def img_to_b64(path):
     """تحويل الصورة إلى base64"""
     try:
-        # تجربة أسماء ملفات مختلفة
         possible_paths = [
             path,
-            "assets/rentford_logo.jpg",  # اسم الملف الصحيح من الصورة
+            "assets/rentford_logo.jpg",
             "assets/brentford_logo.png",
-            "assets/brentford_logo.jpg",
             "rentford_logo.jpg",
-            "brentford_logo.png",
-            "./assets/rentford_logo.jpg"
+            "brentford_logo.png"
         ]
         
         for p in possible_paths:
             if os.path.exists(p):
                 with open(p, "rb") as f:
                     return base64.b64encode(f.read()).decode()
-        
         return None
     except:
         return None
 
-# ========== بداية التطبيق ==========
-
-# الهيدر مع اسم الملف الصحيح
-logo_b64 = img_to_b64("assets/rentford_logo.jpg")  # استخدام الاسم الصحيح
+# بداية التطبيق
+logo_b64 = img_to_b64("assets/rentford_logo.jpg")
 logo_html = f'<img class="header-logo" src="data:image/jpeg;base64,{logo_b64}"/>' if logo_b64 else '<div style="font-size:3rem;flex-shrink:0;">⚽</div>'
 
 st.markdown(f"""
@@ -252,41 +231,28 @@ st.markdown(f"""
 with st.sidebar:
     st.markdown('<div style="font-family:\'Bebas Neue\',sans-serif;font-size:1.3rem;color:white;letter-spacing:2px;margin-bottom:1rem;padding-bottom:0.7rem;border-bottom:1px solid rgba(224,58,62,0.25);">⚙️ SCOUT FILTERS</div>', unsafe_allow_html=True)
     
-    uploaded = st.file_uploader("📂 Add New League CSV", type=["csv"], help="Upload CSV with same format")
+    uploaded = st.file_uploader("📂 Add New League CSV", type=["csv"])
     df_base = load_data(uploaded)
     
     if df_base.empty:
         st.error("❌ لا توجد بيانات")
         st.stop()
     
-    # دوال مساعدة للفلاتر
-    def safe_min(col, default=0):
-        return float(col.min()) if not col.empty and col.min() is not None else default
-    
-    def safe_max(col, default=100):
-        return float(col.max()) if not col.empty and col.max() is not None else default
-    
     # الفلاتر مع معالجة الأخطاء
     leagues = sorted(df_base['League'].dropna().unique()) if 'League' in df_base.columns else ['Ligue 1']
     sel_league = st.multiselect("🌍 League", leagues, default=leagues if leagues else ['Ligue 1'])
     
-    positions = sorted(df_base['Pos_primary'].dropna().unique()) if 'Pos_primary' in df_base.columns else ['FW', 'MF', 'DF']
+    positions = sorted(df_base['Pos_primary'].dropna().unique()) if 'Pos_primary' in df_base.columns else ['FW', 'MF']
     sel_pos = st.multiselect("📍 Position", positions, default=positions if positions else ['FW'])
     
-    # معالجة عمر اللاعبين - الأهم!
+    # معالجة العمر
     min_age = int(df_base['Age_num'].min()) if not df_base['Age_num'].empty else 18
     max_age = int(df_base['Age_num'].max()) if not df_base['Age_num'].empty else 40
     
-    # التأكد من أن min_age < max_age
     if min_age >= max_age:
-        max_age = min_age + 10  # إضافة 10 سنوات إذا كانوا كلهم نفس العمر
+        max_age = min_age + 10
     
-    age_range = st.slider(
-        "🎂 Age Range", 
-        min_age, 
-        max_age, 
-        (min_age, max_age)
-    )
+    age_range = st.slider("🎂 Age Range", min_age, max_age, (min_age, max_age))
     
     # معالجة القيمة السوقية
     min_val = float(df_base['Market_Value_M'].min()) if not df_base['Market_Value_M'].empty else 0
@@ -295,40 +261,19 @@ with st.sidebar:
     if min_val >= max_val:
         max_val = min_val + 10
     
-    budget = st.slider(
-        "💶 Max Market Value (€m)", 
-        min_val, 
-        max_val, 
-        max_val
-    )
+    budget = st.slider("💶 Max Market Value (€m)", min_val, max_val, max_val)
     
-    # معالجة عدد المباريات
+    # معالجة الدقائق
     min_90s_val = float(df_base['90s'].min()) if not df_base['90s'].empty else 0
     max_90s_val = float(df_base['90s'].max()) if not df_base['90s'].empty else 50
     
     if min_90s_val >= max_90s_val:
         max_90s_val = min_90s_val + 10
     
-    min_90s = st.slider(
-        "⏱️ Min 90s Played", 
-        min_90s_val, 
-        max_90s_val, 
-        min(3.0, max_90s_val),
-        step=0.5
-    )
+    min_90s = st.slider("⏱️ Min 90s Played", min_90s_val, max_90s_val, min(3.0, max_90s_val), step=0.5)
     
     st.markdown("---")
     top_n = st.selectbox("📊 Show Top N Targets", [5, 10, 15, 20, 30, 50], index=1)
-    
-    st.markdown("""
-    <div style="margin-top:1.5rem;padding:1rem;background:rgba(224,58,62,0.06);border:1px solid rgba(224,58,62,0.15);border-radius:8px;">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:0.9rem;color:#e03a3e;letter-spacing:1.5px;margin-bottom:0.5rem;">VALUE SCORE FORMULA</div>
-        <div style="font-family:'Inter',sans-serif;font-size:0.65rem;color:#555;line-height:1.9;">
-            Goals/90 × 0.30<br>Shot Acc × 0.18<br>Assists × 0.22<br>Prog Passes × 0.18<br>Schedule Adj × 0.12<br>
-            <span style="color:#444;">÷ Market Value × Age Bonus</span>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
 
 # تطبيق الفلاتر
 df = df_base.copy()
@@ -395,14 +340,14 @@ if not df.empty:
                     <div style="flex:1;">
                         <div style="color:var(--red);font-family:'Inter',sans-serif;font-size:0.65rem;font-weight:700;letter-spacing:1.5px;">#{rank:02d}</div>
                         <div class="pname">{row['Player']}</div>
-                        <div class="pmeta">{row.get('Squad', '—')} &nbsp;•&nbsp; {row.get('League', '—')} &nbsp;•&nbsp; Age {age}</div>
+                        <div class="pmeta">{row.get('Squad', '—')} • {row.get('League', '—')} • Age {age}</div>
                         <div style="margin-top:0.5rem;"><span class="badge">{row.get('Pos_primary', '—')}</span>{age_badge}<span class="{sch_class}">{sch_text}</span></div>
                     </div>
                     <div style="text-align:right;flex-shrink:0;">
                         <div style="font-family:'Bebas Neue',sans-serif;font-size:2.4rem;color:var(--red);line-height:1;">{row['Final_Score']:.0f}</div>
                         <div style="font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;">Value Score</div>
-                        <div style="font-size:0.82rem;color:white;margin-top:0.4rem;font-family:'Inter',sans-serif;font-weight:500;">
-                            ⚽ {int(row.get('Gls', 0))}G &nbsp; 🅰️ {int(row.get('Ast', 0))}A &nbsp; 🎯 {row.get('SoT%', 0):.0f}% &nbsp; 💶 €{row.get('Market_Value_M', 0):.0f}m
+                        <div style="font-size:0.82rem;color:white;margin-top:0.4rem;">
+                            ⚽ {int(row.get('Gls', 0))}G • 🅰️ {int(row.get('Ast', 0))}A • 🎯 {row.get('SoT%', 0):.0f}% • 💶 €{row.get('Market_Value_M', 0):.0f}m
                         </div>
                     </div>
                 </div>
@@ -414,7 +359,7 @@ if not df.empty:
     with tab2:
         st.markdown('<div class="sec-title">VALUE ANALYSIS</div>', unsafe_allow_html=True)
         
-        if len(df) > 1:  # نحتاج على الأقل نقطتين للرسم
+        if len(df) > 1:
             col1, col2 = st.columns(2)
             
             with col1:
@@ -438,22 +383,10 @@ if not df.empty:
                 )
                 fig2.update_layout(
                     plot_bgcolor='#141414', paper_bgcolor='#1a1a1a',
-                    font=dict(color='#e8e8e8', family='Inter')
+                    font=dict(color='#e8e8e8', family='Inter'),
+                    yaxis=dict(autorange='reversed')
                 )
                 st.plotly_chart(fig2, use_container_width=True)
-            
-            # Efficiency chart
-            fig3 = px.scatter(
-                df, x='Gls_p90', y='SoT%', hover_name='Player',
-                color='Final_Score', size='Market_Value_M', size_max=22,
-                title='Scoring Efficiency',
-                labels={'Gls_p90': 'Goals per 90', 'SoT%': 'Shot on Target %'}
-            )
-            fig3.update_layout(
-                plot_bgcolor='#141414', paper_bgcolor='#1a1a1a',
-                font=dict(color='#e8e8e8', family='Inter')
-            )
-            st.plotly_chart(fig3, use_container_width=True)
         else:
             st.info("📊 هناك حاجة إلى المزيد من البيانات للرسوم البيانية")
 
@@ -477,12 +410,14 @@ if not df.empty:
                     with col:
                         st.markdown(f"""
                         <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem;">
-                            <h4 style="color:white;">{player}</h4>
-                            <p>⚽ Goals: {int(player_data.get('Gls', 0))}</p>
-                            <p>🅰️ Assists: {int(player_data.get('Ast', 0))}</p>
-                            <p>🎯 Shot Acc: {player_data.get('SoT%', 0):.1f}%</p>
-                            <p>💶 Value: €{player_data.get('Market_Value_M', 0):.0f}m</p>
-                            <p>📊 Score: {player_data['Final_Score']:.1f}</p>
+                            <h4 style="color:white;font-family:'Bebas Neue';">{player}</h4>
+                            <p style="color:var(--muted);font-size:0.8rem;">{player_data.get('Squad', '')}</p>
+                            <hr style="margin:10px 0;">
+                            <p><span style="color:var(--red);">⚽ {int(player_data.get('Gls', 0))}</span> Goals</p>
+                            <p><span style="color:var(--red);">🅰️ {int(player_data.get('Ast', 0))}</span> Assists</p>
+                            <p><span style="color:var(--red);">🎯 {player_data.get('SoT%', 0):.1f}%</span> Shot Acc</p>
+                            <p><span style="color:var(--red);">💶 €{player_data.get('Market_Value_M', 0):.0f}m</span> Value</p>
+                            <p><span style="color:var(--red);">📊 {player_data['Final_Score']:.1f}</span> Score</p>
                         </div>
                         """, unsafe_allow_html=True)
             else:
@@ -490,29 +425,49 @@ if not df.empty:
         else:
             st.warning("لا يوجد لاعبين")
 
-    # TAB 4: Full Dataset
+    # TAB 4: Full Dataset - ** بدون background_gradient **
     with tab4:
         st.markdown('<div class="sec-title">FULL DATASET</div>', unsafe_allow_html=True)
         
+        # أعمدة العرض
         display_cols = ['Player', 'Squad', 'Age_num', 'Pos_primary', 'Gls', 'Ast', 'SoT%', 'Market_Value_M', 'Final_Score']
         display_cols = [c for c in display_cols if c in df.columns]
         
-        st.dataframe(
-            df[display_cols].style.format({
-                'SoT%': '{:.1f}%',
-                'Market_Value_M': '€{:.0f}m',
-                'Final_Score': '{:.1f}'
-            }).background_gradient(subset=['Final_Score'], cmap='Reds'),
-            use_container_width=True,
-            height=400
-        )
+        # نسخة للعرض بدون تنسيق معقد
+        display_df = df[display_cols].copy()
         
-        st.download_button(
-            "⬇️ Download CSV",
-            df.to_csv(index=False).encode('utf-8'),
-            "scouting_results.csv",
-            "text/csv"
-        )
+        # تنسيق الأرقام
+        for col in display_df.columns:
+            if col == 'SoT%':
+                display_df[col] = display_df[col].apply(lambda x: f"{x:.1f}%")
+            elif col == 'Market_Value_M':
+                display_df[col] = display_df[col].apply(lambda x: f"€{x:.0f}m")
+            elif col == 'Final_Score':
+                display_df[col] = display_df[col].apply(lambda x: f"{x:.1f}")
+            elif col in ['Gls', 'Ast', 'Age_num']:
+                display_df[col] = display_df[col].apply(lambda x: f"{int(x)}")
+        
+        # عرض الجدول بدون background_gradient
+        st.dataframe(display_df, use_container_width=True, height=400)
+        
+        # أزرار التحميل
+        col1, col2 = st.columns(2)
+        with col1:
+            st.download_button(
+                "⬇️ Download Full CSV",
+                df.to_csv(index=False).encode('utf-8'),
+                "scouting_results.csv",
+                "text/csv",
+                use_container_width=True
+            )
+        with col2:
+            st.download_button(
+                "⬇️ Top 10 Only",
+                df.head(10).to_csv(index=False).encode('utf-8'),
+                "top10_targets.csv",
+                "text/csv",
+                use_container_width=True
+            )
 
 else:
     st.warning("⚠️ لا توجد نتائج تطابق معايير البحث. حاول تعديل الفلاتر.")
