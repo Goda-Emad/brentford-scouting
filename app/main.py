@@ -106,18 +106,34 @@ def load_data(file=None):
     if file is not None:
         df = pd.read_csv(file)
     else:
-        # يحدد جذر المشروع مهما كان مكان التشغيل (Local أو Cloud)
+        # تحديد جذر المشروع (يشتغل Local و Streamlit Cloud)
         base_path = os.path.dirname(os.path.dirname(__file__))
         data_path = os.path.join(base_path, "data", "processed", "ligue1_final.csv")
         df = pd.read_csv(data_path)
 
     return recalculate(df)
-LAYOUT=dict(plot_bgcolor='#141414',paper_bgcolor='#1a1a1a',
-    font=dict(color='#e8e8e8',family='Inter'),
-    title_font=dict(color='white',family='Bebas Neue',size=20),
-    legend=dict(bgcolor='rgba(0,0,0,0)',font=dict(color='#777')),
-    margin=dict(t=50,b=30,l=10,r=10))
 
+
+def img_to_b64(path):
+    try:
+        # نفس فكرة تحديد الجذر علشان الصور تشتغل على Cloud
+        base_path = os.path.dirname(os.path.dirname(__file__))
+        full_path = os.path.join(base_path, path)
+
+        with open(full_path, "rb") as f:
+            return base64.b64encode(f.read()).decode()
+    except Exception:
+        return None
+
+
+LAYOUT = dict(
+    plot_bgcolor='#141414',
+    paper_bgcolor='#1a1a1a',
+    font=dict(color='#e8e8e8', family='Inter'),
+    title_font=dict(color='white', family='Bebas Neue', size=20),
+    legend=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='#777')),
+    margin=dict(t=50, b=30, l=10, r=10)
+)
 # HEADER
 logo_b64=img_to_b64("assets/brentford_logo.png")
 logo_html=f'<img class="header-logo" src="data:image/png;base64,{logo_b64}"/>' if logo_b64 else '<div style="font-size:3rem;flex-shrink:0;">⚽</div>'
