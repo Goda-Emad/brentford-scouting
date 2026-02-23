@@ -15,49 +15,65 @@ st.set_page_config(
 
 # ─── GLASS BACKGROUND ────────────────────────────────────────────────────────
 def add_glass_background():
-    bg_paths = ["assets/bg_stadium.jpg","assets/bg_stadium.jpeg","bg_stadium.jpg"]
-    bg_b64 = None
+    """Load background image and inject via base64 - works on Streamlit Cloud"""
+    bg_paths = [
+        "assets/bg_stadium.jpg",
+        "assets/bg_stadium.jpeg", 
+        "assets/bg_stadium.png",
+        "bg_stadium.jpg",
+    ]
+    bg_b64, ext = None, "jpeg"
     for path in bg_paths:
         if os.path.exists(path):
             try:
-                with open(path,"rb") as f:
-                    raw = f.read()
-                    bg_b64 = base64.b64encode(raw).decode()
+                with open(path, "rb") as f:
+                    bg_b64 = base64.b64encode(f.read()).decode()
+                ext = "png" if path.endswith(".png") else "jpeg"
                 break
             except:
                 pass
 
     if bg_b64:
-        ext = "jpeg" if path.endswith((".jpg",".jpeg")) else "png"
-        bg_css = f"""
+        st.markdown(f"""
 <style>
-[data-testid="stAppViewContainer"] > .main {{
-    background-image: url("data:image/{ext};base64,{bg_b64}");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-}}
+/* ── BACKGROUND IMAGE ── */
 [data-testid="stAppViewContainer"] {{
-    background-color: rgba(8,8,8,0.0) !important;
+    background-image: url("data:image/{ext};base64,{bg_b64}") !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    background-attachment: fixed !important;
 }}
-[data-testid="stAppViewContainer"]::before {{
-    content: "";
-    position: fixed;
-    inset: 0;
-    background: rgba(6,6,6,0.80);
-    z-index: 0;
-    pointer-events: none;
+/* dark overlay */
+[data-testid="stAppViewContainer"]::after {{
+    content: "" !important;
+    position: fixed !important;
+    inset: 0 !important;
+    background: rgba(5,5,5,0.83) !important;
+    z-index: 0 !important;
+    pointer-events: none !important;
 }}
-</style>"""
-        st.markdown(bg_css, unsafe_allow_html=True)
+/* push content above overlay */
+[data-testid="stAppViewContainer"] > * {{
+    position: relative !important;
+    z-index: 1 !important;
+}}
+[data-testid="stHeader"] {{
+    background: transparent !important;
+}}
+[data-testid="stToolbar"] {{
+    background: transparent !important;
+}}
+</style>
+""", unsafe_allow_html=True)
     else:
         st.markdown("""
 <style>
-[data-testid="stAppViewContainer"] {{
+[data-testid="stAppViewContainer"] {
     background: linear-gradient(135deg, #0a0a0a 0%, #1a0505 50%, #0a0a0a 100%) !important;
-}}
-</style>""", unsafe_allow_html=True)
+}
+</style>
+""", unsafe_allow_html=True)
 
 add_glass_background()
 
@@ -235,6 +251,7 @@ def img_to_b64(path):
                 return base64.b64encode(f.read()).decode()
     return None
 
+# For go.Figure charts (full control)
 LAYOUT = dict(
     plot_bgcolor='rgba(15,15,15,0.4)',
     paper_bgcolor='rgba(0,0,0,0)',
@@ -242,6 +259,22 @@ LAYOUT = dict(
     legend=dict(bgcolor='rgba(20,20,20,0.7)', bordercolor='rgba(224,58,62,0.2)', font=dict(color='#e8e8e8')),
     margin=dict(t=50, b=30, l=10, r=10),
 )
+
+# For px charts - apply AFTER creation via .update_layout()
+def apply_theme(fig, title_text='', height=400):
+    fig.update_layout(
+        plot_bgcolor='rgba(15,15,15,0.4)',
+        paper_bgcolor='rgba(0,0,0,0)',
+        font=dict(color='#e8e8e8', family='Inter', size=11),
+        legend=dict(bgcolor='rgba(20,20,20,0.7)', bordercolor='rgba(224,58,62,0.2)', font=dict(color='#e8e8e8')),
+        margin=dict(t=50, b=30, l=10, r=10),
+        height=height,
+    )
+    if title_text:
+        fig.update_layout(title=dict(text=title_text, font=dict(color='white', family='Bebas Neue', size=20)))
+    fig.update_xaxes(gridcolor='rgba(255,255,255,0.05)')
+    fig.update_yaxes(gridcolor='rgba(255,255,255,0.05)')
+    return fig
 
 def tl(text, size=20):
     """Chart title helper"""
@@ -395,11 +428,8 @@ with tab2:
             hover_data={'Squad':True,'Age_num':True,'Gls':True,'Ast':True,'Market_Value_M':':.1f','Final_Score':':.1f'},
             color='Pos_primary', size='Gls', size_max=20,
             color_discrete_sequence=['#e03a3e','#f5a623','#4a90e2','#2ecc71','#9b59b6'],
-            title=tl('Value Score vs Market Value'),
             labels={'Market_Value_M':'Market Value (€m)','Final_Score':'Value Score','Pos_primary':'Position'})
-        fig.update_layout(**LAYOUT, height=400)
-        fig.update_xaxes(gridcolor='rgba(255,255,255,0.05)')
-        fig.update_yaxes(gridcolor='rgba(255,255,255,0.05)')
+        apply_theme(fig, 'Value Score vs Market Value', 400)
         fig.add_shape(type='line', x0=0, y0=55, x1=df['Market_Value_M'].max(), y1=55,
                       line=dict(color='rgba(224,58,62,0.3)', dash='dash', width=1))
         fig.add_annotation(x=df['Market_Value_M'].max()*0.6, y=59,
@@ -414,9 +444,13 @@ with tab2:
                         line=dict(color='rgba(224,58,62,0.3)',width=1)),
             text=[f"€{v:.0f}M | ⚽{int(g)}G" for v,g in zip(t10['Market_Value_M'],t10['Gls'])],
             textposition='outside', textfont=dict(color='#666',size=10)))
-        fig2.update_layout(**LAYOUT, title=tl('Top 10 — Value Score Ranking'), height=400,
-                           yaxis=dict(autorange='reversed',gridcolor='rgba(255,255,255,0.04)'),
-                           xaxis=dict(gridcolor='rgba(255,255,255,0.04)'), margin=dict(t=50,b=30,l=10,r=80))
+        fig2.update_layout(
+            plot_bgcolor='rgba(15,15,15,0.4)', paper_bgcolor='rgba(0,0,0,0)',
+            font=dict(color='#e8e8e8', family='Inter', size=11),
+            legend=dict(bgcolor='rgba(20,20,20,0.7)', font=dict(color='#e8e8e8')),
+            title=dict(text='Top 10 — Value Score Ranking', font=dict(color='white', family='Bebas Neue', size=20)),
+            height=400, yaxis=dict(autorange='reversed', gridcolor='rgba(255,255,255,0.04)'),
+            xaxis=dict(gridcolor='rgba(255,255,255,0.04)'), margin=dict(t=50,b=30,l=10,r=80))
         st.plotly_chart(fig2, use_container_width=True)
 
     # Efficiency
@@ -426,9 +460,9 @@ with tab2:
         hover_data={'Squad':True,'Gls':True,'Ast':True},
         color='Final_Score', size='Market_Value_M', size_max=20,
         color_continuous_scale=[[0,'#0d0d0d'],[0.4,'#8b1a1a'],[1,'#e03a3e']],
-        title=tl('Scoring Efficiency: Goals/90 vs Shot Accuracy'),
         labels={'Gls_p90':'Goals per 90','SoT%':'Shot on Target %','Final_Score':'Value Score'})
-    fig3.update_layout(**LAYOUT, height=400, coloraxis_colorbar=dict(title=tl('Score'),tickfont=dict(color='#666'),bgcolor='rgba(20,20,20,0.6)'))
+    apply_theme(fig3, 'Scoring Efficiency: Goals/90 vs Shot Accuracy', 400)
+    fig3.update_layout(coloraxis_colorbar=dict(title='Score', tickfont=dict(color='#666'), bgcolor='rgba(20,20,20,0.6)'))
     fig3.add_hline(y=avg_s, line_dash="dash", line_color="rgba(255,255,255,0.15)",
                    annotation_text=f"Avg: {avg_s:.1f}%", annotation_font=dict(color='#666',size=10))
     fig3.add_vline(x=avg_g, line_dash="dash", line_color="rgba(255,255,255,0.15)",
@@ -441,9 +475,12 @@ with tab2:
         sh = df.groupby('Squad')['Defense_Hardness'].mean().sort_values().reset_index()
         fig4 = go.Figure(go.Bar(x=sh['Defense_Hardness'], y=sh['Squad'], orientation='h',
             marker=dict(color=sh['Defense_Hardness'], colorscale=[[0,'#1a0505'],[1,'#e03a3e']], showscale=False)))
-        fig4.update_layout(**LAYOUT, title=tl('Defense Hardness (higher = harder to score against)'), height=400,
-                           yaxis=dict(gridcolor='rgba(255,255,255,0.04)'),
-                           xaxis=dict(gridcolor='rgba(255,255,255,0.04)'))
+        fig4.update_layout(
+            plot_bgcolor='rgba(15,15,15,0.4)', paper_bgcolor='rgba(0,0,0,0)',
+            font=dict(color='#e8e8e8', family='Inter', size=11),
+            title=dict(text='Defense Hardness (higher = harder to score against)', font=dict(color='white', family='Bebas Neue', size=20)),
+            height=400, yaxis=dict(gridcolor='rgba(255,255,255,0.04)'),
+            xaxis=dict(gridcolor='rgba(255,255,255,0.04)'))
         st.plotly_chart(fig4, use_container_width=True)
 
 
@@ -547,6 +584,8 @@ with tab3:
             fig_r.add_trace(go.Scatterpolar(r=vals, theta=lbs, fill='toself', name=pname,
                 line=dict(color=pc,width=3), fillcolor=f'rgba{rgba+(0.15,)}'))
         fig_r.update_layout(
+            paper_bgcolor='rgba(0,0,0,0)',
+            font=dict(color='#e8e8e8', family='Inter'),
             polar=dict(bgcolor='rgba(15,15,15,0.5)',
                        radialaxis=dict(visible=True,range=[0,1],color='#444',gridcolor='rgba(255,255,255,0.06)',tickfont=dict(color='#555')),
                        angularaxis=dict(color='#666',gridcolor='rgba(255,255,255,0.06)')),
@@ -568,8 +607,12 @@ with tab3:
                 fig_ga.add_trace(go.Bar(name='Assists', x=selected,
                     y=[int(df[df['Player']==p]['Ast'].values[0]) for p in selected],
                     marker_color='#f5a623', text=[int(df[df['Player']==p]['Ast'].values[0]) for p in selected], textposition='inside'))
-                fig_ga.update_layout(**LAYOUT, barmode='group', title=tl('Goals & Assists'), height=320,
-                                     legend=dict(bgcolor='rgba(20,20,20,0.7)',font=dict(color='#e8e8e8')))
+                fig_ga.update_layout(
+                    plot_bgcolor='rgba(15,15,15,0.4)', paper_bgcolor='rgba(0,0,0,0)',
+                    font=dict(color='#e8e8e8', family='Inter', size=11),
+                    barmode='group',
+                    title=dict(text='Goals & Assists', font=dict(color='white', family='Bebas Neue', size=20)),
+                    height=320, legend=dict(bgcolor='rgba(20,20,20,0.7)', font=dict(color='#e8e8e8')))
                 st.plotly_chart(fig_ga, use_container_width=True)
 
             with cc2:
@@ -639,14 +682,19 @@ with tab4:
         pos_c = df['Pos_primary'].value_counts()
         fig_p = go.Figure(go.Pie(labels=pos_c.index, values=pos_c.values, hole=0.45,
             marker_colors=['#e03a3e','#f5a623','#4a90e2','#2ecc71','#9b59b6']))
-        fig_p.update_layout(**LAYOUT, title=tl('Position Distribution'), height=300)
+        fig_p.update_layout(paper_bgcolor='rgba(0,0,0,0)', font=dict(color='#e8e8e8', family='Inter'),
+            title=dict(text='Position Distribution', font=dict(color='white', family='Bebas Neue', size=20)),
+            legend=dict(bgcolor='rgba(20,20,20,0.7)', font=dict(color='#e8e8e8')), height=300)
         st.plotly_chart(fig_p, use_container_width=True)
     with ci2:
         fig_a = go.Figure(go.Histogram(x=df['Age_num'], nbinsx=15,
             marker_color='#e03a3e', opacity=0.7))
-        fig_a.update_layout(**LAYOUT, title=tl('Age Distribution'), height=300,
-                             xaxis=dict(title=tl('Age'),gridcolor='rgba(255,255,255,0.05)'),
-                             yaxis=dict(title=tl('Count'),gridcolor='rgba(255,255,255,0.05)'))
+        fig_a.update_layout(plot_bgcolor='rgba(15,15,15,0.4)', paper_bgcolor='rgba(0,0,0,0)',
+            font=dict(color='#e8e8e8', family='Inter', size=11),
+            title=dict(text='Age Distribution', font=dict(color='white', family='Bebas Neue', size=20)),
+            height=300,
+                             xaxis=dict(title='Age',gridcolor='rgba(255,255,255,0.05)'),
+                             yaxis=dict(title='Count',gridcolor='rgba(255,255,255,0.05)'))
         st.plotly_chart(fig_a, use_container_width=True)
 
     # Downloads
