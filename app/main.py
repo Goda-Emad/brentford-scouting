@@ -119,19 +119,23 @@ def load_data(file=None):
             
     return recalculate(df)
 
-# HEADER
-logo_b64=img_to_b64("assets/brentford_logo.png")
-logo_html=f'<img class="header-logo" src="data:image/png;base64,{logo_b64}"/>' if logo_b64 else '<div style="font-size:3rem;flex-shrink:0;">⚽</div>'
+# تحويل الصور لـ Base64
+logo_b64 = img_to_b64("assets/brentford_logo.png")
+bg_b64 = img_to_b64("assets/bg_stadium.jpg")
+
+# إعداد الـ HTML للـ Header
+logo_html = f'<img class="header-logo" src="data:image/png;base64,{logo_b64}"/>' if logo_b64 else '⚽'
+bg_style = f'background-image: linear-gradient(135deg, rgba(13,13,13,0.9) 0%, rgba(28,6,6,0.8) 100%), url(data:image/jpg;base64,{bg_b64}); background-size: cover; background-position: center;' if bg_b64 else ''
+
 st.markdown(f"""
-<div class="header-wrap">
+<div class="header-wrap" style="{bg_style}">
   {logo_html}
   <div>
     <div class="main-title">BRENTFORD FC <span>//</span> SCOUTING INTEL</div>
-    <div class="main-sub">Undervalued Player Detection • Value Score Algorithm • Schedule-Adjusted Analytics</div>
+    <div class="main-sub">Data-Driven Scouting Framework • {sel_league[0] if sel_league else 'Global'} Analysis</div>
     <div class="social-links">
-      <a class="social-btn" href="https://www.linkedin.com/in/goda-emad/" target="_blank">🔗 LinkedIn</a>
-      <a class="social-btn" href="https://github.com/Goda-Emad/brentford-scouting" target="_blank">🐙 GitHub</a>
-      <a class="social-btn" href="tel:+201126242932">📞 +20 112 624 2932</a>
+      <a class="social-btn" href="https://www.linkedin.com/in/goda-emad/">🔗 LinkedIn</a>
+      <a class="social-btn" href="tel:+201126242932">📞 Contact Eng. Goda</a>
     </div>
   </div>
 </div>""", unsafe_allow_html=True)
