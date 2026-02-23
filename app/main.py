@@ -589,7 +589,6 @@ with tab3:
             polar=dict(bgcolor='rgba(15,15,15,0.5)',
                        radialaxis=dict(visible=True,range=[0,1],color='#444',gridcolor='rgba(255,255,255,0.06)',tickfont=dict(color='#555')),
                        angularaxis=dict(color='#666',gridcolor='rgba(255,255,255,0.06)')),
-            paper_bgcolor='rgba(0,0,0,0)', font=dict(color='#e8e8e8',family='Inter'),
             legend=dict(bgcolor='rgba(20,20,20,0.7)',bordercolor='rgba(224,58,62,0.2)',font=dict(color='#e8e8e8')),
             title=dict(text='Player Comparison Radar',font=dict(family='Bebas Neue',size=22,color='white')),
             height=480, margin=dict(t=60,b=20,l=20,r=20))
