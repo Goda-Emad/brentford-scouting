@@ -102,40 +102,36 @@ def recalculate(df):
 @st.cache_data
 def load_data(file=None):
     if file is not None:
-        df = pd.read_csv(file)
+        df=pd.read_csv(file)
     else:
-        # حاول القراءة من المسارات المحتملة
-        paths = ["data/processed/ligue1_final.csv", "ligue1_final.csv", "app/data/processed/ligue1_final.csv"]
-        df = None
-        for p in paths:
-            if pathlib.Path(p).exists():
-                df = pd.read_csv(p)
-                break
-        
-        if df is None:
-            # إذا لم يجد ملفات، ينشئ DataFrame تجريبي بدلاً من الانهيار
-            st.error("⚠️ لم يتم العثور على ملف البيانات. تم تحميل بيانات تجريبية.")
-            return pd.DataFrame(columns=['Player', 'Squad', 'League', 'Age_num', 'Pos_primary', 'Market_Value_M', '90s', 'Gls', 'Ast', 'SoT%', 'Gls_p90'])
-            
+        try: df=pd.read_csv("data/processed/ligue1_final.csv")
+        except: df=pd.read_csv("ligue1_final.csv")
     return recalculate(df)
 
-# تحويل الصور لـ Base64
-logo_b64 = img_to_b64("assets/brentford_logo.png")
-bg_b64 = img_to_b64("assets/bg_stadium.jpg")
+def img_to_b64(path):
+    try:
+        with open(path,"rb") as f: return base64.b64encode(f.read()).decode()
+    except: return None
 
-# إعداد الـ HTML للـ Header
-logo_html = f'<img class="header-logo" src="data:image/png;base64,{logo_b64}"/>' if logo_b64 else '⚽'
-bg_style = f'background-image: linear-gradient(135deg, rgba(13,13,13,0.9) 0%, rgba(28,6,6,0.8) 100%), url(data:image/jpg;base64,{bg_b64}); background-size: cover; background-position: center;' if bg_b64 else ''
+LAYOUT=dict(plot_bgcolor='#141414',paper_bgcolor='#1a1a1a',
+    font=dict(color='#e8e8e8',family='Inter'),
+    title_font=dict(color='white',family='Bebas Neue',size=20),
+    legend=dict(bgcolor='rgba(0,0,0,0)',font=dict(color='#777')),
+    margin=dict(t=50,b=30,l=10,r=10))
 
+# HEADER
+logo_b64=img_to_b64("assets/brentford_logo.png")
+logo_html=f'<img class="header-logo" src="data:image/png;base64,{logo_b64}"/>' if logo_b64 else '<div style="font-size:3rem;flex-shrink:0;">⚽</div>'
 st.markdown(f"""
-<div class="header-wrap" style="{bg_style}">
+<div class="header-wrap">
   {logo_html}
   <div>
     <div class="main-title">BRENTFORD FC <span>//</span> SCOUTING INTEL</div>
-    <div class="main-sub">Data-Driven Scouting Framework • {sel_league[0] if sel_league else 'Global'} Analysis</div>
+    <div class="main-sub">Undervalued Player Detection • Value Score Algorithm • Schedule-Adjusted Analytics</div>
     <div class="social-links">
-      <a class="social-btn" href="https://www.linkedin.com/in/goda-emad/">🔗 LinkedIn</a>
-      <a class="social-btn" href="tel:+201126242932">📞 Contact Eng. Goda</a>
+      <a class="social-btn" href="https://www.linkedin.com/in/goda-emad/" target="_blank">🔗 LinkedIn</a>
+      <a class="social-btn" href="https://github.com/Goda-Emad/brentford-scouting" target="_blank">🐙 GitHub</a>
+      <a class="social-btn" href="tel:+201126242932">📞 +20 112 624 2932</a>
     </div>
   </div>
 </div>""", unsafe_allow_html=True)
