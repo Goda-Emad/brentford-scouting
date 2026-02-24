@@ -587,95 +587,154 @@ st.markdown(f"""
   </div>
 </div>""", unsafe_allow_html=True)
 
-# ─── SIDEBAR - PROFESSIONAL DESIGN ─────────────────────────────────────────
+# ─── SIDEBAR - PROFESSIONAL DESIGN WITH SCROLL ────────────────────────────
 with st.sidebar:
-    # ===== HEADER SIDEBAR مع شعار =====
+    # ===== تنسيق CSS مخصص للشريط الجانبي =====
     st.markdown("""
-    <div style="text-align:center; margin-bottom:1.5rem;">
-        <div style="font-family:'Bebas Neue',sans-serif; font-size:1.8rem; color:#e03a3e; letter-spacing:3px;">
-            BRENTFORD FC
+    <style>
+    /* تخصيص ارتفاع الشريط الجانبي والتمرير */
+    [data-testid="stSidebar"] {
+        height: 100vh !important;
+        overflow-y: auto !important;
+        scrollbar-width: thin !important;
+        scrollbar-color: #e03a3e #1a1a1a !important;
+    }
+    
+    /* تخصيص شريط التمرير */
+    [data-testid="stSidebar"]::-webkit-scrollbar {
+        width: 6px !important;
+    }
+    
+    [data-testid="stSidebar"]::-webkit-scrollbar-track {
+        background: #1a1a1a !important;
+    }
+    
+    [data-testid="stSidebar"]::-webkit-scrollbar-thumb {
+        background: #e03a3e !important;
+        border-radius: 10px !important;
+    }
+    
+    [data-testid="stSidebar"]::-webkit-scrollbar-thumb:hover {
+        background: #ff5f5f !important;
+    }
+    
+    /* تحسين مظهر العناصر */
+    .sidebar-header {
+        background: linear-gradient(135deg, #0f0f0f 0%, #1f0808 100%);
+        padding: 1.5rem 1rem;
+        margin-bottom: 1rem;
+        border-bottom: 2px solid #e03a3e;
+        text-align: center;
+    }
+    
+    .sidebar-footer {
+        background: rgba(10,10,10,0.5);
+        padding: 1rem;
+        margin-top: 1rem;
+        border-top: 1px solid rgba(224,58,62,0.3);
+        text-align: center;
+        font-size: 0.7rem;
+        color: #666;
+    }
+    
+    .filter-section {
+        background: rgba(20,20,20,0.4);
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border: 1px solid rgba(224,58,62,0.1);
+    }
+    
+    .filter-title {
+        font-family: 'Bebas Neue', sans-serif;
+        color: #e03a3e;
+        font-size: 1rem;
+        letter-spacing: 2px;
+        margin-bottom: 0.8rem;
+        border-bottom: 1px solid rgba(224,58,62,0.3);
+        padding-bottom: 0.3rem;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+    
+    # ===== HEADER SIDEBAR =====
+    st.markdown("""
+    <div class="sidebar-header">
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:2rem; color:#e03a3e; letter-spacing:3px;">
+            BRENTFORD
         </div>
-        <div style="font-family:'Inter',sans-serif; font-size:0.7rem; color:#888; letter-spacing:2px; margin-top:-5px;">
+        <div style="font-family:'Inter',sans-serif; font-size:0.7rem; color:#888; letter-spacing:2px;">
             SCOUTING SYSTEM
+        </div>
+        <div style="margin-top:0.5rem;">
+            <span style="background:#e03a3e; color:white; padding:2px 8px; border-radius:12px; font-size:0.6rem;">
+                ⚽ LIGUE 1 2025-26
+            </span>
         </div>
     </div>
     """, unsafe_allow_html=True)
     
-    # ===== زر الترجمة عربي/إنجليزي =====
-    col1, col2 = st.columns([1, 3])
-    with col1:
-        st.markdown("🌐")
+    # ===== LANGUAGE SELECTOR =====
+    col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         lang = st.selectbox(
             "Language",
             ["🇬🇧 English", "🇸🇦 العربية"],
-            label_visibility="collapsed"
+            label_visibility="collapsed",
+            key="lang_selector"
         )
     
-    # تحديد النصوص حسب اللغة
+    # ===== TRANSLATIONS =====
     if lang == "🇸🇦 العربية":
         texts = {
-            'filters': '⚙️ أدوات البحث',
-            'bg_change': '🖼️ تغيير الخلفية',
-            'upload_csv': '📂 إضافة ملف CSV',
-            'league': '🌍 الدوري',
+            'filters': '🔍 فلتر البحث',
+            'bg_change': '🎨 تغيير الخلفية',
+            'upload_csv': '📁 رفع ملف CSV',
+            'league': '🏆 الدوري',
             'position': '📍 المركز',
-            'age_range': '🎂 الفئة العمرية',
-            'max_value': '💶 القيمة السوقية القصوى',
-            'min_90s': '⏱️ الحد الأدنى للدقائق',
-            'show_top': '📊 عرض أفضل',
-            'formula_title': '📐 معادلة تقييم القيمة',
-            'formula': 'أهداف/90 × 0.30<br>دقة التسديد × 0.18<br>تمريرات حاسمة × 0.22<br>تمريرات تقدمية × 0.18<br>جدول المباريات × 0.12<br>÷ القيمة السوقية × مكافأة العمر'
+            'age': '📅 العمر',
+            'value': '💰 القيمة السوقية',
+            'minutes': '⏱️ الدقائق',
+            'top': '📊 أفضل',
+            'formula': '⚙️ معادلة التقييم',
+            'players': 'لاعبين',
+            'apply': 'تطبيق الفلاتر',
+            'reset': 'إعادة تعيين'
         }
     else:
         texts = {
-            'filters': '⚙️ SCOUT FILTERS',
-            'bg_change': '🖼️ Change Background',
-            'upload_csv': '📂 Add League CSV',
-            'league': '🌍 League',
+            'filters': '🔍 SEARCH FILTERS',
+            'bg_change': '🎨 Change Background',
+            'upload_csv': '📁 Upload CSV',
+            'league': '🏆 League',
             'position': '📍 Position',
-            'age_range': '🎂 Age Range',
-            'max_value': '💶 Max Market Value',
-            'min_90s': '⏱️ Min 90s Played',
-            'show_top': '📊 Show Top',
-            'formula_title': '📐 VALUE SCORE FORMULA',
-            'formula': 'Goals/90 × 0.30<br>Shot Accuracy × 0.18<br>Assists × 0.22<br>Prog Passes × 0.18<br>Schedule Adj × 0.12<br>÷ Market Value × Age Bonus'
+            'age': '📅 Age',
+            'value': '💰 Market Value',
+            'minutes': '⏱️ Minutes',
+            'top': '📊 Top',
+            'formula': '⚙️ Formula',
+            'players': 'players',
+            'apply': 'Apply Filters',
+            'reset': 'Reset'
         }
     
-    # ===== عنوان الفلاتر =====
+    # ===== MAIN FILTERS SECTION =====
     st.markdown(f"""
-    <div style="font-family:'Bebas Neue',sans-serif; font-size:1.3rem; 
-                color:white; letter-spacing:2.5px; margin-bottom:1.2rem; 
-                padding-bottom:0.8rem; border-bottom:2px solid #e03a3e;">
-        {texts['filters']}
-    </div>
+    <div class="filter-section">
+        <div class="filter-title">{texts['filters']}</div>
     """, unsafe_allow_html=True)
     
-    # ===== تغيير الخلفية =====
-    with st.expander(texts['bg_change']):
-        bg_file = st.file_uploader(
-            "Upload image" if lang == "🇬🇧 English" else "رفع صورة",
-            type=["jpg", "jpeg", "png"],
-            key="bg_upload"
-        )
-        if bg_file:
-            st.session_state["bg_b64"] = base64.b64encode(bg_file.read()).decode()
-            st.success("✅ تم التحديث" if lang == "🇸🇦 العربية" else "✅ Updated")
-            st.rerun()
-    
-    st.markdown("---")
-    
-    # ===== رفع ملف CSV =====
+    # رفع ملف CSV
     uploaded = st.file_uploader(
         texts['upload_csv'],
         type=["csv"],
-        help="CSV only" if lang == "🇬🇧 English" else "ملفات CSV فقط"
+        help="CSV files only" if lang == "🇬🇧 English" else "ملفات CSV فقط"
     )
     
-    # ===== تحميل البيانات =====
+    # تحميل البيانات
     df_base = load_data(uploaded)
     
-    # ===== الفلاتر الرئيسية =====
+    # الفلاتر الرئيسية في عمودين
     col1, col2 = st.columns(2)
     
     with col1:
@@ -698,71 +757,128 @@ with st.sidebar:
             key="pos_filter"
         )
     
-    # ===== Age Range Slider =====
+    st.markdown("</div>", unsafe_allow_html=True)
+    
+    # ===== AGE SECTION =====
+    st.markdown(f"""
+    <div class="filter-section">
+        <div class="filter-title">{texts['age']}</div>
+    """, unsafe_allow_html=True)
+    
     age_min, age_max = int(df_base['Age_num'].min()), int(df_base['Age_num'].max())
     age_range = st.slider(
-        texts['age_range'],
+        f"**{texts['age']}**",
         age_min,
         age_max,
         (age_min, age_max),
-        key="age_slider"
+        key="age_slider",
+        help=f"Min: {age_min} - Max: {age_max}" if lang == "🇬🇧 English" else f"الحد الأدنى: {age_min} - الحد الأقصى: {age_max}"
     )
     
-    # ===== Market Value Slider =====
+    # إظهار عدد اللاعبين في الفئة العمرية
+    age_count = len(df_base[(df_base['Age_num'] >= age_range[0]) & (df_base['Age_num'] <= age_range[1])])
+    st.caption(f"📊 {age_count} {texts['players']}" if lang == "🇬🇧 English" else f"📊 {age_count} {texts['players']}")
+    
+    st.markdown("</div>", unsafe_allow_html=True)
+    
+    # ===== MARKET VALUE SECTION =====
+    st.markdown(f"""
+    <div class="filter-section">
+        <div class="filter-title">{texts['value']}</div>
+    """, unsafe_allow_html=True)
+    
     max_val = float(df_base['Market_Value_M'].max())
     budget = st.slider(
-        texts['max_value'],
+        f"**{texts['value']}**",
         1.0,
         max(max_val, 1.1),
         max_val,
         key="value_slider",
-        format="€%.1fM"
+        format="€%.1fM",
+        help=f"Max: €{max_val:.1f}M" if lang == "🇬🇧 English" else f"الحد الأقصى: €{max_val:.1f}م"
     )
     
-    # ===== Minutes Played Slider =====
+    # إحصائيات سريعة للقيمة
+    avg_value = df_base['Market_Value_M'].mean()
+    st.caption(f"📊 Avg: €{avg_value:.1f}M" if lang == "🇬🇧 English" else f"📊 المتوسط: €{avg_value:.1f}م")
+    
+    st.markdown("</div>", unsafe_allow_html=True)
+    
+    # ===== MINUTES SECTION =====
+    st.markdown(f"""
+    <div class="filter-section">
+        <div class="filter-title">{texts['minutes']}</div>
+    """, unsafe_allow_html=True)
+    
     max_90s = float(df_base['90s'].max())
     min_90s = st.slider(
-        texts['min_90s'],
+        f"**{texts['minutes']}**",
         0.0,
         max(max_90s, 1.0),
         0.0,
         step=0.5,
-        key="mins_slider"
+        key="mins_slider",
+        format="%.1f",
+        help=f"Max: {max_90s:.1f}" if lang == "🇬🇧 English" else f"الحد الأقصى: {max_90s:.1f}"
     )
     
-    st.markdown("---")
+    st.markdown("</div>", unsafe_allow_html=True)
     
-    # ===== Top N Selector =====
-    top_n = st.selectbox(
-        texts['show_top'],
-        [10, 15, 20, 30, 50],
-        index=2,
-        key="top_n"
-    )
-    
-    # ===== Formula Box =====
+    # ===== TOP N SECTION =====
     st.markdown(f"""
-    <div style="margin-top:1.5rem; padding:1rem; 
-                background:rgba(224,58,62,0.08); 
-                border:1px solid rgba(224,58,62,0.2); 
-                border-radius:12px;">
-        <div style="font-family:'Bebas Neue',sans-serif; font-size:0.9rem; 
-                    color:#e03a3e; letter-spacing:1.5px; margin-bottom:0.6rem;">
-            {texts['formula_title']}
-        </div>
-        <div style="font-family:'Inter',sans-serif; font-size:0.65rem; 
-                    color:#aaa; line-height:2;">
-            {texts['formula']}
+    <div class="filter-section">
+        <div class="filter-title">{texts['top']}</div>
+    """, unsafe_allow_html=True)
+    
+    top_n = st.selectbox(
+        f"**{texts['top']}**",
+        [10, 15, 20, 30, 50, 100],
+        index=2,
+        key="top_n",
+        label_visibility="collapsed"
+    )
+    
+    st.markdown("</div>", unsafe_allow_html=True)
+    
+    # ===== FORMULA SECTION =====
+    st.markdown(f"""
+    <div class="filter-section">
+        <div class="filter-title">{texts['formula']}</div>
+        <div style="font-size:0.7rem; color:#aaa; line-height:1.8;">
+            • Goals/90 × 0.30<br>
+            • Shot Acc × 0.18<br>
+            • Assists × 0.22<br>
+            • Prog Passes × 0.18<br>
+            • Schedule × 0.12<br>
+            <div style="margin-top:0.5rem; padding-top:0.5rem; border-top:1px solid rgba(224,58,62,0.3);">
+                <span style="color:#e03a3e;">÷ Market Value × Age Bonus</span>
+            </div>
         </div>
     </div>
     """, unsafe_allow_html=True)
     
-    # ===== Footer Sidebar =====
-    st.markdown("---")
+    # ===== APPLY/RESET BUTTONS =====
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("✅ " + texts['apply'], use_container_width=True):
+            st.rerun()
+    with col2:
+        if st.button("🔄 " + texts['reset'], use_container_width=True):
+            st.session_state.clear()
+            st.rerun()
+    
+    # ===== FOOTER =====
     st.markdown("""
-    <div style="text-align:center; font-family:'Inter',sans-serif; font-size:0.6rem; color:#444;">
-        Data: FBref + Transfermarkt<br>
-        Season 2025-26
+    <div class="sidebar-footer">
+        <div style="display:flex; justify-content:center; gap:1rem; margin-bottom:0.5rem;">
+            <span style="color:#e03a3e;">⚽</span>
+            <span style="color:#444;">•</span>
+            <span style="color:#e03a3e;">📊</span>
+        </div>
+        <div>FBref + Transfermarkt</div>
+        <div style="font-size:0.6rem; color:#444; margin-top:0.3rem;">
+            © 2026 Brentford FC
+        </div>
     </div>
     """, unsafe_allow_html=True)
 
