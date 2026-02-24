@@ -246,7 +246,6 @@ st.markdown("""<style>
     background: linear-gradient(90deg, var(--brentford-red-dark), var(--brentford-red), var(--brentford-red-light)); 
 }
 
-/* قيمة KPI - أحمر كبير */
 .kpi-val { 
     font-family: 'Bebas Neue', sans-serif; 
     font-size: 2.5rem; 
@@ -256,7 +255,6 @@ st.markdown("""<style>
     letter-spacing: 2px;
 }
 
-/* عنوان KPI - أبيض واضح */
 .kpi-lbl { 
     font-family: 'Inter', sans-serif; 
     font-size: 0.7rem; 
@@ -478,8 +476,199 @@ hr {
     border-top:1px solid rgba(255,255,255,0.05) !important; 
 }
 </style>""", unsafe_allow_html=True)
-# ─── TABS ────────────────────────────────────────────────────────────────────
-tab1,tab2,tab3,tab4 = st.tabs(["🎯  Top Targets","📊  Value Analysis","🔬  Deep Dive","📋  Full Dataset"])
+
+
+# ─── HELPERS ─────────────────────────────────────────────────────────────────
+def normalize_col(col):
+    col = pd.to_numeric(col, errors='coerce').fillna(0)
+    mn, mx = col.min(), col.max()
+    return col * 0 if mx == mn else (col - mn) / (mx - mn)
+
+def recalculate(df):
+    if df.empty: return df
+    df = df.copy()
+    for c in ['Gls_p90','SoT%','Ast','PrgP_proxy','Scoring_Context_Bonus','Market_Value_M','Age_num','90s','Gls']:
+        if c not in df.columns: df[c] = 0
+        df[c] = pd.to_numeric(df[c], errors='coerce').fillna(0)
+    df['norm_gls_p90'] = normalize_col(df['Gls_p90'])
+    df['norm_sot_pct']  = normalize_col(df['SoT%'])
+    df['norm_ast']      = normalize_col(df['Ast'])
+    df['norm_prgp']     = normalize_col(df['PrgP_proxy'])
+    df['norm_context']  = normalize_col(df['Scoring_Context_Bonus'])
+    df['Perf_Score'] = (
+        df['norm_gls_p90']*0.30 + df['norm_sot_pct']*0.18 +
+        df['norm_ast']*0.22 + df['norm_prgp']*0.18 + df['norm_context']*0.12
+    ).round(3)
+    df['Value_Score']      = (df['Perf_Score'] / df['Market_Value_M'].clip(lower=0.1) * 100).round(3)
+    df['Value_Score_norm'] = (normalize_col(df['Value_Score']) * 100).round(1)
+    df['Age_bonus']        = df['Age_num'].apply(lambda x: 1.2 if x<=23 else (1.1 if x<=25 else 1.0))
+    df['Final_Score']      = (df['Value_Score_norm'] * df['Age_bonus']).round(1)
+    return df
+
+
+@st.cache_data
+def load_data(file=None):
+    """Load CSV data or fallback to default dataset, then recalculate metrics."""
+    try:
+        if file is not None:
+            return recalculate(pd.read_csv(file))
+        for path in ["data/processed/ligue1_final.csv","ligue1_final.csv"]:
+            if os.path.exists(path):
+                return recalculate(pd.read_csv(path))
+    except Exception as e:
+        st.error(f"❌ Error loading file: {e}")
+
+    # Fallback sample dataset
+    data = {
+        'Player':['Aubameyang','Ansu Fati','Wesley Said','Odsonne Edouard','Pavel Sulc','Elye Wahi','Adrien Thomasson','Gauthier Hein'],
+        'Nation':['GAB','ESP','FRA','FRA','CZE','FRA','FRA','FRA'],
+        'Pos_primary':['FW','MF','FW','FW','MF','FW','MF','MF'],
+        'Squad':['Marseille','Monaco','Lens','Lens','Brest','Lens','Lens','Auxerre'],
+        'Age_num':[36,23,28,27,24,22,32,29],
+        'League':['Ligue 1']*8,
+        '90s':[13.6,6.4,18.5,19.2,15.3,12.8,21.3,17.7],
+        'Gls':[6,8,10,9,10,8,2,6],
+        'Ast':[5,0,2,3,3,1,6,4],
+        'Gls_p90':[0.44,1.25,0.54,0.47,0.65,0.63,0.09,0.34],
+        'SoT%':[61.3,58.3,48.8,52.1,55.4,50.2,28.6,33.3],
+        'Market_Value_M':[4,6,8,12,12,12,5,5],
+        'Peak_Value_M':[40,20,8,20,40,40,5,5],
+        'PrgP_proxy':[0,0,2,3,4,1,6,2],
+        'Scoring_Context_Bonus':[0.077,0.153,0.083,0.094,0.088,0.083,0.123,0.039],
+        'Defense_Hardness':[0.59,0.41,0.69,0.69,0.52,0.69,0.69,0.35],
+    }
+    return recalculate(pd.DataFrame(data))
+
+
+def img_to_b64(path):
+    """Return base64 string of image, fallback to default logos if path missing."""
+    for p in [path, "assets/rentford_logo.jpg", "assets/brentford_logo.png"]:
+        if os.path.exists(p):
+            with open(p,"rb") as f:
+                return base64.b64encode(f.read()).decode()
+    return None
+
+
+def tl(text, size=20):
+    """Safe Plotly title dictionary."""
+    return dict(text=text, font=dict(color='white', family='Bebas Neue', size=size))
+
+
+LAYOUT = dict(
+    plot_bgcolor='rgba(8,8,8,0.55)',
+    paper_bgcolor='rgba(0,0,0,0)',
+    font=dict(color='#d8d8d8', family='Inter', size=11),
+    legend=dict(bgcolor='rgba(12,12,12,0.85)',
+                bordercolor='rgba(224,58,62,0.2)',
+                font=dict(color='#d8d8d8')),
+    margin=dict(t=50, b=30, l=10, r=10),
+)
+
+
+# ─── HEADER ──────────────────────────────────────────────────────────────────
+logo_b64 = img_to_b64("assets/rentford_logo.jpg")
+logo_html = f'<img class="header-logo" src="data:image/jpeg;base64,{logo_b64}"/>' if logo_b64 else '<div style="font-size:3.8rem;flex-shrink:0;">🐝</div>'
+
+st.markdown(f"""
+<div class="header-wrap">
+  {logo_html}
+  <div style="flex:1;">
+    <div class="main-title">BRENTFORD FC <span>//</span> SCOUTING INTEL</div>
+    <div class="main-sub">Undervalued Player Detection • Value Score Algorithm • Schedule-Adjusted Analytics</div>
+    <div class="social-links">
+      <a class="social-btn" href="https://www.linkedin.com/in/goda-emad/" target="_blank">🔗 LinkedIn</a>
+      <a class="social-btn" href="https://github.com/Goda-Emad/brentford-scouting" target="_blank">🐙 GitHub</a>
+      <a class="social-btn" href="tel:+201126242932">📞 +20 112 624 2932</a>
+    </div>
+  </div>
+  <div style="text-align:right;flex-shrink:0;">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:0.85rem;color:#e03a3e;letter-spacing:2px;">SEASON 2025–26</div>
+    <div style="font-family:'Inter',sans-serif;font-size:0.62rem;color:#444;margin-top:0.3rem;">FBREF + TRANSFERMARKT</div>
+  </div>
+</div>""", unsafe_allow_html=True)
+
+
+# ─── SIDEBAR ─────────────────────────────────────────────────────────────────
+with st.sidebar:
+    st.markdown('<div style="font-family:\'Bebas Neue\',sans-serif;font-size:1.3rem;color:white;letter-spacing:2.5px;margin-bottom:1.2rem;padding-bottom:0.8rem;border-bottom:1px solid rgba(224,58,62,0.2);">⚙️ SCOUT FILTERS</div>', unsafe_allow_html=True)
+
+    # رفع خلفية جديدة من داخل التطبيق
+    with st.expander("🖼️ Change Background Image"):
+        bg_file = st.file_uploader("Upload new background (.jpg/.png)", type=["jpg","jpeg","png"], key="bg_upload")
+        if bg_file:
+            st.session_state["bg_b64"] = base64.b64encode(bg_file.read()).decode()
+            st.success("✅ Background updated! Scroll up to see it.")
+            st.rerun()
+
+    st.markdown("---")
+    uploaded   = st.file_uploader("📂 Add New League CSV", type=["csv"])
+    df_base    = load_data(uploaded)
+    leagues    = sorted(df_base['League'].dropna().unique()) if 'League' in df_base.columns else ['Ligue 1']
+    sel_league = st.multiselect("🌍 League", leagues, default=leagues)
+    positions  = sorted(df_base['Pos_primary'].dropna().unique())
+    sel_pos    = st.multiselect("📍 Position", positions, default=positions)
+    age_min, age_max = int(df_base['Age_num'].min()), int(df_base['Age_num'].max())
+    age_range  = st.slider("🎂 Age Range", age_min, age_max, (age_min, age_max))
+    max_val    = float(df_base['Market_Value_M'].max())
+    budget     = st.slider("💶 Max Market Value (€m)", 1.0, max(max_val,1.1), max_val)
+    max_90s    = float(df_base['90s'].max())
+    min_90s    = st.slider("⏱️ Min 90s Played", 0.0, max(max_90s,1.0), 0.0, step=0.5)
+    st.markdown("---")
+    top_n = st.selectbox("📊 Show Top N Targets", [10,15,20,30,50], index=2)
+    st.markdown("""<div style="margin-top:1.5rem;padding:1rem;background:rgba(224,58,62,0.06);border:1px solid rgba(224,58,62,0.16);border-radius:10px;">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:0.88rem;color:#e03a3e;letter-spacing:1.5px;margin-bottom:0.6rem;">📐 VALUE SCORE FORMULA</div>
+    <div style="font-family:'Inter',sans-serif;font-size:0.63rem;color:#555;line-height:2.2;">
+    Goals/90 × 0.30<br>Shot Accuracy × 0.18<br>Assists × 0.22<br>Prog Passes × 0.18<br>Schedule Adj × 0.12<br>
+    <span style="color:#3a3a3a;margin-top:0.4rem;display:block;">÷ Market Value × Age Bonus</span></div></div>""", unsafe_allow_html=True)
+
+
+# ============================================
+# بعد السايدبار - إنشاء df وتطبيق الفلاتر
+# ============================================
+
+# إنشاء df وتطبيق الفلاتر
+df = df_base.copy()
+
+if sel_league and 'League' in df.columns:
+    df = df[df['League'].isin(sel_league)]
+if sel_pos and 'Pos_primary' in df.columns:
+    df = df[df['Pos_primary'].isin(sel_pos)]
+if age_range:
+    df = df[(df['Age_num'] >= age_range[0]) & (df['Age_num'] <= age_range[1])]
+if budget:
+    df = df[df['Market_Value_M'] <= budget]
+if min_90s:
+    df = df[df['90s'] >= min_90s]
+
+df = df.sort_values('Final_Score', ascending=False).reset_index(drop=True)
+
+
+# ============================================
+# عرض KPIs
+# ============================================
+if len(df) > 0:
+    k1, k2, k3, k4, k5 = st.columns(5)
+    
+    with k1:
+        st.markdown(f'<div class="kpi-card"><div class="kpi-val">{len(df)}</div><div class="kpi-lbl">Players Scouted</div></div>', unsafe_allow_html=True)
+    with k2:
+        st.markdown(f'<div class="kpi-card"><div class="kpi-val">€{df["Market_Value_M"].mean():.1f}m</div><div class="kpi-lbl">Avg Market Value</div></div>', unsafe_allow_html=True)
+    with k3:
+        st.markdown(f'<div class="kpi-card"><div class="kpi-val">{df["Final_Score"].max():.0f}</div><div class="kpi-lbl">Top Value Score</div></div>', unsafe_allow_html=True)
+    with k4:
+        st.markdown(f'<div class="kpi-card"><div class="kpi-val">{df["Gls_p90"].mean():.2f}</div><div class="kpi-lbl">Avg Goals / 90</div></div>', unsafe_allow_html=True)
+    with k5:
+        st.markdown(f'<div class="kpi-card"><div class="kpi-val">{df["SoT%"].mean():.1f}%</div><div class="kpi-lbl">Avg Shot Accuracy</div></div>', unsafe_allow_html=True)
+    
+    st.markdown("<br>", unsafe_allow_html=True)
+else:
+    st.warning("⚠️ No players match the current filters.")
+
+
+# ============================================
+# TABS - إنشاء التبويبات
+# ============================================
+tab1, tab2, tab3, tab4 = st.tabs(["🎯  Top Targets", "📊  Value Analysis", "🔬  Deep Dive", "📋  Full Dataset"])
 
 
 # ══════ TAB 1 ════════════════════════════════════════════════════════════════
