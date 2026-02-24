@@ -587,7 +587,7 @@ st.markdown(f"""
   </div>
 </div>""", unsafe_allow_html=True)
 
-# ─── SIDEBAR - PROFESSIONAL DESIGN WITH SCROLL ────────────────────────────
+# ─── SIDEBAR - PROFESSIONAL DESIGN WITH DARK/LIGHT MODE ───────────────────
 with st.sidebar:
     # ===== تنسيق CSS مخصص للشريط الجانبي =====
     st.markdown("""
@@ -597,7 +597,7 @@ with st.sidebar:
         height: 100vh !important;
         overflow-y: auto !important;
         scrollbar-width: thin !important;
-        scrollbar-color: #e03a3e #1a1a1a !important;
+        transition: background 0.3s ease !important;
     }
     
     /* تخصيص شريط التمرير */
@@ -625,6 +625,12 @@ with st.sidebar:
         margin-bottom: 1rem;
         border-bottom: 2px solid #e03a3e;
         text-align: center;
+        transition: all 0.3s ease;
+    }
+    
+    .light-mode .sidebar-header {
+        background: linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%);
+        border-bottom: 2px solid #e03a3e;
     }
     
     .sidebar-footer {
@@ -634,7 +640,6 @@ with st.sidebar:
         border-top: 1px solid rgba(224,58,62,0.3);
         text-align: center;
         font-size: 0.7rem;
-        color: #666;
     }
     
     .filter-section {
@@ -643,6 +648,12 @@ with st.sidebar:
         padding: 1rem;
         margin-bottom: 1rem;
         border: 1px solid rgba(224,58,62,0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .light-mode .filter-section {
+        background: rgba(255,255,255,0.8);
+        border: 1px solid rgba(224,58,62,0.2);
     }
     
     .filter-title {
@@ -656,6 +667,46 @@ with st.sidebar:
     }
     </style>
     """, unsafe_allow_html=True)
+    
+    # ===== DARK/LIGHT MODE TOGGLE =====
+    col1, col2, col3 = st.columns([1, 1, 1])
+    with col2:
+        theme = st.radio(
+            "Theme",
+            ["🌙 Dark", "☀️ Light"],
+            horizontal=True,
+            label_visibility="collapsed",
+            key="theme_toggle"
+        )
+    
+    # تطبيق الثيم
+    if theme == "☀️ Light":
+        st.markdown("""
+        <style>
+        :root {
+            --bg-overlay: rgba(255, 255, 255, 0.92);
+            --text-primary: #1a1a1a;
+            --text-secondary: #4a4a4a;
+            --text-muted: #666666;
+        }
+        .stApp::before {
+            background: rgba(255, 255, 255, 0.88) !important;
+        }
+        [data-testid="stSidebar"] {
+            background: rgba(250, 250, 250, 0.95) !important;
+        }
+        [data-testid="stSidebar"] * {
+            color: #1a1a1a !important;
+        }
+        .light-mode .filter-section {
+            background: rgba(255,255,255,0.9);
+        }
+        .stApp {
+            background: #f5f5f5 !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+        st.markdown('<div class="light-mode">', unsafe_allow_html=True)
     
     # ===== HEADER SIDEBAR =====
     st.markdown("""
@@ -699,7 +750,10 @@ with st.sidebar:
             'formula': '⚙️ معادلة التقييم',
             'players': 'لاعبين',
             'apply': 'تطبيق الفلاتر',
-            'reset': 'إعادة تعيين'
+            'reset': 'إعادة تعيين',
+            'theme': 'المظهر',
+            'dark': 'داكن',
+            'light': 'فاتح'
         }
     else:
         texts = {
@@ -715,7 +769,10 @@ with st.sidebar:
             'formula': '⚙️ Formula',
             'players': 'players',
             'apply': 'Apply Filters',
-            'reset': 'Reset'
+            'reset': 'Reset',
+            'theme': 'Theme',
+            'dark': 'Dark',
+            'light': 'Light'
         }
     
     # ===== MAIN FILTERS SECTION =====
@@ -731,7 +788,7 @@ with st.sidebar:
         help="CSV files only" if lang == "🇬🇧 English" else "ملفات CSV فقط"
     )
     
-    # تحميل البيانات
+    # ✅ تحميل البيانات (DF)
     df_base = load_data(uploaded)
     
     # الفلاتر الرئيسية في عمودين
@@ -771,13 +828,12 @@ with st.sidebar:
         age_min,
         age_max,
         (age_min, age_max),
-        key="age_slider",
-        help=f"Min: {age_min} - Max: {age_max}" if lang == "🇬🇧 English" else f"الحد الأدنى: {age_min} - الحد الأقصى: {age_max}"
+        key="age_slider"
     )
     
     # إظهار عدد اللاعبين في الفئة العمرية
     age_count = len(df_base[(df_base['Age_num'] >= age_range[0]) & (df_base['Age_num'] <= age_range[1])])
-    st.caption(f"📊 {age_count} {texts['players']}" if lang == "🇬🇧 English" else f"📊 {age_count} {texts['players']}")
+    st.caption(f"📊 {age_count} {texts['players']}")
     
     st.markdown("</div>", unsafe_allow_html=True)
     
@@ -794,8 +850,7 @@ with st.sidebar:
         max(max_val, 1.1),
         max_val,
         key="value_slider",
-        format="€%.1fM",
-        help=f"Max: €{max_val:.1f}M" if lang == "🇬🇧 English" else f"الحد الأقصى: €{max_val:.1f}م"
+        format="€%.1fM"
     )
     
     # إحصائيات سريعة للقيمة
@@ -818,8 +873,7 @@ with st.sidebar:
         0.0,
         step=0.5,
         key="mins_slider",
-        format="%.1f",
-        help=f"Max: {max_90s:.1f}" if lang == "🇬🇧 English" else f"الحد الأقصى: {max_90s:.1f}"
+        format="%.1f"
     )
     
     st.markdown("</div>", unsafe_allow_html=True)
@@ -864,7 +918,8 @@ with st.sidebar:
             st.rerun()
     with col2:
         if st.button("🔄 " + texts['reset'], use_container_width=True):
-            st.session_state.clear()
+            for key in list(st.session_state.keys()):
+                del st.session_state[key]
             st.rerun()
     
     # ===== FOOTER =====
@@ -881,10 +936,13 @@ with st.sidebar:
         </div>
     </div>
     """, unsafe_allow_html=True)
+    
+    if theme == "☀️ Light":
+        st.markdown('</div>', unsafe_allow_html=True)
 
 
 # ============================================
-# ✅ إنشاء DF وتطبيق الفلاتر
+# ✅ إنشاء DF وتطبيق الفلاتر (بعد السايدبار)
 # ============================================
 
 df = df_base.copy()
