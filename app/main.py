@@ -50,630 +50,355 @@ def inject_background():
 inject_background()
 
 
-# ─── INLINE CSS المعدل (بألوان تتناسب مع الخلفية) ───────────────────────────
+# ─── INLINE CSS ──────────────────────────────────────────────────────────────
 st.markdown("""<style>
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
-    --primary: #e03a3e;
-    --primary-light: #ff6b6b;
-    --primary-dark: #b71c1c;
-    --primary-glow: rgba(224, 58, 62, 0.35);
-    --primary-dim: rgba(224, 58, 62, 0.12);
-    
-    --bg-overlay: rgba(10, 10, 10, 0.6);
-    --bg-sidebar: rgba(15, 15, 15, 0.85);
-    --bg-card: rgba(18, 18, 18, 0.7);
-    --bg-card-hover: rgba(25, 25, 25, 0.8);
-    
-    --text-bright: #ffffff;
-    --text-primary: #f5f5f5;
-    --text-secondary: #cccccc;
-    --text-muted: #999999;
-    --text-dark: #666666;
-    
-    --border-light: rgba(224, 58, 62, 0.25);
-    --border-soft: rgba(255, 255, 255, 0.06);
-    
-    --blur: blur(12px);
-    --glow-red: 0 0 20px rgba(224, 58, 62, 0.25);
+    --red: #e03a3e;
+    --red-dim: rgba(224,58,62,0.18);
+    --border: rgba(224,58,62,0.25);
+    --text: #f0f0f0;
+    --muted: #888;
+    --blur: blur(18px);
 }
 
-/* ─── Global overlay ─── */
+/* ─── Global dark overlay فوق الخلفية ─── */
 .stApp::before {
     content: '';
     position: fixed;
     inset: 0;
-    background: var(--bg-overlay);
-    backdrop-filter: blur(2px);
+    background: rgba(4,4,4,0.78);
     z-index: 0;
     pointer-events: none;
 }
-
-.stApp > * { 
-    position: relative; 
-    z-index: 1; 
-}
+.stApp > * { position: relative; z-index: 1; }
 
 /* ─── Sidebar ─── */
 [data-testid="stSidebar"] {
-    background: var(--bg-sidebar) !important;
+    background: rgba(6,6,6,0.92) !important;
     backdrop-filter: var(--blur) !important;
-    border-right: 2px solid var(--border-light) !important;
-    box-shadow: 5px 0 30px rgba(0, 0, 0, 0.5) !important;
+    border-right: 1px solid var(--border) !important;
 }
-
-[data-testid="stSidebar"] * { 
-    color: var(--text-primary) !important; 
-}
-
+[data-testid="stSidebar"] * { color: var(--text) !important; }
 [data-testid="stSidebar"] label {
     font-family: 'Inter', sans-serif !important;
-    font-size: 0.7rem !important;
+    font-size: 0.68rem !important;
     text-transform: uppercase !important;
     letter-spacing: 1.8px !important;
-    color: var(--text-secondary) !important;
-    font-weight: 500 !important;
-}
-
-[data-testid="stSidebar"] hr {
-    border-color: var(--border-light) !important;
+    color: var(--muted) !important;
 }
 
 /* ─── Header ─── */
 .header-wrap {
-    background: linear-gradient(135deg, rgba(15, 15, 15, 0.8) 0%, rgba(25, 10, 10, 0.8) 100%);
+    background: rgba(6,6,6,0.80);
     backdrop-filter: var(--blur);
-    border: 1px solid var(--border-light);
-    border-radius: 20px;
-    padding: 1.8rem 2.5rem;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 1.8rem 2.4rem;
     margin-bottom: 1.8rem;
     position: relative;
     overflow: hidden;
     display: flex;
     align-items: center;
     gap: 2rem;
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.04);
 }
-
 .header-wrap::before {
     content: '';
     position: absolute;
-    top: -100px; 
-    right: -80px;
-    width: 450px; 
-    height: 450px;
-    background: radial-gradient(circle, var(--primary-glow) 0%, transparent 70%);
+    top: -100px; right: -80px;
+    width: 420px; height: 420px;
+    background: radial-gradient(circle, rgba(224,58,62,0.15) 0%, transparent 70%);
     pointer-events: none;
 }
-
 .header-wrap::after {
     content: '';
     position: absolute;
-    bottom: 0; 
-    left: 0;
-    width: 100%; 
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--primary), transparent);
+    bottom: 0; left: 0;
+    width: 100%; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--red), transparent);
 }
-
 .header-logo {
-    width: 75px; 
-    height: 75px;
+    width: 72px; height: 72px;
     border-radius: 50%;
-    border: 2px solid var(--border-light);
+    border: 2px solid var(--border);
     object-fit: contain;
-    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    transition: transform 0.35s ease, box-shadow 0.35s ease;
     flex-shrink: 0;
-    box-shadow: var(--glow-red);
 }
-
-.header-logo:hover { 
-    transform: scale(1.12) rotate(5deg); 
-    box-shadow: 0 0 35px var(--primary); 
-    border-color: var(--primary);
-}
-
-.main-title { 
-    font-family: 'Bebas Neue', sans-serif; 
-    font-size: 3rem; 
-    color: var(--text-bright); 
-    letter-spacing: 5px; 
-    line-height: 1; 
-    margin: 0;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-}
-
-.main-title span { 
-    color: var(--primary); 
-    text-shadow: 0 0 15px var(--primary);
-}
-
-.main-sub { 
-    font-family: 'Inter', sans-serif; 
-    font-size: 0.72rem; 
-    color: var(--text-secondary); 
-    letter-spacing: 3px; 
-    text-transform: uppercase; 
-    margin-top: 0.5rem; 
-    font-weight: 300;
-}
-
-/* ─── Social Links ─── */
-.social-links { 
-    margin-top: 0.9rem; 
-    display: flex; 
-    gap: 0.6rem; 
-    flex-wrap: wrap; 
-}
-
+.header-logo:hover { transform: scale(1.12) rotate(6deg); box-shadow: 0 0 24px rgba(224,58,62,0.4); }
+.main-title { font-family:'Bebas Neue',sans-serif; font-size:2.9rem; color:white; letter-spacing:5px; line-height:1; margin:0; }
+.main-title span { color: var(--red); }
+.main-sub { font-family:'Inter',sans-serif; font-size:0.7rem; color:#666; letter-spacing:2.5px; text-transform:uppercase; margin-top:0.45rem; }
+.social-links { margin-top:0.9rem; display:flex; gap:0.55rem; flex-wrap:wrap; }
 .social-btn {
-    display: inline-flex; 
-    align-items: center; 
-    gap: 6px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid var(--border-soft);
-    color: var(--text-secondary) !important;
-    font-family: 'Inter', sans-serif; 
-    font-size: 0.68rem; 
-    font-weight: 500;
-    padding: 6px 16px; 
-    border-radius: 30px; 
-    text-decoration: none !important; 
-    transition: all 0.25s ease;
-    backdrop-filter: blur(5px);
+    display:inline-flex; align-items:center; gap:5px;
+    background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1);
+    color:#aaa !important; font-family:'Inter',sans-serif; font-size:0.67rem; font-weight:500;
+    padding:5px 14px; border-radius:30px; text-decoration:none !important; transition:all 0.22s ease;
 }
-
-.social-btn:hover { 
-    border-color: var(--primary); 
-    color: var(--text-bright) !important; 
-    background: var(--primary-dim); 
-    transform: translateY(-3px);
-    box-shadow: var(--glow-red);
-}
+.social-btn:hover { border-color:var(--red); color:white !important; background:rgba(224,58,62,0.1); transform:translateY(-2px); }
 
 /* ─── KPI Cards ─── */
 .kpi-card {
-    background: var(--bg-card);
+    background: rgba(10,10,10,0.88);
     backdrop-filter: var(--blur);
-    border: 1px solid var(--border-light);
-    border-radius: 16px; 
-    padding: 1.2rem 1.4rem;
-    position: relative; 
-    overflow: hidden; 
-    transition: all 0.3s ease;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--border);
+    border-radius: 13px; padding: 1.15rem 1.35rem;
+    position: relative; overflow: hidden; transition: all 0.25s ease;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
 }
-
-.kpi-card:hover { 
-    transform: translateY(-5px); 
-    border-color: var(--primary); 
-    box-shadow: 0 15px 35px var(--primary-glow);
-    background: var(--bg-card-hover);
-}
-
-.kpi-card::after { 
-    content: ''; 
-    position: absolute; 
-    bottom: 0; 
-    left: 0; 
-    width: 100%; 
-    height: 3px; 
-    background: linear-gradient(90deg, var(--primary), transparent); 
-}
-
-.kpi-val { 
-    font-family: 'Bebas Neue', sans-serif; 
-    font-size: 2.5rem; 
-    color: var(--text-bright); 
-    line-height: 1; 
-    text-shadow: 0 2px 8px var(--primary-glow);
-}
-
-.kpi-lbl { 
-    font-family: 'Inter', sans-serif; 
-    font-size: 0.66rem; 
-    color: var(--text-secondary); 
-    text-transform: uppercase; 
-    letter-spacing: 2.2px; 
-    margin-top: 0.4rem; 
-    font-weight: 500;
-}
+.kpi-card:hover { transform:translateY(-4px); border-color:var(--red); box-shadow:0 10px 28px rgba(224,58,62,0.2); }
+.kpi-card::after { content:''; position:absolute; bottom:0; left:0; width:100%; height:2px; background:linear-gradient(90deg,var(--red),transparent); }
+.kpi-val { font-family:'Bebas Neue',sans-serif; font-size:2.3rem; color:white; line-height:1; }
+.kpi-lbl { font-family:'Inter',sans-serif; font-size:0.63rem; color:var(--muted); text-transform:uppercase; letter-spacing:2px; margin-top:0.35rem; }
 
 /* ─── Glass Card ─── */
 .glass-card {
-    background: var(--bg-card);
-    backdrop-filter: var(--blur); 
-    border: 1px solid var(--border-light);
-    border-radius: 16px; 
-    padding: 1.3rem; 
-    transition: all 0.3s ease;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    background: rgba(10,10,10,0.85);
+    backdrop-filter: var(--blur); border: 1px solid var(--border);
+    border-radius: 13px; padding: 1.2rem; transition: all 0.25s ease;
 }
-
-.glass-card:hover { 
-    border-color: var(--primary); 
-    box-shadow: 0 12px 30px var(--primary-glow);
-    background: var(--bg-card-hover);
-    transform: translateY(-3px);
-}
+.glass-card:hover { border-color:rgba(224,58,62,0.5); box-shadow:0 8px 24px rgba(224,58,62,0.12); }
 
 /* ─── Player Cards ─── */
 .pcard {
-    background: var(--bg-card);
-    backdrop-filter: var(--blur); 
-    border: 1px solid var(--border-soft);
-    border-radius: 16px; 
-    padding: 1.2rem 1.5rem; 
-    margin-bottom: 0.9rem;
-    position: relative; 
-    overflow: hidden; 
-    transition: all 0.3s ease;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    background: rgba(10,10,10,0.85);
+    backdrop-filter: var(--blur); border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 13px; padding: 1.15rem 1.5rem; margin-bottom: 0.8rem;
+    position: relative; overflow: hidden; transition: all 0.25s ease;
 }
-
-.pcard::before { 
-    content: ''; 
-    position: absolute; 
-    top: 0; 
-    left: 0; 
-    width: 4px; 
-    height: 0; 
-    background: linear-gradient(180deg, var(--primary), var(--primary-light)); 
-    transition: height 0.4s ease; 
-}
-
-.pcard:hover::before { 
-    height: 100%; 
-}
-
-.pcard:hover { 
-    background: var(--bg-card-hover); 
-    border-color: var(--border-light); 
-    box-shadow: 0 12px 30px var(--primary-glow); 
-    transform: translateX(6px); 
-}
-
-.pname { 
-    font-family: 'Bebas Neue', sans-serif; 
-    font-size: 1.45rem; 
-    color: var(--text-bright); 
-    letter-spacing: 2px; 
-    margin-bottom: 0.2rem;
-}
-
-.pmeta { 
-    font-family: 'Inter', sans-serif; 
-    font-size: 0.73rem; 
-    color: var(--text-secondary); 
-    margin-top: 0.2rem; 
-    letter-spacing: 0.5px;
-}
-
-/* ─── Progress Bars ─── */
-.bar-bg { 
-    background: rgba(255, 255, 255, 0.08); 
-    border-radius: 8px; 
-    height: 6px; 
-    margin-top: 1rem; 
-    overflow: hidden; 
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
-}
-
-.bar-fill { 
-    background: linear-gradient(90deg, var(--primary-dark), var(--primary), var(--primary-light)); 
-    border-radius: 8px; 
-    height: 6px; 
-    transition: width 0.5s ease;
-    box-shadow: 0 0 12px var(--primary);
-}
+.pcard::before { content:''; position:absolute; top:0; left:0; width:3px; height:0; background:linear-gradient(180deg,var(--red),#ff7070); transition:height 0.3s ease; }
+.pcard:hover::before { height:100%; }
+.pcard:hover { background:rgba(18,18,18,0.90); border-color:rgba(224,58,62,0.35); box-shadow:0 8px 24px rgba(224,58,62,0.12); transform:translateX(5px); }
+.pname { font-family:'Bebas Neue',sans-serif; font-size:1.35rem; color:white; letter-spacing:1.5px; }
+.pmeta { font-family:'Inter',sans-serif; font-size:0.7rem; color:var(--muted); margin-top:0.2rem; }
+.bar-bg { background:rgba(255,255,255,0.07); border-radius:6px; height:5px; margin-top:0.9rem; overflow:hidden; }
+.bar-fill { background:linear-gradient(90deg,#8b1a1a,var(--red),#ff8080); border-radius:6px; height:5px; }
 
 /* ─── Badges ─── */
-.badge { 
-    display: inline-block; 
-    background: var(--primary-dim); 
-    border: 1px solid var(--border-light); 
-    color: var(--primary); 
-    font-size: 0.62rem; 
-    font-family: 'Inter', sans-serif; 
-    font-weight: 600; 
-    padding: 3px 12px; 
-    border-radius: 20px; 
-    text-transform: uppercase; 
-    letter-spacing: 1.5px; 
-    margin-right: 5px; 
-    backdrop-filter: blur(5px);
-}
-
-.badge-g { 
-    background: rgba(255, 255, 255, 0.05); 
-    border-color: var(--border-soft); 
-    color: var(--text-secondary); 
-}
-
-.badge-green { 
-    background: rgba(46, 204, 113, 0.15); 
-    border-color: rgba(46, 204, 113, 0.3); 
-    color: #2ecc71; 
-}
-
-.badge-yellow { 
-    background: rgba(243, 156, 18, 0.15); 
-    border-color: rgba(243, 156, 18, 0.3); 
-    color: #f39c12; 
-}
+.badge { display:inline-block; background:var(--red-dim); border:1px solid var(--border); color:var(--red); font-size:0.6rem; font-family:'Inter',sans-serif; font-weight:600; padding:2px 10px; border-radius:20px; text-transform:uppercase; letter-spacing:1.2px; margin-right:4px; }
+.badge-g { background:rgba(255,255,255,0.04); border-color:rgba(255,255,255,0.08); color:#666; }
+.badge-green { background:rgba(46,204,113,0.1); border-color:rgba(46,204,113,0.25); color:#2ecc71; }
+.badge-yellow { background:rgba(243,156,18,0.1); border-color:rgba(243,156,18,0.25); color:#f39c12; }
 
 /* ─── Section Title ─── */
-.sec-title { 
-    font-family: 'Bebas Neue', sans-serif; 
-    font-size: 1.7rem; 
-    color: var(--text-bright); 
-    letter-spacing: 4px; 
-    border-left: 4px solid var(--primary); 
-    padding-left: 1rem; 
-    margin: 1.8rem 0 1.2rem; 
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-}
+.sec-title { font-family:'Bebas Neue',sans-serif; font-size:1.5rem; color:white; letter-spacing:3px; border-left:3px solid var(--red); padding-left:0.85rem; margin:1.6rem 0 1.1rem; }
 
 /* ─── Tabs ─── */
-[data-testid="stTabs"] [data-baseweb="tab-list"] { 
-    background: rgba(8, 8, 8, 0.7) !important; 
-    border-radius: 14px !important; 
-    padding: 5px !important; 
-    backdrop-filter: var(--blur) !important; 
-    border: 1px solid var(--border-soft) !important;
-    gap: 5px !important;
-}
+[data-testid="stTabs"] [data-baseweb="tab-list"] { background:rgba(8,8,8,0.70) !important; border-radius:11px !important; padding:4px !important; backdrop-filter:var(--blur) !important; border:1px solid rgba(255,255,255,0.05) !important; }
+[data-testid="stTabs"] [data-baseweb="tab"] { color:#666 !important; font-family:'Inter',sans-serif !important; font-size:0.76rem !important; font-weight:600 !important; text-transform:uppercase !important; letter-spacing:1.2px !important; border-radius:9px !important; }
+[data-testid="stTabs"] [aria-selected="true"] { color:white !important; background:rgba(224,58,62,0.15) !important; border-bottom:2px solid var(--red) !important; }
 
-[data-testid="stTabs"] [data-baseweb="tab"] { 
-    color: var(--text-secondary) !important; 
-    font-family: 'Inter', sans-serif !important; 
-    font-size: 0.78rem !important; 
-    font-weight: 600 !important; 
-    text-transform: uppercase !important; 
-    letter-spacing: 1.5px !important; 
-    border-radius: 12px !important; 
-    padding: 0.6rem 1.3rem !important;
-    transition: all 0.2s ease !important;
-}
-
-[data-testid="stTabs"] [data-baseweb="tab"]:hover { 
-    color: var(--text-bright) !important; 
-    background: var(--primary-dim) !important;
-}
-
-[data-testid="stTabs"] [aria-selected="true"] { 
-    color: var(--text-bright) !important; 
-    background: var(--primary-dim) !important; 
-    border-bottom: 3px solid var(--primary) !important;
-    box-shadow: 0 0 20px var(--primary-glow) !important;
-}
-
-/* باقي الكود CSS كما هو في ملفك */
+/* ─── Misc ─── */
+div[data-baseweb="select"]>div { background:rgba(12,12,12,0.92) !important; border-color:var(--border) !important; color:white !important; border-radius:9px !important; }
+[data-testid="stDownloadButton"] button { background:rgba(12,12,12,0.88) !important; border:1px solid var(--border) !important; color:var(--red) !important; font-family:'Inter',sans-serif !important; font-size:0.73rem !important; font-weight:600 !important; border-radius:9px !important; letter-spacing:1px !important; text-transform:uppercase !important; }
+[data-testid="stDownloadButton"] button:hover { background:rgba(224,58,62,0.1) !important; color:white !important; }
+::-webkit-scrollbar { width:5px; height:5px; }
+::-webkit-scrollbar-track { background:rgba(0,0,0,0.25); }
+::-webkit-scrollbar-thumb { background:#2a2a2a; border-radius:10px; }
+::-webkit-scrollbar-thumb:hover { background:var(--red); }
+.footer { text-align:center; padding:2rem 0 1.2rem; color:#3a3a3a; font-family:'Inter',sans-serif; font-size:0.66rem; letter-spacing:1.5px; text-transform:uppercase; border-top:1px solid rgba(255,255,255,0.04); margin-top:3rem; }
+.footer a { color:#444 !important; text-decoration:none !important; }
+.footer a:hover { color:var(--red) !important; }
+hr { border:none !important; border-top:1px solid rgba(255,255,255,0.05) !important; }
 </style>""", unsafe_allow_html=True)
 
-# ─── دالة load_data المعدلة (تستخدم المسار المباشر) ────────────────────────
 
-# ============================================
-# أولاً: تعريف دوال المساعدة (normalize_col و recalculate)
-# ============================================
-
+# ─── HELPERS ─────────────────────────────────────────────────────────────────
 def normalize_col(col):
-    """تطبيع العمود ليكون بين 0 و 1"""
-    if col is None or len(col) == 0:
-        return pd.Series([])
-    
     col = pd.to_numeric(col, errors='coerce').fillna(0)
     mn, mx = col.min(), col.max()
-    
-    if mx == mn or mx == 0:
-        return pd.Series([0.5] * len(col))
-    
-    return (col - mn) / (mx - mn)
+    return col * 0 if mx == mn else (col - mn) / (mx - mn)
 
 def recalculate(df):
-    """إعادة حساب المؤشرات"""
-    if df.empty:
-        return df
-    
+    if df.empty: return df
     df = df.copy()
-    
-    # التأكد من وجود الأعمدة
-    required_cols = ['Gls_p90', 'SoT%', 'Ast', 'PrgP_proxy', 'Scoring_Context_Bonus', 'Market_Value_M', 'Age_num', '90s', 'Gls']
-    for col in required_cols:
-        if col not in df.columns:
-            df[col] = 0
-        df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
-    
-    # تطبيع المؤشرات
+    for c in ['Gls_p90','SoT%','Ast','PrgP_proxy','Scoring_Context_Bonus','Market_Value_M','Age_num','90s','Gls']:
+        if c not in df.columns: df[c] = 0
+        df[c] = pd.to_numeric(df[c], errors='coerce').fillna(0)
     df['norm_gls_p90'] = normalize_col(df['Gls_p90'])
-    df['norm_sot_pct'] = normalize_col(df['SoT%'])
-    df['norm_ast'] = normalize_col(df['Ast'])
-    df['norm_prgp'] = normalize_col(df['PrgP_proxy'])
-    df['norm_context'] = normalize_col(df['Scoring_Context_Bonus'])
-    
-    # حساب الدرجات
+    df['norm_sot_pct']  = normalize_col(df['SoT%'])
+    df['norm_ast']      = normalize_col(df['Ast'])
+    df['norm_prgp']     = normalize_col(df['PrgP_proxy'])
+    df['norm_context']  = normalize_col(df['Scoring_Context_Bonus'])
     df['Perf_Score'] = (
-        df['norm_gls_p90'] * 0.30 + 
-        df['norm_sot_pct'] * 0.18 + 
-        df['norm_ast'] * 0.22 + 
-        df['norm_prgp'] * 0.18 + 
-        df['norm_context'] * 0.12
+        df['norm_gls_p90']*0.30 + df['norm_sot_pct']*0.18 +
+        df['norm_ast']*0.22 + df['norm_prgp']*0.18 + df['norm_context']*0.12
     ).round(3)
-    
-    df['Value_Score'] = df.apply(
-        lambda row: (row['Perf_Score'] / max(row['Market_Value_M'], 0.1) * 100) if row['Market_Value_M'] > 0 else 0, 
-        axis=1
-    ).round(3)
-    
+    df['Value_Score']      = (df['Perf_Score'] / df['Market_Value_M'].clip(lower=0.1) * 100).round(3)
     df['Value_Score_norm'] = (normalize_col(df['Value_Score']) * 100).round(1)
-    
-    df['Age_bonus'] = df['Age_num'].apply(
-        lambda x: 1.2 if x <= 23 else (1.1 if x <= 25 else 1.0)
-    )
-    
-    df['Final_Score'] = (df['Value_Score_norm'] * df['Age_bonus']).round(1)
-    
+    df['Age_bonus']        = df['Age_num'].apply(lambda x: 1.2 if x<=23 else (1.1 if x<=25 else 1.0))
+    df['Final_Score']      = (df['Value_Score_norm'] * df['Age_bonus']).round(1)
     return df
 
-# ============================================
-# ثانياً: دالة load_data (بعد recalculate)
-# ============================================
 
+# ─── HELPERS ─────────────────────────────────────────────────────────────────
 @st.cache_data
 def load_data(file=None):
     """Load CSV data or fallback to default dataset, then recalculate metrics."""
     try:
         if file is not None:
-            st.success(f"✅ تم تحميل الملف: {file.name}")
             return recalculate(pd.read_csv(file))
-        
-        # البحث في المسارات المختلفة
-        possible_paths = [
-            "data/processed/lique1_final.csv",
-            "lique1_final.csv",
-            "./lique1_final.csv",
-            "app/lique1_final.csv",
-            "../lique1_final.csv"
-        ]
-        
-        for path in possible_paths:
+        for path in ["data/processed/ligue1_final.csv","ligue1_final.csv"]:
             if os.path.exists(path):
-                st.success(f"✅ تم تحميل البيانات من {path}")
                 return recalculate(pd.read_csv(path))
-        
-        # إذا لم يتم العثور على الملف
-        st.warning("⚠️ لم يتم العثور على ملف البيانات، سيتم استخدام بيانات تجريبية")
-        
-        # عرض محتويات المجلد الحالي للمساعدة
-        current_dir = os.listdir(".")
-        st.info(f"📁 الملفات الموجودة في المجلد الحالي: {current_dir[:10]}")
-        
     except Exception as e:
-        st.error(f"❌ خطأ في تحميل الملف: {e}")
+        st.error(f"❌ Error loading file: {e}")
 
-    # بيانات تجريبية
+    # Fallback sample dataset
     data = {
-        'Player': ['أوباميانج', 'أنسو فاتي', 'ويسلي سعيد', 'أودسون إدوارد', 'بافيل سولك', 'إيلي واهي', 'أدريان توماسون', 'غوتييه هاين'],
-        'Nation': ['GAB', 'ESP', 'FRA', 'FRA', 'CZE', 'FRA', 'FRA', 'FRA'],
-        'Pos_primary': ['FW', 'MF', 'FW', 'FW', 'MF', 'FW', 'MF', 'MF'],
-        'Squad': ['مارسيليا', 'موناكو', 'لنس', 'لنس', 'بريست', 'لنس', 'لنس', 'أوكسير'],
-        'Age_num': [36, 23, 28, 27, 24, 22, 32, 29],
-        'League': ['Ligue 1'] * 8,
-        '90s': [13.6, 6.4, 18.5, 19.2, 15.3, 12.8, 21.3, 17.7],
-        'Gls': [6, 8, 10, 9, 10, 8, 2, 6],
-        'Ast': [5, 0, 2, 3, 3, 1, 6, 4],
-        'Gls_p90': [0.44, 1.25, 0.54, 0.47, 0.65, 0.63, 0.09, 0.34],
-        'SoT%': [61.3, 58.3, 48.8, 52.1, 55.4, 50.2, 28.6, 33.3],
-        'Market_Value_M': [4, 6, 8, 12, 12, 12, 5, 5],
-        'PrgP_proxy': [0, 0, 2, 3, 4, 1, 6, 2],
-        'Scoring_Context_Bonus': [0.077, 0.153, 0.083, 0.094, 0.088, 0.083, 0.123, 0.039],
-        'Defense_Hardness': [0.59, 0.41, 0.69, 0.69, 0.52, 0.69, 0.69, 0.35],
+        'Player':['Aubameyang','Ansu Fati','Wesley Said','Odsonne Edouard','Pavel Sulc','Elye Wahi','Adrien Thomasson','Gauthier Hein'],
+        'Nation':['GAB','ESP','FRA','FRA','CZE','FRA','FRA','FRA'],
+        'Pos_primary':['FW','MF','FW','FW','MF','FW','MF','MF'],
+        'Squad':['Marseille','Monaco','Lens','Lens','Brest','Lens','Lens','Auxerre'],
+        'Age_num':[36,23,28,27,24,22,32,29],
+        'League':['Ligue 1']*8,
+        '90s':[13.6,6.4,18.5,19.2,15.3,12.8,21.3,17.7],
+        'Gls':[6,8,10,9,10,8,2,6],
+        'Ast':[5,0,2,3,3,1,6,4],
+        'Gls_p90':[0.44,1.25,0.54,0.47,0.65,0.63,0.09,0.34],
+        'SoT%':[61.3,58.3,48.8,52.1,55.4,50.2,28.6,33.3],
+        'Market_Value_M':[4,6,8,12,12,12,5,5],
+        'Peak_Value_M':[40,20,8,20,40,40,5,5],
+        'PrgP_proxy':[0,0,2,3,4,1,6,2],
+        'Scoring_Context_Bonus':[0.077,0.153,0.083,0.094,0.088,0.083,0.123,0.039],
+        'Defense_Hardness':[0.59,0.41,0.69,0.69,0.52,0.69,0.69,0.35],
     }
     return recalculate(pd.DataFrame(data))
 
-# ============================================
-# باقي الكود (تحميل البيانات، KPIs، التبويبات)
-# ============================================
 
-# تأكد من وجود uploaded من السايدبار
-if 'uploaded' not in locals():
-    uploaded = None
+def img_to_b64(path):
+    """Return base64 string of image, fallback to default logos if path missing."""
+    for p in [path, "assets/rentford_logo.jpg", "assets/brentford_logo.png"]:
+        if os.path.exists(p):
+            with open(p,"rb") as f:
+                return base64.b64encode(f.read()).decode()
+    return None
 
-# تحميل البيانات
-try:
-    df_base = load_data(uploaded)
-    st.write(f"✅ تم تحميل {len(df_base)} لاعب")
-except Exception as e:
-    st.error(f"❌ فشل تحميل البيانات: {e}")
-    st.stop()
 
-# تعريف المتغيرات إذا مش موجودة
-if 'sel_league' not in locals():
-    sel_league = []
-if 'sel_pos' not in locals():
-    sel_pos = []
-if 'age_range' not in locals():
-    age_range = (int(df_base['Age_num'].min()), int(df_base['Age_num'].max()))
-if 'budget' not in locals():
-    budget = float(df_base['Market_Value_M'].max())
-if 'min_90s' not in locals():
-    min_90s = 0.0
-if 'top_n' not in locals():
-    top_n = 10
+def tl(text, size=20):
+    """Safe Plotly title dictionary."""
+    return dict(text=text, font=dict(color='white', family='Bebas Neue', size=size))
 
-# إنشاء df وتطبيق الفلاتر
+
+LAYOUT = dict(
+    plot_bgcolor='rgba(8,8,8,0.55)',
+    paper_bgcolor='rgba(0,0,0,0)',
+    font=dict(color='#d8d8d8', family='Inter', size=11),
+    legend=dict(bgcolor='rgba(12,12,12,0.85)',
+                bordercolor='rgba(224,58,62,0.2)',
+                font=dict(color='#d8d8d8')),
+    margin=dict(t=50, b=30, l=10, r=10),
+)
+
+
+# ─── HEADER ──────────────────────────────────────────────────────────────────
+logo_b64 = img_to_b64("assets/rentford_logo.jpg")
+logo_html = f'<img class="header-logo" src="data:image/jpeg;base64,{logo_b64}"/>' if logo_b64 else '<div style="font-size:3.8rem;flex-shrink:0;">🐝</div>'
+
+st.markdown(f"""
+<div class="header-wrap">
+  {logo_html}
+  <div style="flex:1;">
+    <div class="main-title">BRENTFORD FC <span>//</span> SCOUTING INTEL</div>
+    <div class="main-sub">Undervalued Player Detection • Value Score Algorithm • Schedule-Adjusted Analytics</div>
+    <div class="social-links">
+      <a class="social-btn" href="https://www.linkedin.com/in/goda-emad/" target="_blank">🔗 LinkedIn</a>
+      <a class="social-btn" href="https://github.com/Goda-Emad/brentford-scouting" target="_blank">🐙 GitHub</a>
+      <a class="social-btn" href="tel:+201126242932">📞 +20 112 624 2932</a>
+    </div>
+  </div>
+  <div style="text-align:right;flex-shrink:0;">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:0.85rem;color:#e03a3e;letter-spacing:2px;">SEASON 2025–26</div>
+    <div style="font-family:'Inter',sans-serif;font-size:0.62rem;color:#444;margin-top:0.3rem;">FBREF + TRANSFERMARKT</div>
+  </div>
+</div>""", unsafe_allow_html=True)
+# ─── SIDEBAR ─────────────────────────────────────────────────────────────────
+with st.sidebar:
+    st.markdown('<div style="font-family:\'Bebas Neue\',sans-serif;font-size:1.3rem;color:white;letter-spacing:2.5px;margin-bottom:1.2rem;padding-bottom:0.8rem;border-bottom:1px solid rgba(224,58,62,0.2);">⚙️ SCOUT FILTERS</div>', unsafe_allow_html=True)
+
+    # رفع خلفية جديدة من داخل التطبيق
+    with st.expander("🖼️ Change Background Image"):
+        bg_file = st.file_uploader("Upload new background (.jpg/.png)", type=["jpg","jpeg","png"], key="bg_upload")
+        if bg_file:
+            st.session_state["bg_b64"] = base64.b64encode(bg_file.read()).decode()
+            st.success("✅ Background updated! Scroll up to see it.")
+            st.rerun()
+
+    st.markdown("---")
+    uploaded   = st.file_uploader("📂 Add New League CSV", type=["csv"])
+    df_base    = load_data(uploaded)
+    leagues    = sorted(df_base['League'].dropna().unique()) if 'League' in df_base.columns else ['Ligue 1']
+    sel_league = st.multiselect("🌍 League", leagues, default=leagues)
+    positions  = sorted(df_base['Pos_primary'].dropna().unique())
+    sel_pos    = st.multiselect("📍 Position", positions, default=positions)
+    age_min, age_max = int(df_base['Age_num'].min()), int(df_base['Age_num'].max())
+    age_range  = st.slider("🎂 Age Range", age_min, age_max, (age_min, age_max))
+    max_val    = float(df_base['Market_Value_M'].max())
+    budget     = st.slider("💶 Max Market Value (€m)", 1.0, max(max_val,1.1), max_val)
+    max_90s    = float(df_base['90s'].max())
+    min_90s    = st.slider("⏱️ Min 90s Played", 0.0, max(max_90s,1.0), 0.0, step=0.5)
+    st.markdown("---")
+    top_n = st.selectbox("📊 Show Top N Targets", [10,15,20,30,50], index=2)
+    st.markdown("""<div style="margin-top:1.5rem;padding:1rem;background:rgba(224,58,62,0.06);border:1px solid rgba(224,58,62,0.16);border-radius:10px;">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:0.88rem;color:#e03a3e;letter-spacing:1.5px;margin-bottom:0.6rem;">📐 VALUE SCORE FORMULA</div>
+    <div style="font-family:'Inter',sans-serif;font-size:0.63rem;color:#555;line-height:2.2;">
+    Goals/90 × 0.30<br>Shot Accuracy × 0.18<br>Assists × 0.22<br>Prog Passes × 0.18<br>Schedule Adj × 0.12<br>
+    <span style="color:#3a3a3a;margin-top:0.4rem;display:block;">÷ Market Value × Age Bonus</span></div></div>""", unsafe_allow_html=True)
+
+
+# ─── FILTER ──────────────────────────────────────────────────────────────────
 df = df_base.copy()
+if sel_league and 'League' in df.columns: df = df[df['League'].isin(sel_league)]
+if sel_pos:                               df = df[df['Pos_primary'].isin(sel_pos)]
+df = df[
+    (df['Age_num'] >= age_range[0]) & (df['Age_num'] <= age_range[1]) &
+    (df['Market_Value_M'] <= budget) & (df['90s'] >= min_90s)
+].sort_values('Final_Score', ascending=False).reset_index(drop=True)
 
-if sel_league and 'League' in df.columns:
-    df = df[df['League'].isin(sel_league)]
-if sel_pos and 'Pos_primary' in df.columns:
-    df = df[df['Pos_primary'].isin(sel_pos)]
-if age_range:
-    df = df[(df['Age_num'] >= age_range[0]) & (df['Age_num'] <= age_range[1])]
-if budget:
-    df = df[df['Market_Value_M'] <= budget]
-if min_90s:
-    df = df[df['90s'] >= min_90s]
 
-df = df.sort_values('Final_Score', ascending=False).reset_index(drop=True)
+# ─── KPIs ────────────────────────────────────────────────────────────────────
+k1,k2,k3,k4,k5 = st.columns(5)
+kpis = [
+    (len(df),                                    "Players Scouted"),
+    (f"€{df['Market_Value_M'].mean():.1f}m" if len(df)>0 else "—", "Avg Market Value"),
+    (f"{df['Final_Score'].max():.0f}" if len(df)>0 else "—",       "Top Value Score"),
+    (f"{df['Gls_p90'].mean():.2f}" if len(df)>0 else "—",          "Avg Goals / 90"),
+    (f"{df['SoT%'].mean():.1f}%" if len(df)>0 else "—",            "Avg Shot Accuracy"),
+]
+for col,(val,lbl) in zip([k1,k2,k3,k4,k5],kpis):
+    with col:
+        st.markdown(f'<div class="kpi-card"><div class="kpi-val">{val}</div><div class="kpi-lbl">{lbl}</div></div>', unsafe_allow_html=True)
 
-# ============================================
-# عرض KPIs
-# ============================================
-if len(df) > 0:
-    k1, k2, k3, k4, k5 = st.columns(5)
-    
-    with k1:
-        st.markdown(f'<div class="kpi-card"><div class="kpi-val">{len(df)}</div><div class="kpi-lbl">Players Scouted</div></div>', unsafe_allow_html=True)
-    with k2:
-        st.markdown(f'<div class="kpi-card"><div class="kpi-val">€{df["Market_Value_M"].mean():.1f}m</div><div class="kpi-lbl">Avg Market Value</div></div>', unsafe_allow_html=True)
-    with k3:
-        st.markdown(f'<div class="kpi-card"><div class="kpi-val">{df["Final_Score"].max():.0f}</div><div class="kpi-lbl">Top Value Score</div></div>', unsafe_allow_html=True)
-    with k4:
-        st.markdown(f'<div class="kpi-card"><div class="kpi-val">{df["Gls_p90"].mean():.2f}</div><div class="kpi-lbl">Avg Goals / 90</div></div>', unsafe_allow_html=True)
-    with k5:
-        st.markdown(f'<div class="kpi-card"><div class="kpi-val">{df["SoT%"].mean():.1f}%</div><div class="kpi-lbl">Avg Shot Accuracy</div></div>', unsafe_allow_html=True)
-    
-    st.markdown("<br>", unsafe_allow_html=True)
-else:
-    st.warning("⚠️ لا توجد بيانات تطابق معايير البحث")
+st.markdown("<br>", unsafe_allow_html=True)
 
-# ============================================
-# TABS - إنشاء التبويبات
-# ============================================
-tab1, tab2, tab3, tab4 = st.tabs(["🎯  Top Targets", "📊  Value Analysis", "🔬  Deep Dive", "📋  Full Dataset"])
-# ============================================
-# باقي الكود (TAB 1, TAB 2, TAB 3, TAB 4)
-# ============================================
-# ضع هنا كود التبويبات الذي أرسلته سابقاً
-# ============================================
-# TAB 1 - Top Targets
-# ============================================
+# ─── TABS ────────────────────────────────────────────────────────────────────
+tab1,tab2,tab3,tab4 = st.tabs(["🎯  Top Targets","📊  Value Analysis","🔬  Deep Dive","📋  Full Dataset"])
+
+
+# ══════ TAB 1 ════════════════════════════════════════════════════════════════
 with tab1:
     st.markdown('<div class="sec-title">TOP TARGETS</div>', unsafe_allow_html=True)
-    
-    # التأكد من وجود df
-    if 'df' not in dir():
-        st.error("❌ No data loaded. Please check the data source.")
-    elif len(df) == 0:
+    if len(df) == 0:
         st.warning("⚠️ No players match the current filters.")
     else:
-        for rank, (_, row) in enumerate(df.head(top_n).iterrows(), 1):
+        for rank,(_, row) in enumerate(df.head(top_n).iterrows(), 1):
             score_pct = min(row['Final_Score']/130*100, 100)
-            h = row.get('Defense_Hardness', 0.5)
-            sch_cls, sch_txt = ('badge-g badge', '🔴 Hard Sch') if h >= 0.6 else (('badge-yellow badge', '🟡 Mid Sch') if h >= 0.4 else ('badge-green badge', '🟢 Easy Sch'))
+            h   = row.get('Defense_Hardness', 0.5)
+            sch_cls, sch_txt = ('badge-g badge','🔴 Hard Sch') if h>=0.6 else (('badge-yellow badge','🟡 Mid Sch') if h>=0.4 else ('badge-green badge','🟢 Easy Sch'))
             age = int(row['Age_num'])
-            ab = '<span class="badge">🌟 U23</span>' if age <= 23 else ('<span class="badge-g badge">Prime</span>' if age <= 26 else '<span class="badge-g badge">Veteran</span>')
+            ab  = '<span class="badge">🌟 U23</span>' if age<=23 else ('<span class="badge-g badge">Prime</span>' if age<=26 else '<span class="badge-g badge">Veteran</span>')
             st.markdown(f"""
             <div class="pcard">
               <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;">
                 <div style="flex:1;">
                   <div style="color:#e03a3e;font-family:'Inter',sans-serif;font-size:0.6rem;font-weight:700;letter-spacing:2.5px;">#{rank:02d}</div>
                   <div class="pname">{row['Player']}</div>
-                  <div class="pmeta">{row.get('Squad', '—')} &nbsp;•&nbsp; {row.get('League', '—')} &nbsp;•&nbsp; Age {age}</div>
+                  <div class="pmeta">{row.get('Squad','—')} &nbsp;•&nbsp; {row.get('League','—')} &nbsp;•&nbsp; Age {age}</div>
                   <div style="margin-top:0.55rem;">
-                    <span class="badge">{row.get('Pos_primary', '—')}</span>{ab}<span class="{sch_cls}">{sch_txt}</span>
+                    <span class="badge">{row.get('Pos_primary','—')}</span>{ab}<span class="{sch_cls}">{sch_txt}</span>
                   </div>
                 </div>
                 <div style="text-align:right;flex-shrink:0;">
@@ -687,23 +412,19 @@ with tab1:
               <div class="bar-bg"><div class="bar-fill" style="width:{score_pct:.0f}%"></div></div>
             </div>""", unsafe_allow_html=True)
 
+
 # ══════ TAB 2 ════════════════════════════════════════════════════════════════
 with tab2:
     st.markdown('<div class="sec-title">📊 VALUE ANALYSIS</div>', unsafe_allow_html=True)
     
-    # ✅ التحقق من وجود df قبل استخدامه
-    if 'df' not in dir():
-        st.error("❌ No data loaded. Please check the data source.")
-    elif len(df) <= 1:
-        st.info("📊 Need more data for analysis charts")
-    else:
+    if len(df) > 1:
         # إحصائيات سريعة
         col1, col2, col3, col4 = st.columns(4)
         
         with col1:
             st.markdown(f"""
             <div class="glass-card" style="text-align:center; padding:1rem;">
-                <div style="font-size:1.5rem; color:var(--primary); font-family:'Bebas Neue';">{df['Final_Score'].max():.0f}</div>
+                <div style="font-size:1.5rem; color:var(--red); font-family:'Bebas Neue';">{df['Final_Score'].max():.0f}</div>
                 <div style="color:#888; font-size:0.7rem;">TOP VALUE SCORE</div>
             </div>
             """, unsafe_allow_html=True)
@@ -1002,275 +723,213 @@ with tab2:
                 </div>
             </div>
             """, unsafe_allow_html=True)
+    
+    else:
+        st.info("📊 Need more data for analysis charts")
 
 # ══════ TAB 3 ════════════════════════════════════════════════════════════════
 with tab3:
     st.markdown('<div class="sec-title">🔬 PLAYER DEEP DIVE</div>', unsafe_allow_html=True)
-    
-    # ✅ التحقق من وجود df قبل استخدامه
-    if 'df' not in dir():
-        st.error("❌ No data loaded. Please check the data source.")
-    elif len(df) == 0:
-        st.warning("⚠️ No players available for comparison")
+    col_sel,col_hint = st.columns([2,1])
+    with col_sel:
+        search = st.text_input("🔍 Search Player", placeholder="Type player name...")
+        all_p  = df['Player'].tolist()
+        filt_p = [p for p in all_p if search.lower() in p.lower()] if search else all_p
+        selected = st.multiselect("Select Players to Compare (max 3)", filt_p,
+                                   default=filt_p[:min(2,len(filt_p))], max_selections=3)
+    with col_hint:
+        st.markdown("""<div class="glass-card" style="padding:1rem;margin-top:1.6rem;">
+        <div style="color:#888;font-size:0.68rem;letter-spacing:1px;">📊 METRICS</div>
+        <div style="color:white;font-size:0.8rem;margin-top:0.5rem;line-height:2;">
+        ⚽ Goals &nbsp;|&nbsp; 🅰️ Assists<br>🎯 Accuracy &nbsp;|&nbsp; 💶 Value<br>📈 Score &nbsp;|&nbsp; 📅 Schedule</div></div>""", unsafe_allow_html=True)
+
+    if selected:
+        st.markdown("---")
+        colors_p = ['#e03a3e','#f5a623','#4a90e2']
+        cols_p = st.columns(len(selected))
+        for idx,(col,pname) in enumerate(zip(cols_p,selected)):
+            r  = df[df['Player']==pname].iloc[0]
+            pc = colors_p[idx]
+            h  = r.get('Defense_Hardness',0.5)
+            si = "🔴" if h>=0.6 else ("🟡" if h>=0.4 else "🟢")
+            peak = float(r.get('Peak_Value_M', r['Market_Value_M']))
+            vc   = ((r['Market_Value_M']-peak)/peak*100) if peak>0 else 0
+            sot_w = min(float(r['SoT%']),100)
+            val_w = max(0, min((1-r['Market_Value_M']/df['Market_Value_M'].max())*100,100))
+            with col:
+                st.markdown(f"""
+                <div class="glass-card" style="padding:1.5rem;border-left:4px solid {pc};">
+                  <div style="display:flex;justify-content:space-between;align-items:center;">
+                    <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:white;">{pname}</div>
+                    <span style="background:{pc}22;color:{pc};padding:3px 10px;border-radius:12px;font-size:0.62rem;font-weight:700;">#{idx+1}</span>
+                  </div>
+                  <div style="color:#666;font-size:0.7rem;margin:0.3rem 0 1rem;">{r.get('Squad','—')} • {r.get('League','—')} • Age {int(r['Age_num'])}</div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.7rem;text-align:center;margin-bottom:1rem;">
+                    <div style="background:rgba(255,255,255,0.03);border-radius:9px;padding:0.85rem;">
+                      <div style="font-size:1.6rem;">⚽</div>
+                      <div style="font-size:1.5rem;color:white;font-family:'Bebas Neue';">{int(r.get('Gls',0))}</div>
+                      <div style="color:#444;font-size:0.6rem;letter-spacing:1px;">GOALS</div>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.03);border-radius:9px;padding:0.85rem;">
+                      <div style="font-size:1.6rem;">🅰️</div>
+                      <div style="font-size:1.5rem;color:white;font-family:'Bebas Neue';">{int(r.get('Ast',0))}</div>
+                      <div style="color:#444;font-size:0.6rem;letter-spacing:1px;">ASSISTS</div>
+                    </div>
+                  </div>
+                  <div style="background:rgba(255,255,255,0.03);border-radius:9px;padding:1rem;margin-bottom:0.8rem;">
+                    <div style="display:flex;justify-content:space-between;margin-bottom:0.4rem;">
+                      <span style="color:#666;font-size:0.73rem;">🎯 Shot Accuracy</span>
+                      <span style="color:white;font-size:0.73rem;">{r['SoT%']:.1f}%</span>
+                    </div>
+                    <div class="bar-bg"><div class="bar-fill" style="width:{sot_w:.0f}%"></div></div>
+                    <div style="display:flex;justify-content:space-between;margin:0.85rem 0 0.4rem;">
+                      <span style="color:#666;font-size:0.73rem;">💶 Market Value</span>
+                      <span style="color:white;font-size:0.73rem;">€{r['Market_Value_M']:.0f}m</span>
+                    </div>
+                    <div class="bar-bg"><div class="bar-fill" style="width:{val_w:.0f}%"></div></div>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;">
+                    <div><span style="color:#666;font-size:0.7rem;">Score</span>
+                      <span style="color:{pc};font-size:1.6rem;font-family:'Bebas Neue';margin-left:0.5rem;">{r['Final_Score']:.0f}</span></div>
+                    <div style="font-size:0.68rem;color:#555;">{si} {h:.2f} | Peak €{peak:.0f}m <span style="color:{'#2ecc71' if vc>=0 else '#e03a3e'};">({vc:+.0f}%)</span></div>
+                  </div>
+                  {'<div style="margin-top:0.85rem;"><span class="badge-green badge">🌟 U23 Bonus</span></div>' if r["Age_num"]<=23 else ('<div style="margin-top:0.85rem;"><span class="badge-yellow badge">⚡ Prime Age</span></div>' if 23<r["Age_num"]<=26 else '')}
+                </div>""", unsafe_allow_html=True)
+
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown('<div class="sec-title">📡 RADAR COMPARISON</div>', unsafe_allow_html=True)
+        metrics = ['norm_gls_p90','norm_sot_pct','norm_ast','norm_prgp','norm_context']
+        labels  = ['⚽ Goals/90','🎯 Shot Acc','🅰️ Assists','📤 Prog Pass','📅 Schedule']
+        fig_r   = go.Figure()
+        for pname,pc in zip(selected,colors_p):
+            r    = df[df['Player']==pname].iloc[0]
+            vals = [float(r.get(m,0)) for m in metrics]+[float(r.get(metrics[0],0))]
+            lbs  = labels+[labels[0]]
+            rgba = tuple(int(pc.lstrip('#')[i:i+2],16) for i in (0,2,4))
+            fig_r.add_trace(go.Scatterpolar(r=vals,theta=lbs,fill='toself',name=pname,
+                line=dict(color=pc,width=3),fillcolor=f'rgba{rgba+(0.14,)}'))
+        fig_r.update_layout(
+            polar=dict(bgcolor='rgba(8,8,8,0.65)',
+                       radialaxis=dict(visible=True,range=[0,1],color='#333',gridcolor='rgba(255,255,255,0.05)',tickfont=dict(color='#444')),
+                       angularaxis=dict(color='#555',gridcolor='rgba(255,255,255,0.05)')),
+            paper_bgcolor='rgba(0,0,0,0)',
+            font=dict(color='#d8d8d8',family='Inter'),
+            legend=dict(bgcolor='rgba(12,12,12,0.85)',bordercolor='rgba(224,58,62,0.2)',font=dict(color='#d8d8d8')),
+            title=tl('Player Comparison Radar',22), height=500, margin=dict(t=60,b=20,l=20,r=20))
+        st.plotly_chart(fig_r, use_container_width=True)
+
+        if len(selected)>1:
+            st.markdown('<div class="sec-title">📊 PERFORMANCE COMPARISON</div>', unsafe_allow_html=True)
+            cc1,cc2 = st.columns(2)
+            with cc1:
+                fig_ga = go.Figure()
+                fig_ga.add_trace(go.Bar(name='Goals',x=selected,
+                    y=[int(df[df['Player']==p]['Gls'].values[0]) for p in selected],
+                    marker_color='#e03a3e',textposition='inside',textfont=dict(color='white'),
+                    text=[int(df[df['Player']==p]['Gls'].values[0]) for p in selected]))
+                fig_ga.add_trace(go.Bar(name='Assists',x=selected,
+                    y=[int(df[df['Player']==p]['Ast'].values[0]) for p in selected],
+                    marker_color='#f39c12',textposition='inside',textfont=dict(color='white'),
+                    text=[int(df[df['Player']==p]['Ast'].values[0]) for p in selected]))
+                fig_ga.update_layout(**LAYOUT,barmode='group',title=tl('Goals & Assists'),height=340)
+                st.plotly_chart(fig_ga, use_container_width=True)
+            with cc2:
+                best  = df[df['Player'].isin(selected)].sort_values('Final_Score',ascending=False).iloc[0]
+                worst = df[df['Player'].isin(selected)].sort_values('Final_Score',ascending=False).iloc[-1]
+                st.markdown(f"""
+                <div class="glass-card" style="padding:1.8rem;text-align:center;min-height:310px;display:flex;flex-direction:column;justify-content:center;">
+                  <div style="color:#e03a3e;font-family:'Bebas Neue';font-size:1.05rem;letter-spacing:2.5px;">🏆 RECOMMENDED TARGET</div>
+                  <div style="font-size:2rem;color:white;font-family:'Bebas Neue';margin:0.6rem 0;letter-spacing:2px;">{best['Player']}</div>
+                  <div style="color:#555;font-size:0.78rem;margin-bottom:1.2rem;">over {worst['Player']}</div>
+                  <div style="display:flex;justify-content:center;gap:2rem;align-items:baseline;">
+                    <div><span style="color:#888;font-size:0.72rem;">Score</span>
+                      <span style="color:#e03a3e;font-size:1.8rem;font-family:'Bebas Neue';margin-left:0.5rem;">{best['Final_Score']:.0f}</span></div>
+                    <div style="color:#3a3a3a;font-size:0.75rem;">vs {worst['Final_Score']:.0f}</div>
+                  </div>
+                  <div style="color:#444;font-size:0.73rem;margin-top:1.1rem;">Age {int(best['Age_num'])} • €{best['Market_Value_M']:.0f}m • Superior value</div>
+                </div>""", unsafe_allow_html=True)
     else:
-        col_sel, col_hint = st.columns([2, 1])
-        with col_sel:
-            search = st.text_input("🔍 Search Player", placeholder="Type player name...")
-            all_p = df['Player'].tolist()
-            filt_p = [p for p in all_p if search.lower() in p.lower()] if search else all_p
-            selected = st.multiselect("Select Players to Compare (max 3)", filt_p,
-                                     default=filt_p[:min(2, len(filt_p))], max_selections=3)
-        with col_hint:
-            st.markdown("""<div class="glass-card" style="padding:1rem;margin-top:1.6rem;">
-            <div style="color:#888;font-size:0.68rem;letter-spacing:1px;">📊 METRICS</div>
-            <div style="color:white;font-size:0.8rem;margin-top:0.5rem;line-height:2;">
-            ⚽ Goals &nbsp;|&nbsp; 🅰️ Assists<br>🎯 Accuracy &nbsp;|&nbsp; 💶 Value<br>📈 Score &nbsp;|&nbsp; 📅 Schedule</div></div>""", unsafe_allow_html=True)
+        st.info("👆 Select players above to compare")
 
-        if selected:
-            st.markdown("---")
-            colors_p = ['#e03a3e', '#f5a623', '#4a90e2']
-            cols_p = st.columns(len(selected))
-            for idx, (col, pname) in enumerate(zip(cols_p, selected)):
-                r = df[df['Player'] == pname].iloc[0]
-                pc = colors_p[idx]
-                h = r.get('Defense_Hardness', 0.5)
-                si = "🔴" if h >= 0.6 else ("🟡" if h >= 0.4 else "🟢")
-                peak = float(r.get('Peak_Value_M', r['Market_Value_M']))
-                vc = ((r['Market_Value_M'] - peak) / peak * 100) if peak > 0 else 0
-                sot_w = min(float(r['SoT%']), 100)
-                val_w = max(0, min((1 - r['Market_Value_M'] / df['Market_Value_M'].max()) * 100, 100))
-                with col:
-                    st.markdown(f"""
-                    <div class="glass-card" style="padding:1.5rem;border-left:4px solid {pc};">
-                      <div style="display:flex;justify-content:space-between;align-items:center;">
-                        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:white;">{pname}</div>
-                        <span style="background:{pc}22;color:{pc};padding:3px 10px;border-radius:12px;font-size:0.62rem;font-weight:700;">#{idx+1}</span>
-                      </div>
-                      <div style="color:#666;font-size:0.7rem;margin:0.3rem 0 1rem;">{r.get('Squad', '—')} • {r.get('League', '—')} • Age {int(r['Age_num'])}</div>
-                      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.7rem;text-align:center;margin-bottom:1rem;">
-                        <div style="background:rgba(255,255,255,0.03);border-radius:9px;padding:0.85rem;">
-                          <div style="font-size:1.6rem;">⚽</div>
-                          <div style="font-size:1.5rem;color:white;font-family:'Bebas Neue';">{int(r.get('Gls', 0))}</div>
-                          <div style="color:#444;font-size:0.6rem;letter-spacing:1px;">GOALS</div>
-                        </div>
-                        <div style="background:rgba(255,255,255,0.03);border-radius:9px;padding:0.85rem;">
-                          <div style="font-size:1.6rem;">🅰️</div>
-                          <div style="font-size:1.5rem;color:white;font-family:'Bebas Neue';">{int(r.get('Ast', 0))}</div>
-                          <div style="color:#444;font-size:0.6rem;letter-spacing:1px;">ASSISTS</div>
-                        </div>
-                      </div>
-                      <div style="background:rgba(255,255,255,0.03);border-radius:9px;padding:1rem;margin-bottom:0.8rem;">
-                        <div style="display:flex;justify-content:space-between;margin-bottom:0.4rem;">
-                          <span style="color:#666;font-size:0.73rem;">🎯 Shot Accuracy</span>
-                          <span style="color:white;font-size:0.73rem;">{r['SoT%']:.1f}%</span>
-                        </div>
-                        <div class="bar-bg"><div class="bar-fill" style="width:{sot_w:.0f}%"></div></div>
-                        <div style="display:flex;justify-content:space-between;margin:0.85rem 0 0.4rem;">
-                          <span style="color:#666;font-size:0.73rem;">💶 Market Value</span>
-                          <span style="color:white;font-size:0.73rem;">€{r['Market_Value_M']:.0f}m</span>
-                        </div>
-                        <div class="bar-bg"><div class="bar-fill" style="width:{val_w:.0f}%"></div></div>
-                      </div>
-                      <div style="display:flex;justify-content:space-between;align-items:center;">
-                        <div><span style="color:#666;font-size:0.7rem;">Score</span>
-                          <span style="color:{pc};font-size:1.6rem;font-family:'Bebas Neue';margin-left:0.5rem;">{r['Final_Score']:.0f}</span></div>
-                        <div style="font-size:0.68rem;color:#555;">{si} {h:.2f} | Peak €{peak:.0f}m <span style="color:{'#2ecc71' if vc >= 0 else '#e03a3e'};">({vc:+.0f}%)</span></div>
-                      </div>
-                      {'<div style="margin-top:0.85rem;"><span class="badge-green badge">🌟 U23 Bonus</span></div>' if r["Age_num"] <= 23 else ('<div style="margin-top:0.85rem;"><span class="badge-yellow badge">⚡ Prime Age</span></div>' if 23 < r["Age_num"] <= 26 else '')}
-                    </div>""", unsafe_allow_html=True)
 
-            st.markdown("<br>", unsafe_allow_html=True)
-            st.markdown('<div class="sec-title">📡 RADAR COMPARISON</div>', unsafe_allow_html=True)
-            metrics = ['norm_gls_p90', 'norm_sot_pct', 'norm_ast', 'norm_prgp', 'norm_context']
-            labels = ['⚽ Goals/90', '🎯 Shot Acc', '🅰️ Assists', '📤 Prog Pass', '📅 Schedule']
-            fig_r = go.Figure()
-            for pname, pc in zip(selected, colors_p):
-                r = df[df['Player'] == pname].iloc[0]
-                vals = [float(r.get(m, 0)) for m in metrics] + [float(r.get(metrics[0], 0))]
-                lbs = labels + [labels[0]]
-                rgba = tuple(int(pc.lstrip('#')[i:i+2], 16) for i in (0, 2, 4))
-                fig_r.add_trace(go.Scatterpolar(r=vals, theta=lbs, fill='toself', name=pname,
-                    line=dict(color=pc, width=3), fillcolor=f'rgba{rgba + (0.14,)}'))
-            fig_r.update_layout(
-                polar=dict(bgcolor='rgba(8,8,8,0.65)',
-                          radialaxis=dict(visible=True, range=[0, 1], color='#333', 
-                                        gridcolor='rgba(255,255,255,0.05)', tickfont=dict(color='#444')),
-                          angularaxis=dict(color='#555', gridcolor='rgba(255,255,255,0.05)')),
-                paper_bgcolor='rgba(0,0,0,0)',
-                font=dict(color='#d8d8d8', family='Inter'),
-                legend=dict(bgcolor='rgba(12,12,12,0.85)', bordercolor='rgba(224,58,62,0.2)', font=dict(color='#d8d8d8')),
-                title=dict(text='Player Comparison Radar', font=dict(color='white', family='Bebas Neue', size=22)), 
-                height=500, margin=dict(t=60, b=20, l=20, r=20))
-            st.plotly_chart(fig_r, use_container_width=True)
-
-            if len(selected) > 1:
-                st.markdown('<div class="sec-title">📊 PERFORMANCE COMPARISON</div>', unsafe_allow_html=True)
-                cc1, cc2 = st.columns(2)
-                with cc1:
-                    fig_ga = go.Figure()
-                    fig_ga.add_trace(go.Bar(name='Goals', x=selected,
-                        y=[int(df[df['Player'] == p]['Gls'].values[0]) for p in selected],
-                        marker_color='#e03a3e', textposition='inside', textfont=dict(color='white'),
-                        text=[int(df[df['Player'] == p]['Gls'].values[0]) for p in selected]))
-                    fig_ga.add_trace(go.Bar(name='Assists', x=selected,
-                        y=[int(df[df['Player'] == p]['Ast'].values[0]) for p in selected],
-                        marker_color='#f39c12', textposition='inside', textfont=dict(color='white'),
-                        text=[int(df[df['Player'] == p]['Ast'].values[0]) for p in selected]))
-                    fig_ga.update_layout(
-                        plot_bgcolor='rgba(8,8,8,0.55)',
-                        paper_bgcolor='rgba(0,0,0,0)',
-                        font=dict(color='#d8d8d8', family='Inter'),
-                        title=dict(text='Goals & Assists', font=dict(color='white', family='Bebas Neue', size=20)),
-                        barmode='group',
-                        legend=dict(bgcolor='rgba(12,12,12,0.85)', font=dict(color='#d8d8d8')),
-                        height=340
-                    )
-                    st.plotly_chart(fig_ga, use_container_width=True)
-                with cc2:
-                    best = df[df['Player'].isin(selected)].sort_values('Final_Score', ascending=False).iloc[0]
-                    worst = df[df['Player'].isin(selected)].sort_values('Final_Score', ascending=False).iloc[-1]
-                    st.markdown(f"""
-                    <div class="glass-card" style="padding:1.8rem;text-align:center;min-height:310px;display:flex;flex-direction:column;justify-content:center;">
-                      <div style="color:#e03a3e;font-family:'Bebas Neue';font-size:1.05rem;letter-spacing:2.5px;">🏆 RECOMMENDED TARGET</div>
-                      <div style="font-size:2rem;color:white;font-family:'Bebas Neue';margin:0.6rem 0;letter-spacing:2px;">{best['Player']}</div>
-                      <div style="color:#555;font-size:0.78rem;margin-bottom:1.2rem;">over {worst['Player']}</div>
-                      <div style="display:flex;justify-content:center;gap:2rem;align-items:baseline;">
-                        <div><span style="color:#888;font-size:0.72rem;">Score</span>
-                          <span style="color:#e03a3e;font-size:1.8rem;font-family:'Bebas Neue';margin-left:0.5rem;">{best['Final_Score']:.0f}</span></div>
-                        <div style="color:#3a3a3a;font-size:0.75rem;">vs {worst['Final_Score']:.0f}</div>
-                      </div>
-                      <div style="color:#444;font-size:0.73rem;margin-top:1.1rem;">Age {int(best['Age_num'])} • €{best['Market_Value_M']:.0f}m • Superior value</div>
-                    </div>""", unsafe_allow_html=True)
-        else:
-            st.info("👆 Select players above to compare")
 # ══════ TAB 4 ════════════════════════════════════════════════════════════════
 with tab4:
     st.markdown('<div class="sec-title">📋 FULL DATASET</div>', unsafe_allow_html=True)
-    
-    # ✅ التحقق من وجود df قبل استخدامه
-    if 'df' not in dir():
-        st.error("❌ No data loaded. Please check the data source.")
-    elif len(df) == 0:
-        st.warning("⚠️ No data available")
-    else:
-        t1c, t2c, t3c, t4c = st.columns([3, 2, 2, 1])
-        with t1c:
-            all_cols = ['Player', 'Nation', 'Pos_primary', 'Squad', 'Age_num', 'League', 'Gls', 'Ast', 'Gls_p90', 'SoT%', 'Market_Value_M', 'Perf_Score', 'Final_Score', 'Defense_Hardness']
-            av_cols = [c for c in all_cols if c in df.columns]
-            sel_cols = st.multiselect("📌 Columns", av_cols, default=['Player', 'Squad', 'Age_num', 'Pos_primary', 'Gls', 'Ast', 'SoT%', 'Market_Value_M', 'Final_Score'])
-        with t2c:
-            sort_options = [c for c in ['Final_Score', 'Market_Value_M', 'Gls', 'Age_num', 'SoT%'] if c in df.columns]
-            sort_by = st.selectbox("🔽 Sort By", sort_options)
-        with t3c:
-            rows_to_show = st.selectbox("📊 Rows", [10, 25, 50, 100, len(df)], index=2)
-        with t4c:
-            asc = st.checkbox("🔄 Asc", False)
+    t1c,t2c,t3c,t4c = st.columns([3,2,2,1])
+    with t1c:
+        all_cols = ['Player','Nation','Pos_primary','Squad','Age_num','League','Gls','Ast','Gls_p90','SoT%','Market_Value_M','Perf_Score','Final_Score','Defense_Hardness']
+        av_cols  = [c for c in all_cols if c in df.columns]
+        sel_cols = st.multiselect("📌 Columns", av_cols, default=['Player','Squad','Age_num','Pos_primary','Gls','Ast','SoT%','Market_Value_M','Final_Score'])
+    with t2c:
+        sort_options = [c for c in ['Final_Score','Market_Value_M','Gls','Age_num','SoT%'] if c in df.columns]
+        sort_by = st.selectbox("🔽 Sort By", sort_options)
+    with t3c:
+        rows_to_show = st.selectbox("📊 Rows", [10,25,50,100,len(df)], index=2)
+    with t4c:
+        asc = st.checkbox("🔄 Asc", False)
 
-        if sel_cols and len(df) > 0:
-            sort_cols = [sort_by] + [c for c in sel_cols if c != sort_by]
-            sort_cols = [c for c in sort_cols if c in df.columns]
-            disp = df[sort_cols].sort_values(sort_by, ascending=asc).head(rows_to_show).copy()
-            disp = disp[[c for c in sel_cols if c in disp.columns]]
-            fmt = {k: v for k, v in {
-                'SoT%': '{:.1f}%',
-                'Gls_p90': '{:.3f}',
-                'Market_Value_M': '€{:.0f}m',
-                'Final_Score': '{:.1f}',
-                'Perf_Score': '{:.3f}',
-                'Defense_Hardness': '{:.2f}'
-            }.items() if k in disp.columns}
-            st.dataframe(disp.style.format(fmt), use_container_width=True, height=500)
+    if sel_cols and len(df)>0:
+        sort_cols = [sort_by]+[c for c in sel_cols if c!=sort_by]
+        sort_cols = [c for c in sort_cols if c in df.columns]
+        disp = df[sort_cols].sort_values(sort_by,ascending=asc).head(rows_to_show).copy()
+        disp = disp[[c for c in sel_cols if c in disp.columns]]
+        fmt  = {k:v for k,v in {'SoT%':'{:.1f}%','Gls_p90':'{:.3f}','Market_Value_M':'€{:.0f}m','Final_Score':'{:.1f}','Perf_Score':'{:.3f}','Defense_Hardness':'{:.2f}'}.items() if k in disp.columns}
+        st.dataframe(disp.style.format(fmt), use_container_width=True, height=500)
 
-        st.markdown('<div class="sec-title">📊 DATA INSIGHTS</div>', unsafe_allow_html=True)
-        si1, si2, si3, si4, si5 = st.columns(5)
-        for col, (val, lbl, c) in zip([si1, si2, si3, si4, si5], [
-            (len(df), "Total Players", "#e03a3e"),
-            (df['Squad'].nunique(), "Teams", "white"),
-            (df['Pos_primary'].nunique(), "Positions", "#f39c12"),
-            (int(df['Gls'].sum()), "Total Goals", "#2ecc71"),
-            (f"{df['Age_num'].mean():.1f}", "Avg Age", "#4a90e2"),
-        ]):
-            with col:
-                st.markdown(f'<div class="glass-card" style="text-align:center;padding:0.9rem;"><div style="font-size:1.65rem;color:{c};font-family:\'Bebas Neue\';">{val}</div><div style="color:#444;font-size:0.63rem;margin-top:0.2rem;">{lbl}</div></div>', unsafe_allow_html=True)
+    st.markdown('<div class="sec-title">📊 DATA INSIGHTS</div>', unsafe_allow_html=True)
+    si1,si2,si3,si4,si5 = st.columns(5)
+    for col,(val,lbl,c) in zip([si1,si2,si3,si4,si5],[
+        (len(df),"Total Players","#e03a3e"),
+        (df['Squad'].nunique(),"Teams","white"),
+        (df['Pos_primary'].nunique(),"Positions","#f39c12"),
+        (int(df['Gls'].sum()),"Total Goals","#2ecc71"),
+        (f"{df['Age_num'].mean():.1f}","Avg Age","#4a90e2"),
+    ]):
+        with col:
+            st.markdown(f'<div class="glass-card" style="text-align:center;padding:0.9rem;"><div style="font-size:1.65rem;color:{c};font-family:\'Bebas Neue\';">{val}</div><div style="color:#444;font-size:0.63rem;margin-top:0.2rem;">{lbl}</div></div>', unsafe_allow_html=True)
 
-        st.markdown("<br>", unsafe_allow_html=True)
-        
-        if len(df) > 1:
-            ci1, ci2 = st.columns(2)
-            with ci1:
-                pos_c = df['Pos_primary'].value_counts()
-                fig_p = go.Figure(go.Pie(
-                    labels=pos_c.index,
-                    values=pos_c.values,
-                    hole=0.48,
-                    marker_colors=['#e03a3e', '#f5a623', '#4a90e2', '#2ecc71', '#9b59b6'],
-                    textfont=dict(color='white')
-                ))
-                fig_p.update_layout(
-                    paper_bgcolor='rgba(0,0,0,0)',
-                    font=dict(color='#d8d8d8', family='Inter'),
-                    title=dict(
-                        text='Position Distribution',
-                        font=dict(color='white', family='Bebas Neue', size=22)
-                    ),
-                    legend=dict(
-                        bgcolor='rgba(12,12,12,0.85)',
-                        font=dict(color='#d8d8d8')
-                    ),
-                    height=320
-                )
-                st.plotly_chart(fig_p, use_container_width=True)
-            
-            with ci2:
-                fig_a = go.Figure(go.Histogram(
-                    x=df['Age_num'],
-                    nbinsx=15,
-                    marker_color='#e03a3e',
-                    opacity=0.75
-                ))
-                fig_a.update_layout(
-                    paper_bgcolor='rgba(0,0,0,0)',
-                    plot_bgcolor='rgba(8,8,8,0.55)',
-                    font=dict(color='#d8d8d8', family='Inter'),
-                    title=dict(
-                        text='Age Distribution',
-                        font=dict(color='white', family='Bebas Neue', size=22)
-                    ),
-                    xaxis=dict(
-                        title='Age',
-                        gridcolor='rgba(255,255,255,0.04)'
-                    ),
-                    yaxis=dict(
-                        title='Count',
-                        gridcolor='rgba(255,255,255,0.04)'
-                    ),
-                    height=320
-                )
-                st.plotly_chart(fig_a, use_container_width=True)
+    st.markdown("<br>", unsafe_allow_html=True)
+    if len(df)>1:
+        ci1,ci2 = st.columns(2)
+        with ci1:
+            pos_c = df['Pos_primary'].value_counts()
+            fig_p = go.Figure(go.Pie(labels=pos_c.index,values=pos_c.values,hole=0.48,
+                marker_colors=['#e03a3e','#f5a623','#4a90e2','#2ecc71','#9b59b6'],textfont=dict(color='white')))
+            fig_p.update_layout(paper_bgcolor='rgba(0,0,0,0)',font=dict(color='#d8d8d8',family='Inter'),
+                title=tl('Position Distribution'),legend=dict(bgcolor='rgba(12,12,12,0.85)',font=dict(color='#d8d8d8')),height=320)
+            st.plotly_chart(fig_p, use_container_width=True)
+        with ci2:
+            fig_a = go.Figure(go.Histogram(x=df['Age_num'],nbinsx=15,marker_color='#e03a3e',opacity=0.75))
+            fig_a.update_layout(paper_bgcolor='rgba(0,0,0,0)',plot_bgcolor='rgba(8,8,8,0.55)',
+                font=dict(color='#d8d8d8',family='Inter'),title=tl('Age Distribution'),
+                xaxis=dict(title='Age',gridcolor='rgba(255,255,255,0.04)'),
+                yaxis=dict(title='Count',gridcolor='rgba(255,255,255,0.04)'),height=320)
+            st.plotly_chart(fig_a, use_container_width=True)
 
-        st.markdown("---")
-        d1, d2, d3, _ = st.columns([1, 1, 1, 3])
-        with d1:
-            st.download_button(
-                "📥 Full Dataset",
-                df.to_csv(index=False).encode('utf-8'),
-                "brentford_scouting_full.csv",
-                "text/csv",
-                use_container_width=True
-            )
-        with d2:
-            st.download_button(
-                "📥 Top 50",
-                df.head(50).to_csv(index=False).encode('utf-8'),
-                "brentford_top50.csv",
-                "text/csv",
-                use_container_width=True
-            )
-        with d3:
-            st.download_button(
-                "📥 Top 10",
-                df.head(10).to_csv(index=False).encode('utf-8'),
-                "brentford_top10.csv",
-                "text/csv",
-                use_container_width=True
-            )
+    st.markdown("---")
+    d1,d2,d3,_ = st.columns([1,1,1,3])
+    with d1:
+        st.download_button("📥 Full Dataset",df.to_csv(index=False).encode('utf-8'),"brentford_scouting_full.csv","text/csv",use_container_width=True)
+    with d2:
+        st.download_button("📥 Top 50",df.head(50).to_csv(index=False).encode('utf-8'),"brentford_top50.csv","text/csv",use_container_width=True)
+    with d3:
+        st.download_button("📥 Top 10",df.head(10).to_csv(index=False).encode('utf-8'),"brentford_top10.csv","text/csv",use_container_width=True)
+
+
+# ─── FOOTER ──────────────────────────────────────────────────────────────────
+st.markdown("""
+<div class="footer">
+  <div style="display:flex;justify-content:center;gap:2rem;margin-bottom:0.9rem;flex-wrap:wrap;">
+    <span>🐝 BRENTFORD FC SCOUTING SYSTEM</span>
+    <span style="color:#2a2a2a;">•</span>
+    <span>⚽ SEASON 2025–26</span>
+    <span style="color:#2a2a2a;">•</span>
+    <span>📊 FBREF + TRANSFERMARKT</span>
+  </div>
+  <div style="display:flex;justify-content:center;gap:1.5rem;margin-bottom:0.6rem;">
+    <a href="https://www.linkedin.com/in/goda-emad/" target="_blank">🔗 LinkedIn</a>
+    <a href="https://github.com/Goda-Emad/brentford-scouting" target="_blank">🐙 GitHub</a>
+    <span style="color:#2a2a2a;">📞 +20 112 624 2932</span>
+  </div>
+  <div style="color:#222;margin-top:0.4rem;">Developed by Goda Emad © 2026</div>
+</div>""", unsafe_allow_html=True)
