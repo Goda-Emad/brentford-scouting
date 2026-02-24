@@ -413,7 +413,319 @@ with tab1:
             </div>""", unsafe_allow_html=True)
 
 
-
+# ══════ TAB 2 ════════════════════════════════════════════════════════════════
+with tab2:
+    st.markdown('<div class="sec-title">📊 VALUE ANALYSIS</div>', unsafe_allow_html=True)
+    
+    if len(df) > 1:
+        # إحصائيات سريعة
+        col1, col2, col3, col4 = st.columns(4)
+        
+        with col1:
+            st.markdown(f"""
+            <div class="glass-card" style="text-align:center; padding:1rem;">
+                <div style="font-size:1.5rem; color:var(--red); font-family:'Bebas Neue';">{df['Final_Score'].max():.0f}</div>
+                <div style="color:#888; font-size:0.7rem;">TOP VALUE SCORE</div>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with col2:
+            st.markdown(f"""
+            <div class="glass-card" style="text-align:center; padding:1rem;">
+                <div style="font-size:1.5rem; color:white; font-family:'Bebas Neue';">€{df['Market_Value_M'].max():.0f}M</div>
+                <div style="color:#888; font-size:0.7rem;">MAX MARKET VALUE</div>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with col3:
+            st.markdown(f"""
+            <div class="glass-card" style="text-align:center; padding:1rem;">
+                <div style="font-size:1.5rem; color:#f5a623; font-family:'Bebas Neue';">{df['Gls'].sum():.0f}</div>
+                <div style="color:#888; font-size:0.7rem;">TOTAL GOALS</div>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with col4:
+            st.markdown(f"""
+            <div class="glass-card" style="text-align:center; padding:1rem;">
+                <div style="font-size:1.5rem; color:#2ecc71; font-family:'Bebas Neue';">{df['Ast'].sum():.0f}</div>
+                <div style="color:#888; font-size:0.7rem;">TOTAL ASSISTS</div>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        st.markdown("<br>", unsafe_allow_html=True)
+        
+        # الرسوم البيانية
+        c1, c2 = st.columns(2)
+        
+        with c1:
+            # Scatter plot: Market Value vs Final Score
+            fig = px.scatter(
+                df, 
+                x='Market_Value_M', 
+                y='Final_Score',
+                hover_name='Player',
+                hover_data={
+                    'Squad': True,
+                    'Age_num': True,
+                    'Gls': True,
+                    'Ast': True,
+                    'Market_Value_M': ':.1f',
+                    'Final_Score': ':.1f'
+                },
+                color='Pos_primary',
+                size='Gls',
+                size_max=22,
+                color_discrete_sequence=['#e03a3e', '#f5a623', '#4a90e2', '#2ecc71'],
+                title='Value Score vs Market Value',
+                labels={
+                    'Market_Value_M': 'Market Value (€M)',
+                    'Final_Score': 'Value Score',
+                    'Pos_primary': 'Position'
+                }
+            )
+            
+            fig.update_layout(
+                plot_bgcolor='rgba(8,8,8,0.55)',
+                paper_bgcolor='rgba(0,0,0,0)',
+                font=dict(color='#d8d8d8', family='Inter', size=11),
+                title_font=dict(color='white', family='Bebas Neue', size=22),
+                legend=dict(
+                    bgcolor='rgba(12,12,12,0.85)',
+                    bordercolor='rgba(224,58,62,0.2)',
+                    font=dict(color='#d8d8d8')
+                ),
+                height=450
+            )
+            
+            fig.update_xaxes(gridcolor='rgba(255,255,255,0.05)')
+            fig.update_yaxes(gridcolor='rgba(255,255,255,0.05)')
+            
+            # إضافة منطقة برينتفورد المستهدفة
+            fig.add_shape(
+                type='rect',
+                x0=0,
+                y0=df['Final_Score'].quantile(0.7),
+                x1=df['Market_Value_M'].quantile(0.3),
+                y1=df['Final_Score'].max(),
+                line=dict(color='rgba(224,58,62,0.3)', width=1, dash='dash'),
+                fillcolor='rgba(224,58,62,0.03)'
+            )
+            
+            fig.add_annotation(
+                x=df['Market_Value_M'].quantile(0.15),
+                y=df['Final_Score'].max() * 0.95,
+                text="🎯 Brentford Target Zone",
+                font=dict(color='rgba(224,58,62,0.8)', size=10),
+                showarrow=False,
+                bgcolor='rgba(12,12,12,0.7)',
+                bordercolor='rgba(224,58,62,0.3)',
+                borderwidth=1,
+                borderpad=4
+            )
+            
+            st.plotly_chart(fig, use_container_width=True)
+        
+        with c2:
+            # Top 10 players bar chart
+            top10 = df.nlargest(10, 'Final_Score')[['Player', 'Final_Score', 'Market_Value_M', 'Gls']].copy()
+            
+            fig2 = go.Figure()
+            
+            fig2.add_trace(go.Bar(
+                x=top10['Final_Score'],
+                y=top10['Player'],
+                orientation='h',
+                marker=dict(
+                    color=top10['Final_Score'],
+                    colorscale=[[0, '#330000'], [0.5, '#8b1a1a'], [1, '#e03a3e']],
+                    showscale=False,
+                    line=dict(color='rgba(224,58,62,0.3)', width=1)
+                ),
+                text=[f"€{v:.0f}M | ⚽{int(g)}G" for v, g in zip(top10['Market_Value_M'], top10['Gls'])],
+                textposition='outside',
+                textfont=dict(color='#aaa', size=10),
+                hovertemplate='<b>%{y}</b><br>Score: %{x:.1f}<br>Value: €%{customdata[0]:.0f}M<br>Goals: %{customdata[1]}<extra></extra>',
+                customdata=top10[['Market_Value_M', 'Gls']]
+            ))
+            
+            fig2.update_layout(
+                plot_bgcolor='rgba(8,8,8,0.55)',
+                paper_bgcolor='rgba(0,0,0,0)',
+                font=dict(color='#d8d8d8', family='Inter', size=11),
+                title=dict(
+                    text='Top 10 Players by Value Score',
+                    font=dict(color='white', family='Bebas Neue', size=22)
+                ),
+                xaxis=dict(
+                    title='Value Score',
+                    gridcolor='rgba(255,255,255,0.05)'
+                ),
+                yaxis=dict(
+                    autorange='reversed',
+                    gridcolor='rgba(255,255,255,0.05)'
+                ),
+                margin=dict(t=50, b=30, l=120, r=50),
+                height=450,
+                showlegend=False
+            )
+            
+            st.plotly_chart(fig2, use_container_width=True)
+        
+        # Efficiency Analysis
+        st.markdown('<div class="sec-title">⚽ EFFICIENCY ANALYSIS</div>', unsafe_allow_html=True)
+        
+        fig3 = px.scatter(
+            df,
+            x='Gls_p90',
+            y='SoT%',
+            hover_name='Player',
+            hover_data={
+                'Squad': True,
+                'Gls': True,
+                'Ast': True,
+                'Market_Value_M': ':.1f'
+            },
+            color='Final_Score',
+            size='Market_Value_M',
+            size_max=25,
+            color_continuous_scale=[[0, '#330000'], [0.5, '#8b1a1a'], [1, '#e03a3e']],
+            title='Scoring Efficiency: Goals per 90 vs Shot Accuracy',
+            labels={
+                'Gls_p90': 'Goals per 90 Minutes',
+                'SoT%': 'Shot on Target %',
+                'Final_Score': 'Value Score'
+            }
+        )
+        
+        fig3.update_layout(
+            plot_bgcolor='rgba(8,8,8,0.55)',
+            paper_bgcolor='rgba(0,0,0,0)',
+            font=dict(color='#d8d8d8', family='Inter', size=11),
+            title_font=dict(color='white', family='Bebas Neue', size=22),
+            coloraxis_colorbar=dict(
+                title='Score',
+                tickfont=dict(color='#aaa'),
+                bgcolor='rgba(12,12,12,0.85)'
+            ),
+            height=450
+        )
+        
+        # Add average lines
+        avg_gls = df['Gls_p90'].mean()
+        avg_sot = df['SoT%'].mean()
+        
+        fig3.add_hline(
+            y=avg_sot, 
+            line_dash="dash", 
+            line_color="rgba(255,255,255,0.2)",
+            annotation_text=f"Avg Acc: {avg_sot:.1f}%", 
+            annotation_position="bottom right",
+            annotation_font=dict(color='#888', size=10)
+        )
+        
+        fig3.add_vline(
+            x=avg_gls, 
+            line_dash="dash", 
+            line_color="rgba(255,255,255,0.2)",
+            annotation_text=f"Avg G/90: {avg_gls:.2f}", 
+            annotation_position="top left",
+            annotation_font=dict(color='#888', size=10)
+        )
+        
+        # Add quadrant annotations
+        fig3.add_annotation(
+            x=df['Gls_p90'].max() * 0.8,
+            y=df['SoT%'].max() * 0.9,
+            text="💪 Elite Finishers",
+            font=dict(color='#2ecc71', size=11),
+            showarrow=False,
+            bgcolor='rgba(12,12,12,0.7)',
+            bordercolor='rgba(46,204,113,0.3)',
+            borderwidth=1,
+            borderpad=4
+        )
+        
+        fig3.add_annotation(
+            x=df['Gls_p90'].max() * 0.2,
+            y=df['SoT%'].max() * 0.2,
+            text="📊 Needs Improvement",
+            font=dict(color='#e03a3e', size=11),
+            showarrow=False,
+            bgcolor='rgba(12,12,12,0.7)',
+            bordercolor='rgba(224,58,62,0.3)',
+            borderwidth=1,
+            borderpad=4
+        )
+        
+        st.plotly_chart(fig3, use_container_width=True)
+        
+        # Schedule Difficulty (if available)
+        if 'Defense_Hardness' in df.columns and 'Squad' in df.columns:
+            st.markdown('<div class="sec-title">📅 SCHEDULE DIFFICULTY</div>', unsafe_allow_html=True)
+            
+            squad_stats = df.groupby('Squad').agg({
+                'Defense_Hardness': 'mean',
+                'Player': 'count',
+                'Final_Score': 'mean'
+            }).reset_index().sort_values('Defense_Hardness', ascending=True)
+            
+            fig4 = go.Figure()
+            
+            fig4.add_trace(go.Bar(
+                x=squad_stats['Defense_Hardness'],
+                y=squad_stats['Squad'],
+                orientation='h',
+                marker=dict(
+                    color=squad_stats['Defense_Hardness'],
+                    colorscale=[[0, '#2ecc71'], [0.5, '#f5a623'], [1, '#e03a3e']],
+                    showscale=False,
+                    line=dict(color='rgba(255,255,255,0.1)', width=1)
+                ),
+                text=[f"{h:.2f} | {c} players" for h, c in zip(squad_stats['Defense_Hardness'], squad_stats['Player'])],
+                textposition='outside',
+                textfont=dict(color='#aaa', size=10),
+                hovertemplate='<b>%{y}</b><br>Hardness: %{x:.2f}<br>Players: %{customdata[0]}<br>Avg Score: %{customdata[1]:.1f}<extra></extra>',
+                customdata=squad_stats[['Player', 'Final_Score']]
+            ))
+            
+            fig4.update_layout(
+                plot_bgcolor='rgba(8,8,8,0.55)',
+                paper_bgcolor='rgba(0,0,0,0)',
+                font=dict(color='#d8d8d8', family='Inter', size=11),
+                title=dict(
+                    text='Defense Hardness by Squad (Higher = Harder to Score)',
+                    font=dict(color='white', family='Bebas Neue', size=20)
+                ),
+                xaxis=dict(
+                    title='Hardness Score',
+                    gridcolor='rgba(255,255,255,0.05)',
+                    range=[0, 1]
+                ),
+                yaxis=dict(
+                    title='',
+                    gridcolor='rgba(255,255,255,0.05)'
+                ),
+                margin=dict(t=50, b=30, l=120, r=50),
+                height=400
+            )
+            
+            st.plotly_chart(fig4, use_container_width=True)
+            
+            # Legend
+            st.markdown("""
+            <div style="background:rgba(8,8,8,0.6); border-radius:10px; padding:1rem; margin-top:1rem;">
+                <p style="color:#888; font-size:0.75rem; margin-bottom:0.5rem;">📌 <strong>Defense Hardness Scale:</strong></p>
+                <div style="display:flex; gap:2rem; flex-wrap:wrap;">
+                    <div><span style="color:#2ecc71;">🟢</span> Easy (&lt; 0.4)</div>
+                    <div><span style="color:#f5a623;">🟡</span> Medium (0.4 - 0.6)</div>
+                    <div><span style="color:#e03a3e;">🔴</span> Hard (&gt; 0.6)</div>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+    
+    else:
+        st.info("📊 Need more data for analysis charts")
 
 # ══════ TAB 3 ════════════════════════════════════════════════════════════════
 with tab3:
