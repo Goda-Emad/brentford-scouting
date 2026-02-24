@@ -233,8 +233,11 @@ def recalculate(df):
     df['Final_Score']      = (df['Value_Score_norm'] * df['Age_bonus']).round(1)
     return df
 
+
+# ─── HELPERS ─────────────────────────────────────────────────────────────────
 @st.cache_data
 def load_data(file=None):
+    """Load CSV data or fallback to default dataset, then recalculate metrics."""
     try:
         if file is not None:
             return recalculate(pd.read_csv(file))
@@ -242,7 +245,9 @@ def load_data(file=None):
             if os.path.exists(path):
                 return recalculate(pd.read_csv(path))
     except Exception as e:
-        st.error(f"❌ Error: {e}")
+        st.error(f"❌ Error loading file: {e}")
+
+    # Fallback sample dataset
     data = {
         'Player':['Aubameyang','Ansu Fati','Wesley Said','Odsonne Edouard','Pavel Sulc','Elye Wahi','Adrien Thomasson','Gauthier Hein'],
         'Nation':['GAB','ESP','FRA','FRA','CZE','FRA','FRA','FRA'],
@@ -263,31 +268,35 @@ def load_data(file=None):
     }
     return recalculate(pd.DataFrame(data))
 
+
 def img_to_b64(path):
+    """Return base64 string of image, fallback to default logos if path missing."""
     for p in [path, "assets/rentford_logo.jpg", "assets/brentford_logo.png"]:
         if os.path.exists(p):
             with open(p,"rb") as f:
                 return base64.b64encode(f.read()).decode()
     return None
 
+
 def tl(text, size=20):
+    """Safe Plotly title dictionary."""
     return dict(text=text, font=dict(color='white', family='Bebas Neue', size=size))
+
 
 LAYOUT = dict(
     plot_bgcolor='rgba(8,8,8,0.55)',
     paper_bgcolor='rgba(0,0,0,0)',
     font=dict(color='#d8d8d8', family='Inter', size=11),
-    legend=dict(bgcolor='rgba(12,12,12,0.85)', bordercolor='rgba(224,58,62,0.2)', font=dict(color='#d8d8d8')),
+    legend=dict(bgcolor='rgba(12,12,12,0.85)',
+                bordercolor='rgba(224,58,62,0.2)',
+                font=dict(color='#d8d8d8')),
     margin=dict(t=50, b=30, l=10, r=10),
 )
 
 
 # ─── HEADER ──────────────────────────────────────────────────────────────────
 logo_b64 = img_to_b64("assets/rentford_logo.jpg")
-if logo_b64:
-    logo_html = f'<img class="header-logo" src="data:image/jpeg;base64,{logo_b64}"/>'
-else:
-    logo_html = '<div style="font-size:3.8rem;flex-shrink:0;">🐝</div>'
+logo_html = f'<img class="header-logo" src="data:image/jpeg;base64,{logo_b64}"/>' if logo_b64 else '<div style="font-size:3.8rem;flex-shrink:0;">🐝</div>'
 
 st.markdown(f"""
 <div class="header-wrap">
@@ -306,8 +315,6 @@ st.markdown(f"""
     <div style="font-family:'Inter',sans-serif;font-size:0.62rem;color:#444;margin-top:0.3rem;">FBREF + TRANSFERMARKT</div>
   </div>
 </div>""", unsafe_allow_html=True)
-
-
 # ─── SIDEBAR ─────────────────────────────────────────────────────────────────
 with st.sidebar:
     st.markdown('<div style="font-family:\'Bebas Neue\',sans-serif;font-size:1.3rem;color:white;letter-spacing:2.5px;margin-bottom:1.2rem;padding-bottom:0.8rem;border-bottom:1px solid rgba(224,58,62,0.2);">⚙️ SCOUT FILTERS</div>', unsafe_allow_html=True)
@@ -406,69 +413,6 @@ with tab1:
             </div>""", unsafe_allow_html=True)
 
 
-# ══════ TAB 2 ════════════════════════════════════════════════════════════════
-with tab2:
-    st.markdown('<div class="sec-title">VALUE ANALYSIS</div>', unsafe_allow_html=True)
-    if len(df) < 2:
-        st.info("📊 Need more data. Adjust filters.")
-    else:
-        s1,s2,s3,s4 = st.columns(4)
-        for col,(val,lbl,c) in zip([s1,s2,s3,s4],[
-            (f"{df['Final_Score'].max():.0f}","TOP SCORE","#e03a3e"),
-            (f"€{df['Market_Value_M'].max():.0f}M","MAX VALUE","white"),
-            (f"{df['Final_Score'].mean():.1f}","AVG SCORE","#f39c12"),
-            (str(len(df)),"PLAYERS","#2ecc71"),
-        ]):
-            with col:
-                st.markdown(f'<div class="glass-card" style="text-align:center;padding:1rem;"><div style="font-size:1.65rem;color:{c};font-family:\'Bebas Neue\';">{val}</div><div style="color:#555;font-size:0.66rem;margin-top:0.2rem;">{lbl}</div></div>', unsafe_allow_html=True)
-        st.markdown("<br>", unsafe_allow_html=True)
-        c1,c2 = st.columns(2)
-        with c1:
-            fig = px.scatter(df,x='Market_Value_M',y='Final_Score',hover_name='Player',
-                hover_data={'Squad':True,'Age_num':True,'Gls':True,'Ast':True},
-                color='Pos_primary',size='Gls',size_max=22,
-                color_discrete_sequence=['#e03a3e','#f5a623','#4a90e2','#2ecc71','#9b59b6'],
-                labels={'Market_Value_M':'Market Value (€m)','Final_Score':'Value Score','Pos_primary':'Position'})
-            fig.update_layout(**LAYOUT, title=tl('Value Score vs Market Value'), height=420)
-            fig.update_xaxes(gridcolor='rgba(255,255,255,0.04)')
-            fig.update_yaxes(gridcolor='rgba(255,255,255,0.04)')
-            st.plotly_chart(fig, use_container_width=True)
-        with c2:
-            t10 = df.nlargest(10,'Final_Score')
-            fig2 = go.Figure(go.Bar(x=t10['Final_Score'],y=t10['Player'],orientation='h',
-                marker=dict(color=t10['Final_Score'],colorscale=[[0,'#1a0505'],[0.5,'#8b1a1a'],[1,'#e03a3e']],showscale=False),
-                text=[f"€{v:.0f}M | ⚽{int(g)}G" for v,g in zip(t10['Market_Value_M'],t10['Gls'])],
-                textposition='outside',textfont=dict(color='#555',size=10)))
-            fig2.update_layout(**LAYOUT, title=tl('Top 10 — Value Score Ranking'), height=420,
-                               yaxis=dict(autorange='reversed',gridcolor='rgba(255,255,255,0.04)'),
-                               xaxis=dict(gridcolor='rgba(255,255,255,0.04)'),
-                               margin=dict(t=50,b=30,l=10,r=90))
-            st.plotly_chart(fig2, use_container_width=True)
-
-        st.markdown('<div class="sec-title">⚽ GOALS EFFICIENCY</div>', unsafe_allow_html=True)
-        avg_g,avg_s = df['Gls_p90'].mean(), df['SoT%'].mean()
-        fig3 = px.scatter(df,x='Gls_p90',y='SoT%',hover_name='Player',
-            hover_data={'Squad':True,'Gls':True,'Ast':True},
-            color='Final_Score',size='Market_Value_M',size_max=22,
-            color_continuous_scale=[[0,'#0d0d0d'],[0.4,'#8b1a1a'],[1,'#e03a3e']],
-            labels={'Gls_p90':'Goals per 90','SoT%':'Shot on Target %'})
-        fig3.update_layout(**LAYOUT, title=tl('Scoring Efficiency: Goals/90 vs Shot Accuracy'), height=390,
-                           coloraxis_colorbar=dict(title='Score',tickfont=dict(color='#555'),bgcolor='rgba(12,12,12,0.85)'))
-        fig3.add_hline(y=avg_s,line_dash="dash",line_color="rgba(255,255,255,0.12)",
-                       annotation_text=f"Avg {avg_s:.1f}%",annotation_font=dict(color='#555',size=10))
-        fig3.add_vline(x=avg_g,line_dash="dash",line_color="rgba(255,255,255,0.12)",
-                       annotation_text=f"Avg {avg_g:.2f}",annotation_font=dict(color='#555',size=10))
-        st.plotly_chart(fig3, use_container_width=True)
-
-        if 'Defense_Hardness' in df.columns:
-            st.markdown('<div class="sec-title">📅 SCHEDULE DIFFICULTY</div>', unsafe_allow_html=True)
-            sh = df.groupby('Squad')['Defense_Hardness'].mean().sort_values().reset_index()
-            fig4 = go.Figure(go.Bar(x=sh['Defense_Hardness'],y=sh['Squad'],orientation='h',
-                marker=dict(color=sh['Defense_Hardness'],colorscale=[[0,'#1a0505'],[1,'#e03a3e']],showscale=False)))
-            fig4.update_layout(**LAYOUT, title=tl('Defense Hardness Score by Team'), height=400,
-                               yaxis=dict(gridcolor='rgba(255,255,255,0.04)'),
-                               xaxis=dict(gridcolor='rgba(255,255,255,0.04)'))
-            st.plotly_chart(fig4, use_container_width=True)
 
 
 # ══════ TAB 3 ════════════════════════════════════════════════════════════════
