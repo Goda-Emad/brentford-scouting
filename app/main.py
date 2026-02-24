@@ -571,34 +571,37 @@ hr {
 }
 </style>""", unsafe_allow_html=True)
 # ─── TABS ────────────────────────────────────────────────────────────────────
-tab1,tab2,tab3,tab4 = st.tabs(["🎯  Top Targets","📊  Value Analysis","🔬  Deep Dive","📋  Full Dataset"])
+# TABS - إنشاء التبويبات
+# ============================================
+tab1, tab2, tab3, tab4 = st.tabs(["🎯  Top Targets", "📊  Value Analysis", "🔬  Deep Dive", "📋  Full Dataset"])
 
-
-# ══════ TAB 1 ════════════════════════════════════════════════════════════════
+# ============================================
+# TAB 1 - Top Targets
+# ============================================
 with tab1:
     st.markdown('<div class="sec-title">TOP TARGETS</div>', unsafe_allow_html=True)
     
-    # ✅ التأكد من أن df موجود ومعرّف
-    if 'df' not in locals() and 'df' not in globals():
+    # التأكد من وجود df
+    if 'df' not in dir():
         st.error("❌ No data loaded. Please check the data source.")
     elif len(df) == 0:
         st.warning("⚠️ No players match the current filters.")
     else:
-        for rank,(_, row) in enumerate(df.head(top_n).iterrows(), 1):
+        for rank, (_, row) in enumerate(df.head(top_n).iterrows(), 1):
             score_pct = min(row['Final_Score']/130*100, 100)
-            h   = row.get('Defense_Hardness', 0.5)
-            sch_cls, sch_txt = ('badge-g badge','🔴 Hard Sch') if h>=0.6 else (('badge-yellow badge','🟡 Mid Sch') if h>=0.4 else ('badge-green badge','🟢 Easy Sch'))
+            h = row.get('Defense_Hardness', 0.5)
+            sch_cls, sch_txt = ('badge-g badge', '🔴 Hard Sch') if h >= 0.6 else (('badge-yellow badge', '🟡 Mid Sch') if h >= 0.4 else ('badge-green badge', '🟢 Easy Sch'))
             age = int(row['Age_num'])
-            ab  = '<span class="badge">🌟 U23</span>' if age<=23 else ('<span class="badge-g badge">Prime</span>' if age<=26 else '<span class="badge-g badge">Veteran</span>')
+            ab = '<span class="badge">🌟 U23</span>' if age <= 23 else ('<span class="badge-g badge">Prime</span>' if age <= 26 else '<span class="badge-g badge">Veteran</span>')
             st.markdown(f"""
             <div class="pcard">
               <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;">
                 <div style="flex:1;">
                   <div style="color:#e03a3e;font-family:'Inter',sans-serif;font-size:0.6rem;font-weight:700;letter-spacing:2.5px;">#{rank:02d}</div>
                   <div class="pname">{row['Player']}</div>
-                  <div class="pmeta">{row.get('Squad','—')} &nbsp;•&nbsp; {row.get('League','—')} &nbsp;•&nbsp; Age {age}</div>
+                  <div class="pmeta">{row.get('Squad', '—')} &nbsp;•&nbsp; {row.get('League', '—')} &nbsp;•&nbsp; Age {age}</div>
                   <div style="margin-top:0.55rem;">
-                    <span class="badge">{row.get('Pos_primary','—')}</span>{ab}<span class="{sch_cls}">{sch_txt}</span>
+                    <span class="badge">{row.get('Pos_primary', '—')}</span>{ab}<span class="{sch_cls}">{sch_txt}</span>
                   </div>
                 </div>
                 <div style="text-align:right;flex-shrink:0;">
@@ -611,6 +614,7 @@ with tab1:
               </div>
               <div class="bar-bg"><div class="bar-fill" style="width:{score_pct:.0f}%"></div></div>
             </div>""", unsafe_allow_html=True)
+
 # ══════ TAB 2 ════════════════════════════════════════════════════════════════
 with tab2:
     st.markdown('<div class="sec-title">📊 VALUE ANALYSIS</div>', unsafe_allow_html=True)
