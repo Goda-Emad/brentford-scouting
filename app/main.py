@@ -577,7 +577,11 @@ tab1,tab2,tab3,tab4 = st.tabs(["🎯  Top Targets","📊  Value Analysis","🔬 
 # ══════ TAB 1 ════════════════════════════════════════════════════════════════
 with tab1:
     st.markdown('<div class="sec-title">TOP TARGETS</div>', unsafe_allow_html=True)
-    if len(df) == 0:
+    
+    # ✅ التأكد من أن df موجود ومعرّف
+    if 'df' not in locals() and 'df' not in globals():
+        st.error("❌ No data loaded. Please check the data source.")
+    elif len(df) == 0:
         st.warning("⚠️ No players match the current filters.")
     else:
         for rank,(_, row) in enumerate(df.head(top_n).iterrows(), 1):
@@ -607,8 +611,6 @@ with tab1:
               </div>
               <div class="bar-bg"><div class="bar-fill" style="width:{score_pct:.0f}%"></div></div>
             </div>""", unsafe_allow_html=True)
-
-
 # ══════ TAB 2 ════════════════════════════════════════════════════════════════
 with tab2:
     st.markdown('<div class="sec-title">📊 VALUE ANALYSIS</div>', unsafe_allow_html=True)
