@@ -934,206 +934,271 @@ with tab2:
 # ══════ TAB 3 ════════════════════════════════════════════════════════════════
 with tab3:
     st.markdown('<div class="sec-title">🔬 PLAYER DEEP DIVE</div>', unsafe_allow_html=True)
-    col_sel,col_hint = st.columns([2,1])
-    with col_sel:
-        search = st.text_input("🔍 Search Player", placeholder="Type player name...")
-        all_p  = df['Player'].tolist()
-        filt_p = [p for p in all_p if search.lower() in p.lower()] if search else all_p
-        selected = st.multiselect("Select Players to Compare (max 3)", filt_p,
-                                   default=filt_p[:min(2,len(filt_p))], max_selections=3)
-    with col_hint:
-        st.markdown("""<div class="glass-card" style="padding:1rem;margin-top:1.6rem;">
-        <div style="color:#888;font-size:0.68rem;letter-spacing:1px;">📊 METRICS</div>
-        <div style="color:white;font-size:0.8rem;margin-top:0.5rem;line-height:2;">
-        ⚽ Goals &nbsp;|&nbsp; 🅰️ Assists<br>🎯 Accuracy &nbsp;|&nbsp; 💶 Value<br>📈 Score &nbsp;|&nbsp; 📅 Schedule</div></div>""", unsafe_allow_html=True)
-
-    if selected:
-        st.markdown("---")
-        colors_p = ['#e03a3e','#f5a623','#4a90e2']
-        cols_p = st.columns(len(selected))
-        for idx,(col,pname) in enumerate(zip(cols_p,selected)):
-            r  = df[df['Player']==pname].iloc[0]
-            pc = colors_p[idx]
-            h  = r.get('Defense_Hardness',0.5)
-            si = "🔴" if h>=0.6 else ("🟡" if h>=0.4 else "🟢")
-            peak = float(r.get('Peak_Value_M', r['Market_Value_M']))
-            vc   = ((r['Market_Value_M']-peak)/peak*100) if peak>0 else 0
-            sot_w = min(float(r['SoT%']),100)
-            val_w = max(0, min((1-r['Market_Value_M']/df['Market_Value_M'].max())*100,100))
-            with col:
-                st.markdown(f"""
-                <div class="glass-card" style="padding:1.5rem;border-left:4px solid {pc};">
-                  <div style="display:flex;justify-content:space-between;align-items:center;">
-                    <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:white;">{pname}</div>
-                    <span style="background:{pc}22;color:{pc};padding:3px 10px;border-radius:12px;font-size:0.62rem;font-weight:700;">#{idx+1}</span>
-                  </div>
-                  <div style="color:#666;font-size:0.7rem;margin:0.3rem 0 1rem;">{r.get('Squad','—')} • {r.get('League','—')} • Age {int(r['Age_num'])}</div>
-                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.7rem;text-align:center;margin-bottom:1rem;">
-                    <div style="background:rgba(255,255,255,0.03);border-radius:9px;padding:0.85rem;">
-                      <div style="font-size:1.6rem;">⚽</div>
-                      <div style="font-size:1.5rem;color:white;font-family:'Bebas Neue';">{int(r.get('Gls',0))}</div>
-                      <div style="color:#444;font-size:0.6rem;letter-spacing:1px;">GOALS</div>
-                    </div>
-                    <div style="background:rgba(255,255,255,0.03);border-radius:9px;padding:0.85rem;">
-                      <div style="font-size:1.6rem;">🅰️</div>
-                      <div style="font-size:1.5rem;color:white;font-family:'Bebas Neue';">{int(r.get('Ast',0))}</div>
-                      <div style="color:#444;font-size:0.6rem;letter-spacing:1px;">ASSISTS</div>
-                    </div>
-                  </div>
-                  <div style="background:rgba(255,255,255,0.03);border-radius:9px;padding:1rem;margin-bottom:0.8rem;">
-                    <div style="display:flex;justify-content:space-between;margin-bottom:0.4rem;">
-                      <span style="color:#666;font-size:0.73rem;">🎯 Shot Accuracy</span>
-                      <span style="color:white;font-size:0.73rem;">{r['SoT%']:.1f}%</span>
-                    </div>
-                    <div class="bar-bg"><div class="bar-fill" style="width:{sot_w:.0f}%"></div></div>
-                    <div style="display:flex;justify-content:space-between;margin:0.85rem 0 0.4rem;">
-                      <span style="color:#666;font-size:0.73rem;">💶 Market Value</span>
-                      <span style="color:white;font-size:0.73rem;">€{r['Market_Value_M']:.0f}m</span>
-                    </div>
-                    <div class="bar-bg"><div class="bar-fill" style="width:{val_w:.0f}%"></div></div>
-                  </div>
-                  <div style="display:flex;justify-content:space-between;align-items:center;">
-                    <div><span style="color:#666;font-size:0.7rem;">Score</span>
-                      <span style="color:{pc};font-size:1.6rem;font-family:'Bebas Neue';margin-left:0.5rem;">{r['Final_Score']:.0f}</span></div>
-                    <div style="font-size:0.68rem;color:#555;">{si} {h:.2f} | Peak €{peak:.0f}m <span style="color:{'#2ecc71' if vc>=0 else '#e03a3e'};">({vc:+.0f}%)</span></div>
-                  </div>
-                  {'<div style="margin-top:0.85rem;"><span class="badge-green badge">🌟 U23 Bonus</span></div>' if r["Age_num"]<=23 else ('<div style="margin-top:0.85rem;"><span class="badge-yellow badge">⚡ Prime Age</span></div>' if 23<r["Age_num"]<=26 else '')}
-                </div>""", unsafe_allow_html=True)
-
-        st.markdown("<br>", unsafe_allow_html=True)
-        st.markdown('<div class="sec-title">📡 RADAR COMPARISON</div>', unsafe_allow_html=True)
-        metrics = ['norm_gls_p90','norm_sot_pct','norm_ast','norm_prgp','norm_context']
-        labels  = ['⚽ Goals/90','🎯 Shot Acc','🅰️ Assists','📤 Prog Pass','📅 Schedule']
-        fig_r   = go.Figure()
-        for pname,pc in zip(selected,colors_p):
-            r    = df[df['Player']==pname].iloc[0]
-            vals = [float(r.get(m,0)) for m in metrics]+[float(r.get(metrics[0],0))]
-            lbs  = labels+[labels[0]]
-            rgba = tuple(int(pc.lstrip('#')[i:i+2],16) for i in (0,2,4))
-            fig_r.add_trace(go.Scatterpolar(r=vals,theta=lbs,fill='toself',name=pname,
-                line=dict(color=pc,width=3),fillcolor=f'rgba{rgba+(0.14,)}'))
-        fig_r.update_layout(
-            polar=dict(bgcolor='rgba(8,8,8,0.65)',
-                       radialaxis=dict(visible=True,range=[0,1],color='#333',gridcolor='rgba(255,255,255,0.05)',tickfont=dict(color='#444')),
-                       angularaxis=dict(color='#555',gridcolor='rgba(255,255,255,0.05)')),
-            paper_bgcolor='rgba(0,0,0,0)',
-            font=dict(color='#d8d8d8',family='Inter'),
-            legend=dict(bgcolor='rgba(12,12,12,0.85)',bordercolor='rgba(224,58,62,0.2)',font=dict(color='#d8d8d8')),
-            title=tl('Player Comparison Radar',22), height=500, margin=dict(t=60,b=20,l=20,r=20))
-        st.plotly_chart(fig_r, use_container_width=True)
-
-        if len(selected)>1:
-            st.markdown('<div class="sec-title">📊 PERFORMANCE COMPARISON</div>', unsafe_allow_html=True)
-            cc1,cc2 = st.columns(2)
-            with cc1:
-                fig_ga = go.Figure()
-                fig_ga.add_trace(go.Bar(name='Goals',x=selected,
-                    y=[int(df[df['Player']==p]['Gls'].values[0]) for p in selected],
-                    marker_color='#e03a3e',textposition='inside',textfont=dict(color='white'),
-                    text=[int(df[df['Player']==p]['Gls'].values[0]) for p in selected]))
-                fig_ga.add_trace(go.Bar(name='Assists',x=selected,
-                    y=[int(df[df['Player']==p]['Ast'].values[0]) for p in selected],
-                    marker_color='#f39c12',textposition='inside',textfont=dict(color='white'),
-                    text=[int(df[df['Player']==p]['Ast'].values[0]) for p in selected]))
-                fig_ga.update_layout(**LAYOUT,barmode='group',title=tl('Goals & Assists'),height=340)
-                st.plotly_chart(fig_ga, use_container_width=True)
-            with cc2:
-                best  = df[df['Player'].isin(selected)].sort_values('Final_Score',ascending=False).iloc[0]
-                worst = df[df['Player'].isin(selected)].sort_values('Final_Score',ascending=False).iloc[-1]
-                st.markdown(f"""
-                <div class="glass-card" style="padding:1.8rem;text-align:center;min-height:310px;display:flex;flex-direction:column;justify-content:center;">
-                  <div style="color:#e03a3e;font-family:'Bebas Neue';font-size:1.05rem;letter-spacing:2.5px;">🏆 RECOMMENDED TARGET</div>
-                  <div style="font-size:2rem;color:white;font-family:'Bebas Neue';margin:0.6rem 0;letter-spacing:2px;">{best['Player']}</div>
-                  <div style="color:#555;font-size:0.78rem;margin-bottom:1.2rem;">over {worst['Player']}</div>
-                  <div style="display:flex;justify-content:center;gap:2rem;align-items:baseline;">
-                    <div><span style="color:#888;font-size:0.72rem;">Score</span>
-                      <span style="color:#e03a3e;font-size:1.8rem;font-family:'Bebas Neue';margin-left:0.5rem;">{best['Final_Score']:.0f}</span></div>
-                    <div style="color:#3a3a3a;font-size:0.75rem;">vs {worst['Final_Score']:.0f}</div>
-                  </div>
-                  <div style="color:#444;font-size:0.73rem;margin-top:1.1rem;">Age {int(best['Age_num'])} • €{best['Market_Value_M']:.0f}m • Superior value</div>
-                </div>""", unsafe_allow_html=True)
+    
+    # ✅ التحقق من وجود df قبل استخدامه
+    if 'df' not in dir():
+        st.error("❌ No data loaded. Please check the data source.")
+    elif len(df) == 0:
+        st.warning("⚠️ No players available for comparison")
     else:
-        st.info("👆 Select players above to compare")
+        col_sel, col_hint = st.columns([2, 1])
+        with col_sel:
+            search = st.text_input("🔍 Search Player", placeholder="Type player name...")
+            all_p = df['Player'].tolist()
+            filt_p = [p for p in all_p if search.lower() in p.lower()] if search else all_p
+            selected = st.multiselect("Select Players to Compare (max 3)", filt_p,
+                                     default=filt_p[:min(2, len(filt_p))], max_selections=3)
+        with col_hint:
+            st.markdown("""<div class="glass-card" style="padding:1rem;margin-top:1.6rem;">
+            <div style="color:#888;font-size:0.68rem;letter-spacing:1px;">📊 METRICS</div>
+            <div style="color:white;font-size:0.8rem;margin-top:0.5rem;line-height:2;">
+            ⚽ Goals &nbsp;|&nbsp; 🅰️ Assists<br>🎯 Accuracy &nbsp;|&nbsp; 💶 Value<br>📈 Score &nbsp;|&nbsp; 📅 Schedule</div></div>""", unsafe_allow_html=True)
 
+        if selected:
+            st.markdown("---")
+            colors_p = ['#e03a3e', '#f5a623', '#4a90e2']
+            cols_p = st.columns(len(selected))
+            for idx, (col, pname) in enumerate(zip(cols_p, selected)):
+                r = df[df['Player'] == pname].iloc[0]
+                pc = colors_p[idx]
+                h = r.get('Defense_Hardness', 0.5)
+                si = "🔴" if h >= 0.6 else ("🟡" if h >= 0.4 else "🟢")
+                peak = float(r.get('Peak_Value_M', r['Market_Value_M']))
+                vc = ((r['Market_Value_M'] - peak) / peak * 100) if peak > 0 else 0
+                sot_w = min(float(r['SoT%']), 100)
+                val_w = max(0, min((1 - r['Market_Value_M'] / df['Market_Value_M'].max()) * 100, 100))
+                with col:
+                    st.markdown(f"""
+                    <div class="glass-card" style="padding:1.5rem;border-left:4px solid {pc};">
+                      <div style="display:flex;justify-content:space-between;align-items:center;">
+                        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:white;">{pname}</div>
+                        <span style="background:{pc}22;color:{pc};padding:3px 10px;border-radius:12px;font-size:0.62rem;font-weight:700;">#{idx+1}</span>
+                      </div>
+                      <div style="color:#666;font-size:0.7rem;margin:0.3rem 0 1rem;">{r.get('Squad', '—')} • {r.get('League', '—')} • Age {int(r['Age_num'])}</div>
+                      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.7rem;text-align:center;margin-bottom:1rem;">
+                        <div style="background:rgba(255,255,255,0.03);border-radius:9px;padding:0.85rem;">
+                          <div style="font-size:1.6rem;">⚽</div>
+                          <div style="font-size:1.5rem;color:white;font-family:'Bebas Neue';">{int(r.get('Gls', 0))}</div>
+                          <div style="color:#444;font-size:0.6rem;letter-spacing:1px;">GOALS</div>
+                        </div>
+                        <div style="background:rgba(255,255,255,0.03);border-radius:9px;padding:0.85rem;">
+                          <div style="font-size:1.6rem;">🅰️</div>
+                          <div style="font-size:1.5rem;color:white;font-family:'Bebas Neue';">{int(r.get('Ast', 0))}</div>
+                          <div style="color:#444;font-size:0.6rem;letter-spacing:1px;">ASSISTS</div>
+                        </div>
+                      </div>
+                      <div style="background:rgba(255,255,255,0.03);border-radius:9px;padding:1rem;margin-bottom:0.8rem;">
+                        <div style="display:flex;justify-content:space-between;margin-bottom:0.4rem;">
+                          <span style="color:#666;font-size:0.73rem;">🎯 Shot Accuracy</span>
+                          <span style="color:white;font-size:0.73rem;">{r['SoT%']:.1f}%</span>
+                        </div>
+                        <div class="bar-bg"><div class="bar-fill" style="width:{sot_w:.0f}%"></div></div>
+                        <div style="display:flex;justify-content:space-between;margin:0.85rem 0 0.4rem;">
+                          <span style="color:#666;font-size:0.73rem;">💶 Market Value</span>
+                          <span style="color:white;font-size:0.73rem;">€{r['Market_Value_M']:.0f}m</span>
+                        </div>
+                        <div class="bar-bg"><div class="bar-fill" style="width:{val_w:.0f}%"></div></div>
+                      </div>
+                      <div style="display:flex;justify-content:space-between;align-items:center;">
+                        <div><span style="color:#666;font-size:0.7rem;">Score</span>
+                          <span style="color:{pc};font-size:1.6rem;font-family:'Bebas Neue';margin-left:0.5rem;">{r['Final_Score']:.0f}</span></div>
+                        <div style="font-size:0.68rem;color:#555;">{si} {h:.2f} | Peak €{peak:.0f}m <span style="color:{'#2ecc71' if vc >= 0 else '#e03a3e'};">({vc:+.0f}%)</span></div>
+                      </div>
+                      {'<div style="margin-top:0.85rem;"><span class="badge-green badge">🌟 U23 Bonus</span></div>' if r["Age_num"] <= 23 else ('<div style="margin-top:0.85rem;"><span class="badge-yellow badge">⚡ Prime Age</span></div>' if 23 < r["Age_num"] <= 26 else '')}
+                    </div>""", unsafe_allow_html=True)
 
+            st.markdown("<br>", unsafe_allow_html=True)
+            st.markdown('<div class="sec-title">📡 RADAR COMPARISON</div>', unsafe_allow_html=True)
+            metrics = ['norm_gls_p90', 'norm_sot_pct', 'norm_ast', 'norm_prgp', 'norm_context']
+            labels = ['⚽ Goals/90', '🎯 Shot Acc', '🅰️ Assists', '📤 Prog Pass', '📅 Schedule']
+            fig_r = go.Figure()
+            for pname, pc in zip(selected, colors_p):
+                r = df[df['Player'] == pname].iloc[0]
+                vals = [float(r.get(m, 0)) for m in metrics] + [float(r.get(metrics[0], 0))]
+                lbs = labels + [labels[0]]
+                rgba = tuple(int(pc.lstrip('#')[i:i+2], 16) for i in (0, 2, 4))
+                fig_r.add_trace(go.Scatterpolar(r=vals, theta=lbs, fill='toself', name=pname,
+                    line=dict(color=pc, width=3), fillcolor=f'rgba{rgba + (0.14,)}'))
+            fig_r.update_layout(
+                polar=dict(bgcolor='rgba(8,8,8,0.65)',
+                          radialaxis=dict(visible=True, range=[0, 1], color='#333', 
+                                        gridcolor='rgba(255,255,255,0.05)', tickfont=dict(color='#444')),
+                          angularaxis=dict(color='#555', gridcolor='rgba(255,255,255,0.05)')),
+                paper_bgcolor='rgba(0,0,0,0)',
+                font=dict(color='#d8d8d8', family='Inter'),
+                legend=dict(bgcolor='rgba(12,12,12,0.85)', bordercolor='rgba(224,58,62,0.2)', font=dict(color='#d8d8d8')),
+                title=dict(text='Player Comparison Radar', font=dict(color='white', family='Bebas Neue', size=22)), 
+                height=500, margin=dict(t=60, b=20, l=20, r=20))
+            st.plotly_chart(fig_r, use_container_width=True)
+
+            if len(selected) > 1:
+                st.markdown('<div class="sec-title">📊 PERFORMANCE COMPARISON</div>', unsafe_allow_html=True)
+                cc1, cc2 = st.columns(2)
+                with cc1:
+                    fig_ga = go.Figure()
+                    fig_ga.add_trace(go.Bar(name='Goals', x=selected,
+                        y=[int(df[df['Player'] == p]['Gls'].values[0]) for p in selected],
+                        marker_color='#e03a3e', textposition='inside', textfont=dict(color='white'),
+                        text=[int(df[df['Player'] == p]['Gls'].values[0]) for p in selected]))
+                    fig_ga.add_trace(go.Bar(name='Assists', x=selected,
+                        y=[int(df[df['Player'] == p]['Ast'].values[0]) for p in selected],
+                        marker_color='#f39c12', textposition='inside', textfont=dict(color='white'),
+                        text=[int(df[df['Player'] == p]['Ast'].values[0]) for p in selected]))
+                    fig_ga.update_layout(
+                        plot_bgcolor='rgba(8,8,8,0.55)',
+                        paper_bgcolor='rgba(0,0,0,0)',
+                        font=dict(color='#d8d8d8', family='Inter'),
+                        title=dict(text='Goals & Assists', font=dict(color='white', family='Bebas Neue', size=20)),
+                        barmode='group',
+                        legend=dict(bgcolor='rgba(12,12,12,0.85)', font=dict(color='#d8d8d8')),
+                        height=340
+                    )
+                    st.plotly_chart(fig_ga, use_container_width=True)
+                with cc2:
+                    best = df[df['Player'].isin(selected)].sort_values('Final_Score', ascending=False).iloc[0]
+                    worst = df[df['Player'].isin(selected)].sort_values('Final_Score', ascending=False).iloc[-1]
+                    st.markdown(f"""
+                    <div class="glass-card" style="padding:1.8rem;text-align:center;min-height:310px;display:flex;flex-direction:column;justify-content:center;">
+                      <div style="color:#e03a3e;font-family:'Bebas Neue';font-size:1.05rem;letter-spacing:2.5px;">🏆 RECOMMENDED TARGET</div>
+                      <div style="font-size:2rem;color:white;font-family:'Bebas Neue';margin:0.6rem 0;letter-spacing:2px;">{best['Player']}</div>
+                      <div style="color:#555;font-size:0.78rem;margin-bottom:1.2rem;">over {worst['Player']}</div>
+                      <div style="display:flex;justify-content:center;gap:2rem;align-items:baseline;">
+                        <div><span style="color:#888;font-size:0.72rem;">Score</span>
+                          <span style="color:#e03a3e;font-size:1.8rem;font-family:'Bebas Neue';margin-left:0.5rem;">{best['Final_Score']:.0f}</span></div>
+                        <div style="color:#3a3a3a;font-size:0.75rem;">vs {worst['Final_Score']:.0f}</div>
+                      </div>
+                      <div style="color:#444;font-size:0.73rem;margin-top:1.1rem;">Age {int(best['Age_num'])} • €{best['Market_Value_M']:.0f}m • Superior value</div>
+                    </div>""", unsafe_allow_html=True)
+        else:
+            st.info("👆 Select players above to compare")
 # ══════ TAB 4 ════════════════════════════════════════════════════════════════
 with tab4:
     st.markdown('<div class="sec-title">📋 FULL DATASET</div>', unsafe_allow_html=True)
-    t1c,t2c,t3c,t4c = st.columns([3,2,2,1])
-    with t1c:
-        all_cols = ['Player','Nation','Pos_primary','Squad','Age_num','League','Gls','Ast','Gls_p90','SoT%','Market_Value_M','Perf_Score','Final_Score','Defense_Hardness']
-        av_cols  = [c for c in all_cols if c in df.columns]
-        sel_cols = st.multiselect("📌 Columns", av_cols, default=['Player','Squad','Age_num','Pos_primary','Gls','Ast','SoT%','Market_Value_M','Final_Score'])
-    with t2c:
-        sort_options = [c for c in ['Final_Score','Market_Value_M','Gls','Age_num','SoT%'] if c in df.columns]
-        sort_by = st.selectbox("🔽 Sort By", sort_options)
-    with t3c:
-        rows_to_show = st.selectbox("📊 Rows", [10,25,50,100,len(df)], index=2)
-    with t4c:
-        asc = st.checkbox("🔄 Asc", False)
+    
+    # ✅ التحقق من وجود df قبل استخدامه
+    if 'df' not in dir():
+        st.error("❌ No data loaded. Please check the data source.")
+    elif len(df) == 0:
+        st.warning("⚠️ No data available")
+    else:
+        t1c, t2c, t3c, t4c = st.columns([3, 2, 2, 1])
+        with t1c:
+            all_cols = ['Player', 'Nation', 'Pos_primary', 'Squad', 'Age_num', 'League', 'Gls', 'Ast', 'Gls_p90', 'SoT%', 'Market_Value_M', 'Perf_Score', 'Final_Score', 'Defense_Hardness']
+            av_cols = [c for c in all_cols if c in df.columns]
+            sel_cols = st.multiselect("📌 Columns", av_cols, default=['Player', 'Squad', 'Age_num', 'Pos_primary', 'Gls', 'Ast', 'SoT%', 'Market_Value_M', 'Final_Score'])
+        with t2c:
+            sort_options = [c for c in ['Final_Score', 'Market_Value_M', 'Gls', 'Age_num', 'SoT%'] if c in df.columns]
+            sort_by = st.selectbox("🔽 Sort By", sort_options)
+        with t3c:
+            rows_to_show = st.selectbox("📊 Rows", [10, 25, 50, 100, len(df)], index=2)
+        with t4c:
+            asc = st.checkbox("🔄 Asc", False)
 
-    if sel_cols and len(df)>0:
-        sort_cols = [sort_by]+[c for c in sel_cols if c!=sort_by]
-        sort_cols = [c for c in sort_cols if c in df.columns]
-        disp = df[sort_cols].sort_values(sort_by,ascending=asc).head(rows_to_show).copy()
-        disp = disp[[c for c in sel_cols if c in disp.columns]]
-        fmt  = {k:v for k,v in {'SoT%':'{:.1f}%','Gls_p90':'{:.3f}','Market_Value_M':'€{:.0f}m','Final_Score':'{:.1f}','Perf_Score':'{:.3f}','Defense_Hardness':'{:.2f}'}.items() if k in disp.columns}
-        st.dataframe(disp.style.format(fmt), use_container_width=True, height=500)
+        if sel_cols and len(df) > 0:
+            sort_cols = [sort_by] + [c for c in sel_cols if c != sort_by]
+            sort_cols = [c for c in sort_cols if c in df.columns]
+            disp = df[sort_cols].sort_values(sort_by, ascending=asc).head(rows_to_show).copy()
+            disp = disp[[c for c in sel_cols if c in disp.columns]]
+            fmt = {k: v for k, v in {
+                'SoT%': '{:.1f}%',
+                'Gls_p90': '{:.3f}',
+                'Market_Value_M': '€{:.0f}m',
+                'Final_Score': '{:.1f}',
+                'Perf_Score': '{:.3f}',
+                'Defense_Hardness': '{:.2f}'
+            }.items() if k in disp.columns}
+            st.dataframe(disp.style.format(fmt), use_container_width=True, height=500)
 
-    st.markdown('<div class="sec-title">📊 DATA INSIGHTS</div>', unsafe_allow_html=True)
-    si1,si2,si3,si4,si5 = st.columns(5)
-    for col,(val,lbl,c) in zip([si1,si2,si3,si4,si5],[
-        (len(df),"Total Players","#e03a3e"),
-        (df['Squad'].nunique(),"Teams","white"),
-        (df['Pos_primary'].nunique(),"Positions","#f39c12"),
-        (int(df['Gls'].sum()),"Total Goals","#2ecc71"),
-        (f"{df['Age_num'].mean():.1f}","Avg Age","#4a90e2"),
-    ]):
-        with col:
-            st.markdown(f'<div class="glass-card" style="text-align:center;padding:0.9rem;"><div style="font-size:1.65rem;color:{c};font-family:\'Bebas Neue\';">{val}</div><div style="color:#444;font-size:0.63rem;margin-top:0.2rem;">{lbl}</div></div>', unsafe_allow_html=True)
+        st.markdown('<div class="sec-title">📊 DATA INSIGHTS</div>', unsafe_allow_html=True)
+        si1, si2, si3, si4, si5 = st.columns(5)
+        for col, (val, lbl, c) in zip([si1, si2, si3, si4, si5], [
+            (len(df), "Total Players", "#e03a3e"),
+            (df['Squad'].nunique(), "Teams", "white"),
+            (df['Pos_primary'].nunique(), "Positions", "#f39c12"),
+            (int(df['Gls'].sum()), "Total Goals", "#2ecc71"),
+            (f"{df['Age_num'].mean():.1f}", "Avg Age", "#4a90e2"),
+        ]):
+            with col:
+                st.markdown(f'<div class="glass-card" style="text-align:center;padding:0.9rem;"><div style="font-size:1.65rem;color:{c};font-family:\'Bebas Neue\';">{val}</div><div style="color:#444;font-size:0.63rem;margin-top:0.2rem;">{lbl}</div></div>', unsafe_allow_html=True)
 
-    st.markdown("<br>", unsafe_allow_html=True)
-    if len(df)>1:
-        ci1,ci2 = st.columns(2)
-        with ci1:
-            pos_c = df['Pos_primary'].value_counts()
-            fig_p = go.Figure(go.Pie(labels=pos_c.index,values=pos_c.values,hole=0.48,
-                marker_colors=['#e03a3e','#f5a623','#4a90e2','#2ecc71','#9b59b6'],textfont=dict(color='white')))
-            fig_p.update_layout(paper_bgcolor='rgba(0,0,0,0)',font=dict(color='#d8d8d8',family='Inter'),
-                title=tl('Position Distribution'),legend=dict(bgcolor='rgba(12,12,12,0.85)',font=dict(color='#d8d8d8')),height=320)
-            st.plotly_chart(fig_p, use_container_width=True)
-        with ci2:
-            fig_a = go.Figure(go.Histogram(x=df['Age_num'],nbinsx=15,marker_color='#e03a3e',opacity=0.75))
-            fig_a.update_layout(paper_bgcolor='rgba(0,0,0,0)',plot_bgcolor='rgba(8,8,8,0.55)',
-                font=dict(color='#d8d8d8',family='Inter'),title=tl('Age Distribution'),
-                xaxis=dict(title='Age',gridcolor='rgba(255,255,255,0.04)'),
-                yaxis=dict(title='Count',gridcolor='rgba(255,255,255,0.04)'),height=320)
-            st.plotly_chart(fig_a, use_container_width=True)
+        st.markdown("<br>", unsafe_allow_html=True)
+        
+        if len(df) > 1:
+            ci1, ci2 = st.columns(2)
+            with ci1:
+                pos_c = df['Pos_primary'].value_counts()
+                fig_p = go.Figure(go.Pie(
+                    labels=pos_c.index,
+                    values=pos_c.values,
+                    hole=0.48,
+                    marker_colors=['#e03a3e', '#f5a623', '#4a90e2', '#2ecc71', '#9b59b6'],
+                    textfont=dict(color='white')
+                ))
+                fig_p.update_layout(
+                    paper_bgcolor='rgba(0,0,0,0)',
+                    font=dict(color='#d8d8d8', family='Inter'),
+                    title=dict(
+                        text='Position Distribution',
+                        font=dict(color='white', family='Bebas Neue', size=22)
+                    ),
+                    legend=dict(
+                        bgcolor='rgba(12,12,12,0.85)',
+                        font=dict(color='#d8d8d8')
+                    ),
+                    height=320
+                )
+                st.plotly_chart(fig_p, use_container_width=True)
+            
+            with ci2:
+                fig_a = go.Figure(go.Histogram(
+                    x=df['Age_num'],
+                    nbinsx=15,
+                    marker_color='#e03a3e',
+                    opacity=0.75
+                ))
+                fig_a.update_layout(
+                    paper_bgcolor='rgba(0,0,0,0)',
+                    plot_bgcolor='rgba(8,8,8,0.55)',
+                    font=dict(color='#d8d8d8', family='Inter'),
+                    title=dict(
+                        text='Age Distribution',
+                        font=dict(color='white', family='Bebas Neue', size=22)
+                    ),
+                    xaxis=dict(
+                        title='Age',
+                        gridcolor='rgba(255,255,255,0.04)'
+                    ),
+                    yaxis=dict(
+                        title='Count',
+                        gridcolor='rgba(255,255,255,0.04)'
+                    ),
+                    height=320
+                )
+                st.plotly_chart(fig_a, use_container_width=True)
 
-    st.markdown("---")
-    d1,d2,d3,_ = st.columns([1,1,1,3])
-    with d1:
-        st.download_button("📥 Full Dataset",df.to_csv(index=False).encode('utf-8'),"brentford_scouting_full.csv","text/csv",use_container_width=True)
-    with d2:
-        st.download_button("📥 Top 50",df.head(50).to_csv(index=False).encode('utf-8'),"brentford_top50.csv","text/csv",use_container_width=True)
-    with d3:
-        st.download_button("📥 Top 10",df.head(10).to_csv(index=False).encode('utf-8'),"brentford_top10.csv","text/csv",use_container_width=True)
-
-
-# ─── FOOTER ──────────────────────────────────────────────────────────────────
-st.markdown("""
-<div class="footer">
-  <div style="display:flex;justify-content:center;gap:2rem;margin-bottom:0.9rem;flex-wrap:wrap;">
-    <span>🐝 BRENTFORD FC SCOUTING SYSTEM</span>
-    <span style="color:#2a2a2a;">•</span>
-    <span>⚽ SEASON 2025–26</span>
-    <span style="color:#2a2a2a;">•</span>
-    <span>📊 FBREF + TRANSFERMARKT</span>
-  </div>
-  <div style="display:flex;justify-content:center;gap:1.5rem;margin-bottom:0.6rem;">
-    <a href="https://www.linkedin.com/in/goda-emad/" target="_blank">🔗 LinkedIn</a>
-    <a href="https://github.com/Goda-Emad/brentford-scouting" target="_blank">🐙 GitHub</a>
-    <span style="color:#2a2a2a;">📞 +20 112 624 2932</span>
-  </div>
-  <div style="color:#222;margin-top:0.4rem;">Developed by Goda Emad © 2026</div>
-</div>""", unsafe_allow_html=True)
+        st.markdown("---")
+        d1, d2, d3, _ = st.columns([1, 1, 1, 3])
+        with d1:
+            st.download_button(
+                "📥 Full Dataset",
+                df.to_csv(index=False).encode('utf-8'),
+                "brentford_scouting_full.csv",
+                "text/csv",
+                use_container_width=True
+            )
+        with d2:
+            st.download_button(
+                "📥 Top 50",
+                df.head(50).to_csv(index=False).encode('utf-8'),
+                "brentford_top50.csv",
+                "text/csv",
+                use_container_width=True
+            )
+        with d3:
+            st.download_button(
+                "📥 Top 10",
+                df.head(10).to_csv(index=False).encode('utf-8'),
+                "brentford_top10.csv",
+                "text/csv",
+                use_container_width=True
+            )
