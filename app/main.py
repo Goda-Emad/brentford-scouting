@@ -619,14 +619,19 @@ with tab1:
 with tab2:
     st.markdown('<div class="sec-title">📊 VALUE ANALYSIS</div>', unsafe_allow_html=True)
     
-    if len(df) > 1:
+    # ✅ التحقق من وجود df قبل استخدامه
+    if 'df' not in dir():
+        st.error("❌ No data loaded. Please check the data source.")
+    elif len(df) <= 1:
+        st.info("📊 Need more data for analysis charts")
+    else:
         # إحصائيات سريعة
         col1, col2, col3, col4 = st.columns(4)
         
         with col1:
             st.markdown(f"""
             <div class="glass-card" style="text-align:center; padding:1rem;">
-                <div style="font-size:1.5rem; color:var(--red); font-family:'Bebas Neue';">{df['Final_Score'].max():.0f}</div>
+                <div style="font-size:1.5rem; color:var(--primary); font-family:'Bebas Neue';">{df['Final_Score'].max():.0f}</div>
                 <div style="color:#888; font-size:0.7rem;">TOP VALUE SCORE</div>
             </div>
             """, unsafe_allow_html=True)
@@ -925,9 +930,6 @@ with tab2:
                 </div>
             </div>
             """, unsafe_allow_html=True)
-    
-    else:
-        st.info("📊 Need more data for analysis charts")
 
 # ══════ TAB 3 ════════════════════════════════════════════════════════════════
 with tab3:
