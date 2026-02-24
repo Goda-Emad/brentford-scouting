@@ -569,7 +569,37 @@ hr {
     .header-wrap { flex-direction: column; text-align: center; }
     .social-links { justify-content: center; }
 }
-</style>""", unsafe_allow_html=True)
+</style>""", unsafe_allow_html=True) 
+# تأكد من وجود uploaded من السايدبار
+if 'uploaded' not in locals():
+    uploaded = None
+
+# تحميل البيانات
+df_base = load_data(uploaded)
+
+# إنشاء df (إذا مش موجود)
+if 'df' not in locals():
+    df = df_base.copy()
+    # طبق الفلاتر الأساسية إذا موجودة
+    if 'sel_league' in locals() and sel_league:
+        df = df[df['League'].isin(sel_league)]
+    if 'sel_pos' in locals() and sel_pos:
+        df = df[df['Pos_primary'].isin(sel_pos)]
+    if 'age_range' in locals():
+        df = df[(df['Age_num'] >= age_range[0]) & (df['Age_num'] <= age_range[1])]
+    if 'budget' in locals():
+        df = df[df['Market_Value_M'] <= budget]
+    if 'min_90s' in locals():
+        df = df[df['90s'] >= min_90s]
+    df = df.sort_values('Final_Score', ascending=False).reset_index(drop=True)
+
+# ============================================
+# عرض KPIs
+# ============================================
+if len(df) > 0:
+    k1, k2, k3, k4, k5 = st.columns(5)
+    # ... كود KPIs ...
+
 # ─── TABS ────────────────────────────────────────────────────────────────────
 # TABS - إنشاء التبويبات
 # ============================================
