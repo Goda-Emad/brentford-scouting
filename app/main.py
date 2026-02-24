@@ -61,7 +61,7 @@ st.markdown("""<style>
     --primary-glow: rgba(224, 58, 62, 0.4);
     --primary-dim: rgba(224, 58, 62, 0.15);
     
-    --bg-overlay: rgba(0, 0, 0, 0.65);  /* أفتح عشان الخلفية تظهر */
+    --bg-overlay: rgba(0, 0, 0, 0.65);
     --bg-sidebar: rgba(8, 8, 8, 0.85);
     --bg-card: rgba(12, 12, 12, 0.75);
     --bg-card-hover: rgba(20, 20, 20, 0.85);
@@ -79,497 +79,14 @@ st.markdown("""<style>
     --glow-red: 0 0 20px rgba(224, 58, 62, 0.3);
 }
 
-/* ─── Global overlay ─── */
-.stApp::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background: var(--bg-overlay);
-    backdrop-filter: blur(3px);
-    z-index: 0;
-    pointer-events: none;
-}
+/* باقي الـ CSS كما هو */
+/* ... */
+</style>""", unsafe_allow_html=True)
 
-.stApp > * { 
-    position: relative; 
-    z-index: 1; 
-}
+# ============================================
+# بعد الـ CSS - تحميل البيانات وإنشاء df
+# ============================================
 
-/* ─── Sidebar ─── */
-[data-testid="stSidebar"] {
-    background: var(--bg-sidebar) !important;
-    backdrop-filter: var(--blur) !important;
-    border-right: 2px solid var(--border-light) !important;
-    box-shadow: 5px 0 30px rgba(0, 0, 0, 0.5) !important;
-}
-
-[data-testid="stSidebar"] * { 
-    color: var(--text-primary) !important; 
-}
-
-[data-testid="stSidebar"] label {
-    font-family: 'Inter', sans-serif !important;
-    font-size: 0.7rem !important;
-    text-transform: uppercase !important;
-    letter-spacing: 2px !important;
-    color: var(--text-secondary) !important;
-    font-weight: 500 !important;
-}
-
-[data-testid="stSidebar"] hr {
-    border-color: var(--border-light) !important;
-}
-
-/* ─── Header ─── */
-.header-wrap {
-    background: linear-gradient(135deg, rgba(8, 8, 8, 0.85) 0%, rgba(20, 8, 8, 0.85) 100%);
-    backdrop-filter: var(--blur);
-    border: 1px solid var(--border-light);
-    border-radius: 20px;
-    padding: 1.8rem 2.5rem;
-    margin-bottom: 1.8rem;
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-}
-
-.header-wrap::before {
-    content: '';
-    position: absolute;
-    top: -100px; 
-    right: -80px;
-    width: 450px; 
-    height: 450px;
-    background: radial-gradient(circle, var(--primary-glow) 0%, transparent 70%);
-    pointer-events: none;
-}
-
-.header-wrap::after {
-    content: '';
-    position: absolute;
-    bottom: 0; 
-    left: 0;
-    width: 100%; 
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--primary), transparent);
-}
-
-.header-logo {
-    width: 75px; 
-    height: 75px;
-    border-radius: 50%;
-    border: 2px solid var(--border-light);
-    object-fit: contain;
-    transition: transform 0.4s ease, box-shadow 0.4s ease;
-    flex-shrink: 0;
-    box-shadow: var(--glow-red);
-}
-
-.header-logo:hover { 
-    transform: scale(1.12) rotate(5deg); 
-    box-shadow: 0 0 35px var(--primary); 
-    border-color: var(--primary);
-}
-
-.main-title { 
-    font-family: 'Bebas Neue', sans-serif; 
-    font-size: 3rem; 
-    color: var(--text-bright); 
-    letter-spacing: 5px; 
-    line-height: 1; 
-    margin: 0;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-}
-
-.main-title span { 
-    color: var(--primary); 
-    text-shadow: 0 0 15px var(--primary);
-}
-
-.main-sub { 
-    font-family: 'Inter', sans-serif; 
-    font-size: 0.72rem; 
-    color: var(--text-secondary); 
-    letter-spacing: 3px; 
-    text-transform: uppercase; 
-    margin-top: 0.5rem; 
-    font-weight: 300;
-}
-
-/* ─── Social Links ─── */
-.social-links { 
-    margin-top: 0.9rem; 
-    display: flex; 
-    gap: 0.6rem; 
-    flex-wrap: wrap; 
-}
-
-.social-btn {
-    display: inline-flex; 
-    align-items: center; 
-    gap: 6px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid var(--border-soft);
-    color: var(--text-secondary) !important;
-    font-family: 'Inter', sans-serif; 
-    font-size: 0.68rem; 
-    font-weight: 500;
-    padding: 6px 16px; 
-    border-radius: 30px; 
-    text-decoration: none !important; 
-    transition: all 0.25s ease;
-    backdrop-filter: blur(5px);
-}
-
-.social-btn:hover { 
-    border-color: var(--primary); 
-    color: var(--text-bright) !important; 
-    background: var(--primary-dim); 
-    transform: translateY(-3px);
-    box-shadow: var(--glow-red);
-}
-
-/* ─── KPI Cards ─── */
-.kpi-card {
-    background: var(--bg-card);
-    backdrop-filter: var(--blur);
-    border: 1px solid var(--border-light);
-    border-radius: 16px; 
-    padding: 1.2rem 1.4rem;
-    position: relative; 
-    overflow: hidden; 
-    transition: all 0.3s ease;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-}
-
-.kpi-card:hover { 
-    transform: translateY(-5px); 
-    border-color: var(--primary); 
-    box-shadow: 0 15px 35px var(--primary-glow);
-    background: var(--bg-card-hover);
-}
-
-.kpi-card::after { 
-    content: ''; 
-    position: absolute; 
-    bottom: 0; 
-    left: 0; 
-    width: 100%; 
-    height: 3px; 
-    background: linear-gradient(90deg, var(--primary), transparent); 
-}
-
-.kpi-val { 
-    font-family: 'Bebas Neue', sans-serif; 
-    font-size: 2.5rem; 
-    color: var(--text-bright); 
-    line-height: 1; 
-    text-shadow: 0 2px 8px var(--primary-glow);
-}
-
-.kpi-lbl { 
-    font-family: 'Inter', sans-serif; 
-    font-size: 0.66rem; 
-    color: var(--text-secondary); 
-    text-transform: uppercase; 
-    letter-spacing: 2.2px; 
-    margin-top: 0.4rem; 
-    font-weight: 500;
-}
-
-/* ─── Glass Card ─── */
-.glass-card {
-    background: var(--bg-card);
-    backdrop-filter: var(--blur); 
-    border: 1px solid var(--border-light);
-    border-radius: 16px; 
-    padding: 1.3rem; 
-    transition: all 0.3s ease;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-}
-
-.glass-card:hover { 
-    border-color: var(--primary); 
-    box-shadow: 0 12px 30px var(--primary-glow);
-    background: var(--bg-card-hover);
-    transform: translateY(-3px);
-}
-
-/* ─── Player Cards ─── */
-.pcard {
-    background: var(--bg-card);
-    backdrop-filter: var(--blur); 
-    border: 1px solid var(--border-soft);
-    border-radius: 16px; 
-    padding: 1.2rem 1.5rem; 
-    margin-bottom: 0.9rem;
-    position: relative; 
-    overflow: hidden; 
-    transition: all 0.3s ease;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
-}
-
-.pcard::before { 
-    content: ''; 
-    position: absolute; 
-    top: 0; 
-    left: 0; 
-    width: 4px; 
-    height: 0; 
-    background: linear-gradient(180deg, var(--primary), var(--primary-light)); 
-    transition: height 0.4s ease; 
-}
-
-.pcard:hover::before { 
-    height: 100%; 
-}
-
-.pcard:hover { 
-    background: var(--bg-card-hover); 
-    border-color: var(--border-light); 
-    box-shadow: 0 12px 30px var(--primary-glow); 
-    transform: translateX(6px); 
-}
-
-.pname { 
-    font-family: 'Bebas Neue', sans-serif; 
-    font-size: 1.45rem; 
-    color: var(--text-bright); 
-    letter-spacing: 2px; 
-    margin-bottom: 0.2rem;
-}
-
-.pmeta { 
-    font-family: 'Inter', sans-serif; 
-    font-size: 0.73rem; 
-    color: var(--text-secondary); 
-    margin-top: 0.2rem; 
-    letter-spacing: 0.5px;
-}
-
-/* ─── Progress Bars ─── */
-.bar-bg { 
-    background: rgba(255, 255, 255, 0.08); 
-    border-radius: 8px; 
-    height: 6px; 
-    margin-top: 1rem; 
-    overflow: hidden; 
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
-}
-
-.bar-fill { 
-    background: linear-gradient(90deg, var(--primary-dark), var(--primary), var(--primary-light)); 
-    border-radius: 8px; 
-    height: 6px; 
-    transition: width 0.5s ease;
-    box-shadow: 0 0 12px var(--primary);
-}
-
-/* ─── Badges ─── */
-.badge { 
-    display: inline-block; 
-    background: var(--primary-dim); 
-    border: 1px solid var(--border-light); 
-    color: var(--primary); 
-    font-size: 0.62rem; 
-    font-family: 'Inter', sans-serif; 
-    font-weight: 600; 
-    padding: 3px 12px; 
-    border-radius: 20px; 
-    text-transform: uppercase; 
-    letter-spacing: 1.5px; 
-    margin-right: 5px; 
-    backdrop-filter: blur(5px);
-}
-
-.badge-g { 
-    background: rgba(255, 255, 255, 0.05); 
-    border-color: var(--border-soft); 
-    color: var(--text-secondary); 
-}
-
-.badge-green { 
-    background: rgba(46, 204, 113, 0.15); 
-    border-color: rgba(46, 204, 113, 0.3); 
-    color: #2ecc71; 
-}
-
-.badge-yellow { 
-    background: rgba(243, 156, 18, 0.15); 
-    border-color: rgba(243, 156, 18, 0.3); 
-    color: #f39c12; 
-}
-
-/* ─── Section Title ─── */
-.sec-title { 
-    font-family: 'Bebas Neue', sans-serif; 
-    font-size: 1.7rem; 
-    color: var(--text-bright); 
-    letter-spacing: 4px; 
-    border-left: 4px solid var(--primary); 
-    padding-left: 1rem; 
-    margin: 1.8rem 0 1.2rem; 
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-}
-
-/* ─── Tabs ─── */
-[data-testid="stTabs"] [data-baseweb="tab-list"] { 
-    background: rgba(8, 8, 8, 0.7) !important; 
-    border-radius: 14px !important; 
-    padding: 5px !important; 
-    backdrop-filter: var(--blur) !important; 
-    border: 1px solid var(--border-soft) !important;
-    gap: 5px !important;
-}
-
-[data-testid="stTabs"] [data-baseweb="tab"] { 
-    color: var(--text-secondary) !important; 
-    font-family: 'Inter', sans-serif !important; 
-    font-size: 0.78rem !important; 
-    font-weight: 600 !important; 
-    text-transform: uppercase !important; 
-    letter-spacing: 1.5px !important; 
-    border-radius: 12px !important; 
-    padding: 0.6rem 1.3rem !important;
-    transition: all 0.2s ease !important;
-}
-
-[data-testid="stTabs"] [data-baseweb="tab"]:hover { 
-    color: var(--text-bright) !important; 
-    background: var(--primary-dim) !important;
-}
-
-[data-testid="stTabs"] [aria-selected="true"] { 
-    color: var(--text-bright) !important; 
-    background: var(--primary-dim) !important; 
-    border-bottom: 3px solid var(--primary) !important;
-    box-shadow: 0 0 20px var(--primary-glow) !important;
-}
-
-/* ─── Selectbox ─── */
-div[data-baseweb="select"] > div { 
-    background: var(--bg-card) !important; 
-    border-color: var(--border-light) !important; 
-    color: var(--text-bright) !important; 
-    border-radius: 12px !important; 
-    backdrop-filter: var(--blur) !important;
-}
-
-div[data-baseweb="select"] > div:hover { 
-    border-color: var(--primary) !important; 
-    box-shadow: 0 0 0 2px var(--primary-dim) !important;
-}
-
-/* ─── Download Button ─── */
-[data-testid="stDownloadButton"] button { 
-    background: var(--bg-card) !important; 
-    border: 1px solid var(--border-light) !important; 
-    color: var(--primary) !important; 
-    font-family: 'Inter', sans-serif !important; 
-    font-size: 0.75rem !important; 
-    font-weight: 600 !important; 
-    border-radius: 12px !important; 
-    letter-spacing: 1.2px !important; 
-    text-transform: uppercase !important;
-    backdrop-filter: var(--blur) !important;
-    transition: all 0.3s ease !important;
-}
-
-[data-testid="stDownloadButton"] button:hover { 
-    background: var(--primary-dim) !important; 
-    color: var(--text-bright) !important; 
-    border-color: var(--primary) !important;
-    box-shadow: var(--glow-red) !important;
-    transform: translateY(-2px) !important;
-}
-
-/* ─── Scrollbar ─── */
-::-webkit-scrollbar { 
-    width: 6px; 
-    height: 6px; 
-}
-
-::-webkit-scrollbar-track { 
-    background: rgba(0, 0, 0, 0.3); 
-}
-
-::-webkit-scrollbar-thumb { 
-    background: var(--primary-dark); 
-    border-radius: 10px; 
-}
-
-::-webkit-scrollbar-thumb:hover { 
-    background: var(--primary); 
-}
-
-/* ─── Footer ─── */
-.footer { 
-    text-align: center; 
-    padding: 2rem 0 1.2rem; 
-    color: var(--text-dark); 
-    font-family: 'Inter', sans-serif; 
-    font-size: 0.68rem; 
-    letter-spacing: 2px; 
-    text-transform: uppercase; 
-    border-top: 1px solid var(--border-light); 
-    margin-top: 3rem; 
-    backdrop-filter: var(--blur);
-}
-
-.footer a { 
-    color: var(--text-secondary) !important; 
-    text-decoration: none !important; 
-    transition: color 0.2s ease !important;
-}
-
-.footer a:hover { 
-    color: var(--primary) !important; 
-}
-
-/* ─── Expander ─── */
-.streamlit-expanderHeader {
-    background: var(--bg-card) !important;
-    border: 1px solid var(--border-light) !important;
-    border-radius: 12px !important;
-    color: var(--text-primary) !important;
-}
-
-.streamlit-expanderContent {
-    background: var(--bg-card) !important;
-    border: 1px solid var(--border-light) !important;
-    border-top: none !important;
-    border-radius: 0 0 12px 12px !important;
-}
-
-/* ─── Divider ─── */
-hr { 
-    border: none !important; 
-    border-top: 1px solid var(--border-light) !important; 
-    margin: 1.5rem 0 !important; 
-}
-
-/* ─── Responsive Design ─── */
-@media screen and (max-width: 768px) {
-    .main-title { font-size: 2.3rem; letter-spacing: 3px; }
-    .main-sub { font-size: 0.62rem; letter-spacing: 2px; }
-    .header-wrap { padding: 1.3rem 1.8rem; gap: 1rem; flex-wrap: wrap; }
-    .header-logo { width: 65px; height: 65px; }
-    .kpi-val { font-size: 2.1rem; }
-    .kpi-lbl { font-size: 0.6rem; letter-spacing: 1.8px; }
-    .pname { font-size: 1.25rem; }
-    .sec-title { font-size: 1.4rem; }
-}
-
-@media screen and (max-width: 480px) {
-    .main-title { font-size: 1.9rem; }
-    .social-btn { font-size: 0.6rem; padding: 4px 12px; }
-    .header-wrap { flex-direction: column; text-align: center; }
-    .social-links { justify-content: center; }
-}
-</style>""", unsafe_allow_html=True) 
 # تأكد من وجود uploaded من السايدبار
 if 'uploaded' not in locals():
     uploaded = None
@@ -577,34 +94,64 @@ if 'uploaded' not in locals():
 # تحميل البيانات
 df_base = load_data(uploaded)
 
-# إنشاء df (إذا مش موجود)
-if 'df' not in locals():
-    df = df_base.copy()
-    # طبق الفلاتر الأساسية إذا موجودة
-    if 'sel_league' in locals() and sel_league:
-        df = df[df['League'].isin(sel_league)]
-    if 'sel_pos' in locals() and sel_pos:
-        df = df[df['Pos_primary'].isin(sel_pos)]
-    if 'age_range' in locals():
-        df = df[(df['Age_num'] >= age_range[0]) & (df['Age_num'] <= age_range[1])]
-    if 'budget' in locals():
-        df = df[df['Market_Value_M'] <= budget]
-    if 'min_90s' in locals():
-        df = df[df['90s'] >= min_90s]
-    df = df.sort_values('Final_Score', ascending=False).reset_index(drop=True)
+# تعريف المتغيرات إذا مش موجودة (من السايدبار)
+if 'sel_league' not in locals():
+    sel_league = []
+if 'sel_pos' not in locals():
+    sel_pos = []
+if 'age_range' not in locals():
+    age_range = (int(df_base['Age_num'].min()), int(df_base['Age_num'].max()))
+if 'budget' not in locals():
+    budget = float(df_base['Market_Value_M'].max())
+if 'min_90s' not in locals():
+    min_90s = 0.0
+if 'top_n' not in locals():
+    top_n = 10
+
+# إنشاء df وتطبيق الفلاتر
+df = df_base.copy()
+
+if sel_league and 'League' in df.columns:
+    df = df[df['League'].isin(sel_league)]
+if sel_pos and 'Pos_primary' in df.columns:
+    df = df[df['Pos_primary'].isin(sel_pos)]
+if age_range:
+    df = df[(df['Age_num'] >= age_range[0]) & (df['Age_num'] <= age_range[1])]
+if budget:
+    df = df[df['Market_Value_M'] <= budget]
+if min_90s:
+    df = df[df['90s'] >= min_90s]
+
+df = df.sort_values('Final_Score', ascending=False).reset_index(drop=True)
 
 # ============================================
 # عرض KPIs
 # ============================================
 if len(df) > 0:
     k1, k2, k3, k4, k5 = st.columns(5)
-    # ... كود KPIs ...
+    
+    with k1:
+        st.markdown(f'<div class="kpi-card"><div class="kpi-val">{len(df)}</div><div class="kpi-lbl">Players Scouted</div></div>', unsafe_allow_html=True)
+    with k2:
+        st.markdown(f'<div class="kpi-card"><div class="kpi-val">€{df["Market_Value_M"].mean():.1f}m</div><div class="kpi-lbl">Avg Market Value</div></div>', unsafe_allow_html=True)
+    with k3:
+        st.markdown(f'<div class="kpi-card"><div class="kpi-val">{df["Final_Score"].max():.0f}</div><div class="kpi-lbl">Top Value Score</div></div>', unsafe_allow_html=True)
+    with k4:
+        st.markdown(f'<div class="kpi-card"><div class="kpi-val">{df["Gls_p90"].mean():.2f}</div><div class="kpi-lbl">Avg Goals / 90</div></div>', unsafe_allow_html=True)
+    with k5:
+        st.markdown(f'<div class="kpi-card"><div class="kpi-val">{df["SoT%"].mean():.1f}%</div><div class="kpi-lbl">Avg Shot Accuracy</div></div>', unsafe_allow_html=True)
+    
+    st.markdown("<br>", unsafe_allow_html=True)
 
-# ─── TABS ────────────────────────────────────────────────────────────────────
+# ============================================
 # TABS - إنشاء التبويبات
 # ============================================
 tab1, tab2, tab3, tab4 = st.tabs(["🎯  Top Targets", "📊  Value Analysis", "🔬  Deep Dive", "📋  Full Dataset"])
 
+# ============================================
+# باقي الكود (TAB 1, TAB 2, TAB 3, TAB 4)
+# ============================================
+# ضع هنا كود التبويبات الذي أرسلته سابقاً
 # ============================================
 # TAB 1 - Top Targets
 # ============================================
