@@ -50,330 +50,611 @@ def inject_background():
 inject_background()
 
 
-# ─── INLINE CSS ──────────────────────────────────────────────────────────────
+# ─── INLINE CSS - Brentford FC Professional Design ───────────────────────
 st.markdown("""<style>
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-    --red: #e03a3e;
-    --red-dim: rgba(224,58,62,0.18);
-    --border: rgba(224,58,62,0.25);
-    --text: #f0f0f0;
-    --muted: #888;
-    --blur: blur(18px);
+    /* Brentford Colors */
+    --brentford-red: #e03a3e;
+    --brentford-red-light: #ff5f5f;
+    --brentford-red-dark: #b71c1c;
+    --brentford-red-glow: rgba(224, 58, 62, 0.35);
+    --brentford-red-dim: rgba(224, 58, 62, 0.12);
+    
+    --brentford-black: #0a0a0a;
+    --brentford-black-light: #1a1a1a;
+    --brentford-black-lighter: #2a2a2a;
+    
+    --stadium-amber: #ffb347;
+    --stadium-gold: #c49a6c;
+    
+    /* Stadium Background */
+    --bg-overlay: linear-gradient(135deg, rgba(10, 10, 10, 0.75) 0%, rgba(30, 10, 10, 0.7) 100%);
+    --bg-sidebar: rgba(8, 8, 8, 0.92);
+    --bg-sidebar-hover: rgba(20, 8, 8, 0.95);
+    --bg-card: rgba(16, 16, 16, 0.85);
+    --bg-card-hover: rgba(26, 16, 16, 0.9);
+    
+    /* Text Colors */
+    --text-bright: #ffffff;
+    --text-primary: #f0f0f0;
+    --text-secondary: #cccccc;
+    --text-muted: #999999;
+    --text-dim: #666666;
+    
+    /* Borders & Effects */
+    --border-red: rgba(224, 58, 62, 0.3);
+    --border-soft: rgba(255, 255, 255, 0.08);
+    --border-hard: rgba(224, 58, 62, 0.5);
+    
+    --blur: blur(12px);
+    --glow-red: 0 0 25px rgba(224, 58, 62, 0.3);
+    --glow-white: 0 0 20px rgba(255, 255, 255, 0.1);
 }
 
-/* ─── Global dark overlay فوق الخلفية ─── */
+/* ===== STADIUM BACKGROUND ===== */
+.stApp {
+    background: #0a0a0a !important;
+}
+
 .stApp::before {
     content: '';
     position: fixed;
-    inset: 0;
-    background: rgba(4,4,4,0.78);
-    z-index: 0;
-    pointer-events: none;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-image: url('https://images.unsplash.com/photo-1577223625816-7546f13df25d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.25;
+    filter: blur(3px) brightness(0.5);
+    z-index: -2;
+    animation: stadiumPulse 20s infinite alternate;
 }
-.stApp > * { position: relative; z-index: 1; }
 
-/* ─── Sidebar ─── */
-[data-testid="stSidebar"] {
-    background: rgba(6,6,6,0.92) !important;
-    backdrop-filter: var(--blur) !important;
-    border-right: 1px solid var(--border) !important;
+@keyframes stadiumPulse {
+    0% { opacity: 0.25; transform: scale(1); }
+    100% { opacity: 0.3; transform: scale(1.02); }
 }
-[data-testid="stSidebar"] * { color: var(--text) !important; }
+
+.stApp::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: var(--bg-overlay);
+    backdrop-filter: blur(2px);
+    z-index: -1;
+}
+
+.stApp > * { 
+    position: relative; 
+    z-index: 1; 
+}
+
+/* ===== SIDEBAR ===== */
+[data-testid="stSidebar"] {
+    background: var(--bg-sidebar) !important;
+    backdrop-filter: var(--blur) !important;
+    border-right: 2px solid var(--border-red) !important;
+    box-shadow: 8px 0 30px rgba(0, 0, 0, 0.6) !important;
+}
+
+[data-testid="stSidebar"]::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 2px;
+    height: 100%;
+    background: linear-gradient(180deg, transparent, var(--brentford-red), transparent);
+}
+
+[data-testid="stSidebar"] * { 
+    color: var(--text-primary) !important; 
+}
+
 [data-testid="stSidebar"] label {
     font-family: 'Inter', sans-serif !important;
-    font-size: 0.68rem !important;
+    font-size: 0.7rem !important;
     text-transform: uppercase !important;
-    letter-spacing: 1.8px !important;
-    color: var(--muted) !important;
+    letter-spacing: 2px !important;
+    color: var(--brentford-red) !important;
+    font-weight: 600 !important;
 }
 
-/* ─── Header ─── */
+[data-testid="stSidebar"] hr {
+    border-color: var(--border-red) !important;
+    margin: 1.2rem 0 !important;
+}
+
+/* Sidebar Title */
+[data-testid="stSidebar"] .sidebar-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    color: white;
+    letter-spacing: 3px;
+    margin-bottom: 1.2rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 2px solid var(--border-red);
+    position: relative;
+}
+
+[data-testid="stSidebar"] .sidebar-title::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 50px;
+    height: 2px;
+    background: var(--brentford-red);
+}
+
+/* ===== HEADER ===== */
 .header-wrap {
-    background: rgba(6,6,6,0.80);
+    background: linear-gradient(135deg, rgba(10, 10, 10, 0.85) 0%, rgba(30, 10, 10, 0.85) 100%);
     backdrop-filter: var(--blur);
-    border: 1px solid var(--border);
-    border-radius: 18px;
-    padding: 1.8rem 2.4rem;
-    margin-bottom: 1.8rem;
+    border: 1px solid var(--border-red);
+    border-radius: 20px;
+    padding: 1.8rem 2.5rem;
+    margin-bottom: 2rem;
     position: relative;
     overflow: hidden;
     display: flex;
     align-items: center;
     gap: 2rem;
-    box-shadow: 0 12px 40px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.04);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
 }
+
 .header-wrap::before {
     content: '';
     position: absolute;
-    top: -100px; right: -80px;
-    width: 420px; height: 420px;
-    background: radial-gradient(circle, rgba(224,58,62,0.15) 0%, transparent 70%);
+    top: -100px;
+    right: -80px;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, var(--brentford-red-glow) 0%, transparent 70%);
     pointer-events: none;
 }
+
 .header-wrap::after {
     content: '';
     position: absolute;
-    bottom: 0; left: 0;
-    width: 100%; height: 2px;
-    background: linear-gradient(90deg, transparent, var(--red), transparent);
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--brentford-red), var(--brentford-red-light), transparent);
 }
+
 .header-logo {
-    width: 72px; height: 72px;
+    width: 80px;
+    height: 80px;
     border-radius: 50%;
-    border: 2px solid var(--border);
+    border: 2px solid var(--border-red);
     object-fit: contain;
-    transition: transform 0.35s ease, box-shadow 0.35s ease;
-    flex-shrink: 0;
+    background: rgba(10, 10, 10, 0.5);
+    padding: 5px;
+    transition: all 0.4s ease;
+    box-shadow: var(--glow-red);
 }
-.header-logo:hover { transform: scale(1.12) rotate(6deg); box-shadow: 0 0 24px rgba(224,58,62,0.4); }
-.main-title { font-family:'Bebas Neue',sans-serif; font-size:2.9rem; color:white; letter-spacing:5px; line-height:1; margin:0; }
-.main-title span { color: var(--red); }
-.main-sub { font-family:'Inter',sans-serif; font-size:0.7rem; color:#666; letter-spacing:2.5px; text-transform:uppercase; margin-top:0.45rem; }
-.social-links { margin-top:0.9rem; display:flex; gap:0.55rem; flex-wrap:wrap; }
+
+.header-logo:hover {
+    transform: scale(1.1) rotate(5deg);
+    border-color: var(--brentford-red);
+    box-shadow: 0 0 35px var(--brentford-red);
+}
+
+.main-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3.2rem;
+    color: var(--text-bright);
+    letter-spacing: 5px;
+    line-height: 1;
+    margin: 0;
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
+}
+
+.main-title span {
+    color: var(--brentford-red);
+    text-shadow: 0 0 20px var(--brentford-red);
+}
+
+.main-sub {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-top: 0.5rem;
+    font-weight: 300;
+}
+
+/* Season Badge */
+.season-badge {
+    background: rgba(224, 58, 62, 0.15);
+    border: 1px solid var(--border-red);
+    border-radius: 30px;
+    padding: 0.4rem 1.2rem;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.9rem;
+    color: var(--brentford-red);
+    letter-spacing: 2px;
+}
+
+/* ===== SOCIAL LINKS ===== */
+.social-links {
+    margin-top: 0.9rem;
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+}
+
 .social-btn {
-    display:inline-flex; align-items:center; gap:5px;
-    background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1);
-    color:#aaa !important; font-family:'Inter',sans-serif; font-size:0.67rem; font-weight:500;
-    padding:5px 14px; border-radius:30px; text-decoration:none !important; transition:all 0.22s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-soft);
+    color: var(--text-secondary) !important;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 500;
+    padding: 5px 15px;
+    border-radius: 30px;
+    text-decoration: none !important;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
 }
-.social-btn:hover { border-color:var(--red); color:white !important; background:rgba(224,58,62,0.1); transform:translateY(-2px); }
 
-/* ─── KPI Cards ─── */
+.social-btn:hover {
+    border-color: var(--brentford-red);
+    color: var(--text-bright) !important;
+    background: var(--brentford-red-dim);
+    transform: translateY(-3px);
+    box-shadow: var(--glow-red);
+}
+
+/* ===== KPI CARDS ===== */
 .kpi-card {
-    background: rgba(10,10,10,0.88);
+    background: var(--bg-card);
     backdrop-filter: var(--blur);
-    border: 1px solid var(--border);
-    border-radius: 13px; padding: 1.15rem 1.35rem;
-    position: relative; overflow: hidden; transition: all 0.25s ease;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    border: 1px solid var(--border-red);
+    border-radius: 16px;
+    padding: 1.2rem 1.4rem;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
 }
-.kpi-card:hover { transform:translateY(-4px); border-color:var(--red); box-shadow:0 10px 28px rgba(224,58,62,0.2); }
-.kpi-card::after { content:''; position:absolute; bottom:0; left:0; width:100%; height:2px; background:linear-gradient(90deg,var(--red),transparent); }
-.kpi-val { font-family:'Bebas Neue',sans-serif; font-size:2.3rem; color:white; line-height:1; }
-.kpi-lbl { font-family:'Inter',sans-serif; font-size:0.63rem; color:var(--muted); text-transform:uppercase; letter-spacing:2px; margin-top:0.35rem; }
 
-/* ─── Glass Card ─── */
+.kpi-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--brentford-red);
+    box-shadow: 0 15px 35px var(--brentford-red-glow);
+    background: var(--bg-card-hover);
+}
+
+.kpi-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, var(--brentford-red), transparent);
+}
+
+.kpi-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.5rem;
+    color: var(--text-bright);
+    line-height: 1;
+    text-shadow: 0 2px 10px var(--brentford-red-glow);
+}
+
+.kpi-lbl {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.65rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 2.2px;
+    margin-top: 0.4rem;
+    font-weight: 500;
+}
+
+/* ===== GLASS CARD ===== */
 .glass-card {
-    background: rgba(10,10,10,0.85);
-    backdrop-filter: var(--blur); border: 1px solid var(--border);
-    border-radius: 13px; padding: 1.2rem; transition: all 0.25s ease;
+    background: var(--bg-card);
+    backdrop-filter: var(--blur);
+    border: 1px solid var(--border-red);
+    border-radius: 16px;
+    padding: 1.3rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
 }
-.glass-card:hover { border-color:rgba(224,58,62,0.5); box-shadow:0 8px 24px rgba(224,58,62,0.12); }
 
-/* ─── Player Cards ─── */
+.glass-card:hover {
+    border-color: var(--brentford-red);
+    box-shadow: 0 12px 30px var(--brentford-red-glow);
+    background: var(--bg-card-hover);
+    transform: translateY(-3px);
+}
+
+/* ===== PLAYER CARDS ===== */
 .pcard {
-    background: rgba(10,10,10,0.85);
-    backdrop-filter: var(--blur); border: 1px solid rgba(255,255,255,0.05);
-    border-radius: 13px; padding: 1.15rem 1.5rem; margin-bottom: 0.8rem;
-    position: relative; overflow: hidden; transition: all 0.25s ease;
+    background: var(--bg-card);
+    backdrop-filter: var(--blur);
+    border: 1px solid var(--border-soft);
+    border-radius: 16px;
+    padding: 1.2rem 1.5rem;
+    margin-bottom: 0.9rem;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
 }
-.pcard::before { content:''; position:absolute; top:0; left:0; width:3px; height:0; background:linear-gradient(180deg,var(--red),#ff7070); transition:height 0.3s ease; }
-.pcard:hover::before { height:100%; }
-.pcard:hover { background:rgba(18,18,18,0.90); border-color:rgba(224,58,62,0.35); box-shadow:0 8px 24px rgba(224,58,62,0.12); transform:translateX(5px); }
-.pname { font-family:'Bebas Neue',sans-serif; font-size:1.35rem; color:white; letter-spacing:1.5px; }
-.pmeta { font-family:'Inter',sans-serif; font-size:0.7rem; color:var(--muted); margin-top:0.2rem; }
-.bar-bg { background:rgba(255,255,255,0.07); border-radius:6px; height:5px; margin-top:0.9rem; overflow:hidden; }
-.bar-fill { background:linear-gradient(90deg,#8b1a1a,var(--red),#ff8080); border-radius:6px; height:5px; }
 
-/* ─── Badges ─── */
-.badge { display:inline-block; background:var(--red-dim); border:1px solid var(--border); color:var(--red); font-size:0.6rem; font-family:'Inter',sans-serif; font-weight:600; padding:2px 10px; border-radius:20px; text-transform:uppercase; letter-spacing:1.2px; margin-right:4px; }
-.badge-g { background:rgba(255,255,255,0.04); border-color:rgba(255,255,255,0.08); color:#666; }
-.badge-green { background:rgba(46,204,113,0.1); border-color:rgba(46,204,113,0.25); color:#2ecc71; }
-.badge-yellow { background:rgba(243,156,18,0.1); border-color:rgba(243,156,18,0.25); color:#f39c12; }
+.pcard::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 0;
+    background: linear-gradient(180deg, var(--brentford-red), var(--brentford-red-light));
+    transition: height 0.4s ease;
+}
 
-/* ─── Section Title ─── */
-.sec-title { font-family:'Bebas Neue',sans-serif; font-size:1.5rem; color:white; letter-spacing:3px; border-left:3px solid var(--red); padding-left:0.85rem; margin:1.6rem 0 1.1rem; }
+.pcard:hover::before {
+    height: 100%;
+}
 
-/* ─── Tabs ─── */
-[data-testid="stTabs"] [data-baseweb="tab-list"] { background:rgba(8,8,8,0.70) !important; border-radius:11px !important; padding:4px !important; backdrop-filter:var(--blur) !important; border:1px solid rgba(255,255,255,0.05) !important; }
-[data-testid="stTabs"] [data-baseweb="tab"] { color:#666 !important; font-family:'Inter',sans-serif !important; font-size:0.76rem !important; font-weight:600 !important; text-transform:uppercase !important; letter-spacing:1.2px !important; border-radius:9px !important; }
-[data-testid="stTabs"] [aria-selected="true"] { color:white !important; background:rgba(224,58,62,0.15) !important; border-bottom:2px solid var(--red) !important; }
+.pcard:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--border-red);
+    box-shadow: 0 12px 30px var(--brentford-red-glow);
+    transform: translateX(6px);
+}
 
-/* ─── Misc ─── */
-div[data-baseweb="select"]>div { background:rgba(12,12,12,0.92) !important; border-color:var(--border) !important; color:white !important; border-radius:9px !important; }
-[data-testid="stDownloadButton"] button { background:rgba(12,12,12,0.88) !important; border:1px solid var(--border) !important; color:var(--red) !important; font-family:'Inter',sans-serif !important; font-size:0.73rem !important; font-weight:600 !important; border-radius:9px !important; letter-spacing:1px !important; text-transform:uppercase !important; }
-[data-testid="stDownloadButton"] button:hover { background:rgba(224,58,62,0.1) !important; color:white !important; }
-::-webkit-scrollbar { width:5px; height:5px; }
-::-webkit-scrollbar-track { background:rgba(0,0,0,0.25); }
-::-webkit-scrollbar-thumb { background:#2a2a2a; border-radius:10px; }
-::-webkit-scrollbar-thumb:hover { background:var(--red); }
-.footer { text-align:center; padding:2rem 0 1.2rem; color:#3a3a3a; font-family:'Inter',sans-serif; font-size:0.66rem; letter-spacing:1.5px; text-transform:uppercase; border-top:1px solid rgba(255,255,255,0.04); margin-top:3rem; }
-.footer a { color:#444 !important; text-decoration:none !important; }
-.footer a:hover { color:var(--red) !important; }
-hr { border:none !important; border-top:1px solid rgba(255,255,255,0.05) !important; }
+.pname {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.45rem;
+    color: var(--text-bright);
+    letter-spacing: 2px;
+    margin-bottom: 0.2rem;
+}
+
+.pmeta {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+    margin-top: 0.2rem;
+}
+
+/* ===== PROGRESS BARS ===== */
+.bar-bg {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    height: 6px;
+    margin-top: 1rem;
+    overflow: hidden;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.bar-fill {
+    background: linear-gradient(90deg, var(--brentford-red-dark), var(--brentford-red), var(--brentford-red-light));
+    border-radius: 8px;
+    height: 6px;
+    transition: width 0.5s ease;
+    box-shadow: 0 0 12px var(--brentford-red);
+}
+
+/* ===== BADGES ===== */
+.badge {
+    display: inline-block;
+    background: var(--brentford-red-dim);
+    border: 1px solid var(--border-red);
+    color: var(--brentford-red);
+    font-size: 0.62rem;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-right: 5px;
+    backdrop-filter: blur(5px);
+}
+
+.badge-g {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--border-soft);
+    color: var(--text-secondary);
+}
+
+.badge-green {
+    background: rgba(46, 204, 113, 0.15);
+    border-color: rgba(46, 204, 113, 0.3);
+    color: #2ecc71;
+}
+
+.badge-yellow {
+    background: rgba(243, 156, 18, 0.15);
+    border-color: rgba(243, 156, 18, 0.3);
+    color: #f39c12;
+}
+
+/* ===== SECTION TITLE ===== */
+.sec-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.7rem;
+    color: var(--text-bright);
+    letter-spacing: 4px;
+    border-left: 4px solid var(--brentford-red);
+    padding-left: 1rem;
+    margin: 1.8rem 0 1.2rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* ===== TABS ===== */
+[data-testid="stTabs"] [data-baseweb="tab-list"] {
+    background: rgba(10, 10, 10, 0.6) !important;
+    border-radius: 14px !important;
+    padding: 5px !important;
+    backdrop-filter: var(--blur) !important;
+    border: 1px solid var(--border-soft) !important;
+    gap: 5px !important;
+}
+
+[data-testid="stTabs"] [data-baseweb="tab"] {
+    color: var(--text-secondary) !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.78rem !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1.5px !important;
+    border-radius: 12px !important;
+    padding: 0.6rem 1.3rem !important;
+    transition: all 0.2s ease !important;
+}
+
+[data-testid="stTabs"] [data-baseweb="tab"]:hover {
+    color: var(--text-bright) !important;
+    background: var(--brentford-red-dim) !important;
+}
+
+[data-testid="stTabs"] [aria-selected="true"] {
+    color: var(--text-bright) !important;
+    background: var(--brentford-red-dim) !important;
+    border-bottom: 3px solid var(--brentford-red) !important;
+    box-shadow: 0 0 20px var(--brentford-red-glow) !important;
+}
+
+/* ===== SELECTBOX ===== */
+div[data-baseweb="select"] > div {
+    background: var(--bg-card) !important;
+    border-color: var(--border-red) !important;
+    color: var(--text-bright) !important;
+    border-radius: 12px !important;
+    backdrop-filter: var(--blur) !important;
+}
+
+div[data-baseweb="select"] > div:hover {
+    border-color: var(--brentford-red) !important;
+    box-shadow: 0 0 0 2px var(--brentford-red-dim) !important;
+}
+
+/* ===== DOWNLOAD BUTTON ===== */
+[data-testid="stDownloadButton"] button {
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border-red) !important;
+    color: var(--brentford-red) !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+    border-radius: 12px !important;
+    letter-spacing: 1.2px !important;
+    text-transform: uppercase !important;
+    backdrop-filter: var(--blur) !important;
+    transition: all 0.3s ease !important;
+}
+
+[data-testid="stDownloadButton"] button:hover {
+    background: var(--brentford-red-dim) !important;
+    color: var(--text-bright) !important;
+    border-color: var(--brentford-red) !important;
+    box-shadow: var(--glow-red) !important;
+    transform: translateY(-2px) !important;
+}
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--brentford-red-dark);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--brentford-red);
+}
+
+/* ===== FOOTER ===== */
+.footer {
+    text-align: center;
+    padding: 2rem 0 1.2rem;
+    color: var(--text-dim);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.68rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border-top: 1px solid var(--border-red);
+    margin-top: 3rem;
+    backdrop-filter: var(--blur);
+}
+
+.footer a {
+    color: var(--text-secondary) !important;
+    text-decoration: none !important;
+    transition: color 0.2s ease !important;
+}
+
+.footer a:hover {
+    color: var(--brentford-red) !important;
+}
+
+/* ===== EXPANDER ===== */
+.streamlit-expanderHeader {
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border-red) !important;
+    border-radius: 12px !important;
+    color: var(--text-primary) !important;
+}
+
+.streamlit-expanderContent {
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border-red) !important;
+    border-top: none !important;
+    border-radius: 0 0 12px 12px !important;
+}
+
+/* ===== DIVIDER ===== */
+hr {
+    border: none !important;
+    border-top: 1px solid var(--border-red) !important;
+    opacity: 0.3 !important;
+    margin: 1.5rem 0 !important;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media screen and (max-width: 768px) {
+    .main-title { font-size: 2.3rem; letter-spacing: 3px; }
+    .main-sub { font-size: 0.65rem; letter-spacing: 2px; }
+    .header-wrap { padding: 1.3rem 1.8rem; gap: 1rem; flex-wrap: wrap; }
+    .header-logo { width: 65px; height: 65px; }
+    .kpi-val { font-size: 2.1rem; }
+    .kpi-lbl { font-size: 0.6rem; letter-spacing: 1.8px; }
+    .pname { font-size: 1.25rem; }
+    .sec-title { font-size: 1.4rem; }
+}
+
+@media screen and (max-width: 480px) {
+    .main-title { font-size: 1.9rem; }
+    .social-btn { font-size: 0.6rem; padding: 4px 12px; }
+    .header-wrap { flex-direction: column; text-align: center; }
+    .social-links { justify-content: center; }
+}
 </style>""", unsafe_allow_html=True)
-
-
-# ─── HELPERS ─────────────────────────────────────────────────────────────────
-def normalize_col(col):
-    col = pd.to_numeric(col, errors='coerce').fillna(0)
-    mn, mx = col.min(), col.max()
-    return col * 0 if mx == mn else (col - mn) / (mx - mn)
-
-def recalculate(df):
-    if df.empty: return df
-    df = df.copy()
-    for c in ['Gls_p90','SoT%','Ast','PrgP_proxy','Scoring_Context_Bonus','Market_Value_M','Age_num','90s','Gls']:
-        if c not in df.columns: df[c] = 0
-        df[c] = pd.to_numeric(df[c], errors='coerce').fillna(0)
-    df['norm_gls_p90'] = normalize_col(df['Gls_p90'])
-    df['norm_sot_pct']  = normalize_col(df['SoT%'])
-    df['norm_ast']      = normalize_col(df['Ast'])
-    df['norm_prgp']     = normalize_col(df['PrgP_proxy'])
-    df['norm_context']  = normalize_col(df['Scoring_Context_Bonus'])
-    df['Perf_Score'] = (
-        df['norm_gls_p90']*0.30 + df['norm_sot_pct']*0.18 +
-        df['norm_ast']*0.22 + df['norm_prgp']*0.18 + df['norm_context']*0.12
-    ).round(3)
-    df['Value_Score']      = (df['Perf_Score'] / df['Market_Value_M'].clip(lower=0.1) * 100).round(3)
-    df['Value_Score_norm'] = (normalize_col(df['Value_Score']) * 100).round(1)
-    df['Age_bonus']        = df['Age_num'].apply(lambda x: 1.2 if x<=23 else (1.1 if x<=25 else 1.0))
-    df['Final_Score']      = (df['Value_Score_norm'] * df['Age_bonus']).round(1)
-    return df
-
-
-# ─── HELPERS ─────────────────────────────────────────────────────────────────
-@st.cache_data
-def load_data(file=None):
-    """Load CSV data or fallback to default dataset, then recalculate metrics."""
-    try:
-        if file is not None:
-            return recalculate(pd.read_csv(file))
-        for path in ["data/processed/ligue1_final.csv","ligue1_final.csv"]:
-            if os.path.exists(path):
-                return recalculate(pd.read_csv(path))
-    except Exception as e:
-        st.error(f"❌ Error loading file: {e}")
-
-    # Fallback sample dataset
-    data = {
-        'Player':['Aubameyang','Ansu Fati','Wesley Said','Odsonne Edouard','Pavel Sulc','Elye Wahi','Adrien Thomasson','Gauthier Hein'],
-        'Nation':['GAB','ESP','FRA','FRA','CZE','FRA','FRA','FRA'],
-        'Pos_primary':['FW','MF','FW','FW','MF','FW','MF','MF'],
-        'Squad':['Marseille','Monaco','Lens','Lens','Brest','Lens','Lens','Auxerre'],
-        'Age_num':[36,23,28,27,24,22,32,29],
-        'League':['Ligue 1']*8,
-        '90s':[13.6,6.4,18.5,19.2,15.3,12.8,21.3,17.7],
-        'Gls':[6,8,10,9,10,8,2,6],
-        'Ast':[5,0,2,3,3,1,6,4],
-        'Gls_p90':[0.44,1.25,0.54,0.47,0.65,0.63,0.09,0.34],
-        'SoT%':[61.3,58.3,48.8,52.1,55.4,50.2,28.6,33.3],
-        'Market_Value_M':[4,6,8,12,12,12,5,5],
-        'Peak_Value_M':[40,20,8,20,40,40,5,5],
-        'PrgP_proxy':[0,0,2,3,4,1,6,2],
-        'Scoring_Context_Bonus':[0.077,0.153,0.083,0.094,0.088,0.083,0.123,0.039],
-        'Defense_Hardness':[0.59,0.41,0.69,0.69,0.52,0.69,0.69,0.35],
-    }
-    return recalculate(pd.DataFrame(data))
-
-
-def img_to_b64(path):
-    """Return base64 string of image, fallback to default logos if path missing."""
-    for p in [path, "assets/rentford_logo.jpg", "assets/brentford_logo.png"]:
-        if os.path.exists(p):
-            with open(p,"rb") as f:
-                return base64.b64encode(f.read()).decode()
-    return None
-
-
-def tl(text, size=20):
-    """Safe Plotly title dictionary."""
-    return dict(text=text, font=dict(color='white', family='Bebas Neue', size=size))
-
-
-LAYOUT = dict(
-    plot_bgcolor='rgba(8,8,8,0.55)',
-    paper_bgcolor='rgba(0,0,0,0)',
-    font=dict(color='#d8d8d8', family='Inter', size=11),
-    legend=dict(bgcolor='rgba(12,12,12,0.85)',
-                bordercolor='rgba(224,58,62,0.2)',
-                font=dict(color='#d8d8d8')),
-    margin=dict(t=50, b=30, l=10, r=10),
-)
-
-
-# ─── HEADER ──────────────────────────────────────────────────────────────────
-logo_b64 = img_to_b64("assets/rentford_logo.jpg")
-logo_html = f'<img class="header-logo" src="data:image/jpeg;base64,{logo_b64}"/>' if logo_b64 else '<div style="font-size:3.8rem;flex-shrink:0;">🐝</div>'
-
-st.markdown(f"""
-<div class="header-wrap">
-  {logo_html}
-  <div style="flex:1;">
-    <div class="main-title">BRENTFORD FC <span>//</span> SCOUTING INTEL</div>
-    <div class="main-sub">Undervalued Player Detection • Value Score Algorithm • Schedule-Adjusted Analytics</div>
-    <div class="social-links">
-      <a class="social-btn" href="https://www.linkedin.com/in/goda-emad/" target="_blank">🔗 LinkedIn</a>
-      <a class="social-btn" href="https://github.com/Goda-Emad/brentford-scouting" target="_blank">🐙 GitHub</a>
-      <a class="social-btn" href="tel:+201126242932">📞 +20 112 624 2932</a>
-    </div>
-  </div>
-  <div style="text-align:right;flex-shrink:0;">
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:0.85rem;color:#e03a3e;letter-spacing:2px;">SEASON 2025–26</div>
-    <div style="font-family:'Inter',sans-serif;font-size:0.62rem;color:#444;margin-top:0.3rem;">FBREF + TRANSFERMARKT</div>
-  </div>
-</div>""", unsafe_allow_html=True)
-# ─── SIDEBAR ─────────────────────────────────────────────────────────────────
-with st.sidebar:
-    st.markdown('<div style="font-family:\'Bebas Neue\',sans-serif;font-size:1.3rem;color:white;letter-spacing:2.5px;margin-bottom:1.2rem;padding-bottom:0.8rem;border-bottom:1px solid rgba(224,58,62,0.2);">⚙️ SCOUT FILTERS</div>', unsafe_allow_html=True)
-
-    # رفع خلفية جديدة من داخل التطبيق
-    with st.expander("🖼️ Change Background Image"):
-        bg_file = st.file_uploader("Upload new background (.jpg/.png)", type=["jpg","jpeg","png"], key="bg_upload")
-        if bg_file:
-            st.session_state["bg_b64"] = base64.b64encode(bg_file.read()).decode()
-            st.success("✅ Background updated! Scroll up to see it.")
-            st.rerun()
-
-    st.markdown("---")
-    uploaded   = st.file_uploader("📂 Add New League CSV", type=["csv"])
-    df_base    = load_data(uploaded)
-    leagues    = sorted(df_base['League'].dropna().unique()) if 'League' in df_base.columns else ['Ligue 1']
-    sel_league = st.multiselect("🌍 League", leagues, default=leagues)
-    positions  = sorted(df_base['Pos_primary'].dropna().unique())
-    sel_pos    = st.multiselect("📍 Position", positions, default=positions)
-    age_min, age_max = int(df_base['Age_num'].min()), int(df_base['Age_num'].max())
-    age_range  = st.slider("🎂 Age Range", age_min, age_max, (age_min, age_max))
-    max_val    = float(df_base['Market_Value_M'].max())
-    budget     = st.slider("💶 Max Market Value (€m)", 1.0, max(max_val,1.1), max_val)
-    max_90s    = float(df_base['90s'].max())
-    min_90s    = st.slider("⏱️ Min 90s Played", 0.0, max(max_90s,1.0), 0.0, step=0.5)
-    st.markdown("---")
-    top_n = st.selectbox("📊 Show Top N Targets", [10,15,20,30,50], index=2)
-    st.markdown("""<div style="margin-top:1.5rem;padding:1rem;background:rgba(224,58,62,0.06);border:1px solid rgba(224,58,62,0.16);border-radius:10px;">
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:0.88rem;color:#e03a3e;letter-spacing:1.5px;margin-bottom:0.6rem;">📐 VALUE SCORE FORMULA</div>
-    <div style="font-family:'Inter',sans-serif;font-size:0.63rem;color:#555;line-height:2.2;">
-    Goals/90 × 0.30<br>Shot Accuracy × 0.18<br>Assists × 0.22<br>Prog Passes × 0.18<br>Schedule Adj × 0.12<br>
-    <span style="color:#3a3a3a;margin-top:0.4rem;display:block;">÷ Market Value × Age Bonus</span></div></div>""", unsafe_allow_html=True)
-
-
-# ─── FILTER ──────────────────────────────────────────────────────────────────
-df = df_base.copy()
-if sel_league and 'League' in df.columns: df = df[df['League'].isin(sel_league)]
-if sel_pos:                               df = df[df['Pos_primary'].isin(sel_pos)]
-df = df[
-    (df['Age_num'] >= age_range[0]) & (df['Age_num'] <= age_range[1]) &
-    (df['Market_Value_M'] <= budget) & (df['90s'] >= min_90s)
-].sort_values('Final_Score', ascending=False).reset_index(drop=True)
-
-
-# ─── KPIs ────────────────────────────────────────────────────────────────────
-k1,k2,k3,k4,k5 = st.columns(5)
-kpis = [
-    (len(df),                                    "Players Scouted"),
-    (f"€{df['Market_Value_M'].mean():.1f}m" if len(df)>0 else "—", "Avg Market Value"),
-    (f"{df['Final_Score'].max():.0f}" if len(df)>0 else "—",       "Top Value Score"),
-    (f"{df['Gls_p90'].mean():.2f}" if len(df)>0 else "—",          "Avg Goals / 90"),
-    (f"{df['SoT%'].mean():.1f}%" if len(df)>0 else "—",            "Avg Shot Accuracy"),
-]
-for col,(val,lbl) in zip([k1,k2,k3,k4,k5],kpis):
-    with col:
-        st.markdown(f'<div class="kpi-card"><div class="kpi-val">{val}</div><div class="kpi-lbl">{lbl}</div></div>', unsafe_allow_html=True)
-
-st.markdown("<br>", unsafe_allow_html=True)
-
 # ─── TABS ────────────────────────────────────────────────────────────────────
 tab1,tab2,tab3,tab4 = st.tabs(["🎯  Top Targets","📊  Value Analysis","🔬  Deep Dive","📋  Full Dataset"])
 
