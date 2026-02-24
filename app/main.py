@@ -454,6 +454,72 @@ st.markdown("""<style>
 
 # ─── دالة load_data المعدلة (تستخدم المسار المباشر) ────────────────────────
 
+# ============================================
+# أولاً: تعريف دوال المساعدة (normalize_col و recalculate)
+# ============================================
+
+def normalize_col(col):
+    """تطبيع العمود ليكون بين 0 و 1"""
+    if col is None or len(col) == 0:
+        return pd.Series([])
+    
+    col = pd.to_numeric(col, errors='coerce').fillna(0)
+    mn, mx = col.min(), col.max()
+    
+    if mx == mn or mx == 0:
+        return pd.Series([0.5] * len(col))
+    
+    return (col - mn) / (mx - mn)
+
+def recalculate(df):
+    """إعادة حساب المؤشرات"""
+    if df.empty:
+        return df
+    
+    df = df.copy()
+    
+    # التأكد من وجود الأعمدة
+    required_cols = ['Gls_p90', 'SoT%', 'Ast', 'PrgP_proxy', 'Scoring_Context_Bonus', 'Market_Value_M', 'Age_num', '90s', 'Gls']
+    for col in required_cols:
+        if col not in df.columns:
+            df[col] = 0
+        df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
+    
+    # تطبيع المؤشرات
+    df['norm_gls_p90'] = normalize_col(df['Gls_p90'])
+    df['norm_sot_pct'] = normalize_col(df['SoT%'])
+    df['norm_ast'] = normalize_col(df['Ast'])
+    df['norm_prgp'] = normalize_col(df['PrgP_proxy'])
+    df['norm_context'] = normalize_col(df['Scoring_Context_Bonus'])
+    
+    # حساب الدرجات
+    df['Perf_Score'] = (
+        df['norm_gls_p90'] * 0.30 + 
+        df['norm_sot_pct'] * 0.18 + 
+        df['norm_ast'] * 0.22 + 
+        df['norm_prgp'] * 0.18 + 
+        df['norm_context'] * 0.12
+    ).round(3)
+    
+    df['Value_Score'] = df.apply(
+        lambda row: (row['Perf_Score'] / max(row['Market_Value_M'], 0.1) * 100) if row['Market_Value_M'] > 0 else 0, 
+        axis=1
+    ).round(3)
+    
+    df['Value_Score_norm'] = (normalize_col(df['Value_Score']) * 100).round(1)
+    
+    df['Age_bonus'] = df['Age_num'].apply(
+        lambda x: 1.2 if x <= 23 else (1.1 if x <= 25 else 1.0)
+    )
+    
+    df['Final_Score'] = (df['Value_Score_norm'] * df['Age_bonus']).round(1)
+    
+    return df
+
+# ============================================
+# ثانياً: دالة load_data (بعد recalculate)
+# ============================================
+
 @st.cache_data
 def load_data(file=None):
     """Load CSV data or fallback to default dataset, then recalculate metrics."""
@@ -462,7 +528,7 @@ def load_data(file=None):
             st.success(f"✅ تم تحميل الملف: {file.name}")
             return recalculate(pd.read_csv(file))
         
-        # ✅ البحث في المسارات المختلفة
+        # البحث في المسارات المختلفة
         possible_paths = [
             "data/processed/lique1_final.csv",
             "lique1_final.csv",
@@ -507,7 +573,7 @@ def load_data(file=None):
     return recalculate(pd.DataFrame(data))
 
 # ============================================
-# تحميل البيانات وإنشاء df
+# باقي الكود (تحميل البيانات، KPIs، التبويبات)
 # ============================================
 
 # تأكد من وجود uploaded من السايدبار
