@@ -587,9 +587,9 @@ st.markdown(f"""
   </div>
 </div>""", unsafe_allow_html=True)
 
-# ─── SIDEBAR - PROFESSIONAL DESIGN WITH DARK/LIGHT MODE ───────────────────
+# ─── SIDEBAR - FULL FEATURES ──────────────────────────────────────────────
 with st.sidebar:
-    # ===== تنسيق CSS مخصص للشريط الجانبي =====
+    # ===== CSS مخصص للشريط الجانبي =====
     st.markdown("""
     <style>
     /* تخصيص ارتفاع الشريط الجانبي والتمرير */
@@ -597,7 +597,7 @@ with st.sidebar:
         height: 100vh !important;
         overflow-y: auto !important;
         scrollbar-width: thin !important;
-        transition: background 0.3s ease !important;
+        transition: all 0.3s ease !important;
     }
     
     /* تخصيص شريط التمرير */
@@ -614,10 +614,6 @@ with st.sidebar:
         border-radius: 10px !important;
     }
     
-    [data-testid="stSidebar"]::-webkit-scrollbar-thumb:hover {
-        background: #ff5f5f !important;
-    }
-    
     /* تحسين مظهر العناصر */
     .sidebar-header {
         background: linear-gradient(135deg, #0f0f0f 0%, #1f0808 100%);
@@ -630,16 +626,6 @@ with st.sidebar:
     
     .light-mode .sidebar-header {
         background: linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%);
-        border-bottom: 2px solid #e03a3e;
-    }
-    
-    .sidebar-footer {
-        background: rgba(10,10,10,0.5);
-        padding: 1rem;
-        margin-top: 1rem;
-        border-top: 1px solid rgba(224,58,62,0.3);
-        text-align: center;
-        font-size: 0.7rem;
     }
     
     .filter-section {
@@ -653,7 +639,6 @@ with st.sidebar:
     
     .light-mode .filter-section {
         background: rgba(255,255,255,0.8);
-        border: 1px solid rgba(224,58,62,0.2);
     }
     
     .filter-title {
@@ -668,26 +653,24 @@ with st.sidebar:
     </style>
     """, unsafe_allow_html=True)
     
-    # ===== DARK/LIGHT MODE TOGGLE =====
-    col1, col2, col3 = st.columns([1, 1, 1])
-    with col2:
-        theme = st.radio(
-            "Theme",
-            ["🌙 Dark", "☀️ Light"],
-            horizontal=True,
-            label_visibility="collapsed",
-            key="theme_toggle"
-        )
+    # ===== ✅ DARK/LIGHT MODE TOGGLE =====
+    st.markdown("### 🎨 المظهر")
+    theme = st.radio(
+        "اختر الوضع",
+        ["🌙 Dark Mode", "☀️ Light Mode"],
+        horizontal=True,
+        label_visibility="collapsed",
+        key="theme_toggle"
+    )
     
     # تطبيق الثيم
-    if theme == "☀️ Light":
+    if theme == "☀️ Light Mode":
         st.markdown("""
         <style>
         :root {
             --bg-overlay: rgba(255, 255, 255, 0.92);
             --text-primary: #1a1a1a;
             --text-secondary: #4a4a4a;
-            --text-muted: #666666;
         }
         .stApp::before {
             background: rgba(255, 255, 255, 0.88) !important;
@@ -698,290 +681,207 @@ with st.sidebar:
         [data-testid="stSidebar"] * {
             color: #1a1a1a !important;
         }
-        .light-mode .filter-section {
-            background: rgba(255,255,255,0.9);
-        }
-        .stApp {
-            background: #f5f5f5 !important;
+        .kpi-card, .pcard, .glass-card {
+            background: rgba(255, 255, 255, 0.9) !important;
         }
         </style>
         """, unsafe_allow_html=True)
         st.markdown('<div class="light-mode">', unsafe_allow_html=True)
     
+    st.markdown("---")
+    
     # ===== HEADER SIDEBAR =====
     st.markdown("""
     <div class="sidebar-header">
-        <div style="font-family:'Bebas Neue',sans-serif; font-size:2rem; color:#e03a3e; letter-spacing:3px;">
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:2rem; color:#e03a3e;">
             BRENTFORD
         </div>
-        <div style="font-family:'Inter',sans-serif; font-size:0.7rem; color:#888; letter-spacing:2px;">
+        <div style="font-family:'Inter',sans-serif; font-size:0.7rem; color:#888;">
             SCOUTING SYSTEM
-        </div>
-        <div style="margin-top:0.5rem;">
-            <span style="background:#e03a3e; color:white; padding:2px 8px; border-radius:12px; font-size:0.6rem;">
-                ⚽ LIGUE 1 2025-26
-            </span>
         </div>
     </div>
     """, unsafe_allow_html=True)
     
     # ===== LANGUAGE SELECTOR =====
-    col1, col2, col3 = st.columns([1, 2, 1])
+    col1, col2 = st.columns([1, 3])
+    with col1:
+        st.markdown("🌐")
     with col2:
         lang = st.selectbox(
             "Language",
             ["🇬🇧 English", "🇸🇦 العربية"],
             label_visibility="collapsed",
-            key="lang_selector"
+            key="lang"
         )
     
-    # ===== TRANSLATIONS =====
+    # الترجمات
     if lang == "🇸🇦 العربية":
         texts = {
-            'filters': '🔍 فلتر البحث',
-            'bg_change': '🎨 تغيير الخلفية',
-            'upload_csv': '📁 رفع ملف CSV',
-            'league': '🏆 الدوري',
-            'position': '📍 المركز',
-            'age': '📅 العمر',
+            'upload': '📂 رفع ملف CSV',
+            'age': '🎂 العمر',
             'value': '💰 القيمة السوقية',
             'minutes': '⏱️ الدقائق',
-            'top': '📊 أفضل',
-            'formula': '⚙️ معادلة التقييم',
-            'players': 'لاعبين',
-            'apply': 'تطبيق الفلاتر',
+            'top': '📊 عرض',
+            'apply': 'تطبيق',
             'reset': 'إعادة تعيين',
-            'theme': 'المظهر',
-            'dark': 'داكن',
-            'light': 'فاتح'
+            'players': 'لاعب'
         }
     else:
         texts = {
-            'filters': '🔍 SEARCH FILTERS',
-            'bg_change': '🎨 Change Background',
-            'upload_csv': '📁 Upload CSV',
-            'league': '🏆 League',
-            'position': '📍 Position',
-            'age': '📅 Age',
+            'upload': '📂 Upload CSV',
+            'age': '🎂 Age',
             'value': '💰 Market Value',
             'minutes': '⏱️ Minutes',
-            'top': '📊 Top',
-            'formula': '⚙️ Formula',
-            'players': 'players',
-            'apply': 'Apply Filters',
+            'top': '📊 Show',
+            'apply': 'Apply',
             'reset': 'Reset',
-            'theme': 'Theme',
-            'dark': 'Dark',
-            'light': 'Light'
+            'players': 'players'
         }
     
-    # ===== MAIN FILTERS SECTION =====
-    st.markdown(f"""
-    <div class="filter-section">
-        <div class="filter-title">{texts['filters']}</div>
-    """, unsafe_allow_html=True)
+    st.markdown("---")
     
-    # رفع ملف CSV
+    # ===== رفع ملف CSV =====
+    st.markdown(f"### {texts['upload']}")
     uploaded = st.file_uploader(
-        texts['upload_csv'],
+        "ligue1_final.csv",
         type=["csv"],
-        help="CSV files only" if lang == "🇬🇧 English" else "ملفات CSV فقط"
-    )
-    
-    # ✅ تحميل البيانات (DF)
-    df_base = load_data(uploaded)
-    
-    # الفلاتر الرئيسية في عمودين
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        # League filter
-        leagues = sorted(df_base['League'].dropna().unique()) if 'League' in df_base.columns else ['Ligue 1']
-        sel_league = st.multiselect(
-            texts['league'],
-            leagues,
-            default=leagues,
-            key="league_filter"
-        )
-    
-    with col2:
-        # Position filter
-        positions = sorted(df_base['Pos_primary'].dropna().unique()) if 'Pos_primary' in df_base.columns else ['FW', 'MF', 'DF']
-        sel_pos = st.multiselect(
-            texts['position'],
-            positions,
-            default=positions,
-            key="pos_filter"
-        )
-    
-    st.markdown("</div>", unsafe_allow_html=True)
-    
-    # ===== AGE SECTION =====
-    st.markdown(f"""
-    <div class="filter-section">
-        <div class="filter-title">{texts['age']}</div>
-    """, unsafe_allow_html=True)
-    
-    age_min, age_max = int(df_base['Age_num'].min()), int(df_base['Age_num'].max())
-    age_range = st.slider(
-        f"**{texts['age']}**",
-        age_min,
-        age_max,
-        (age_min, age_max),
-        key="age_slider"
-    )
-    
-    # إظهار عدد اللاعبين في الفئة العمرية
-    age_count = len(df_base[(df_base['Age_num'] >= age_range[0]) & (df_base['Age_num'] <= age_range[1])])
-    st.caption(f"📊 {age_count} {texts['players']}")
-    
-    st.markdown("</div>", unsafe_allow_html=True)
-    
-    # ===== MARKET VALUE SECTION =====
-    st.markdown(f"""
-    <div class="filter-section">
-        <div class="filter-title">{texts['value']}</div>
-    """, unsafe_allow_html=True)
-    
-    max_val = float(df_base['Market_Value_M'].max())
-    budget = st.slider(
-        f"**{texts['value']}**",
-        1.0,
-        max(max_val, 1.1),
-        max_val,
-        key="value_slider",
-        format="€%.1fM"
-    )
-    
-    # إحصائيات سريعة للقيمة
-    avg_value = df_base['Market_Value_M'].mean()
-    st.caption(f"📊 Avg: €{avg_value:.1f}M" if lang == "🇬🇧 English" else f"📊 المتوسط: €{avg_value:.1f}م")
-    
-    st.markdown("</div>", unsafe_allow_html=True)
-    
-    # ===== MINUTES SECTION =====
-    st.markdown(f"""
-    <div class="filter-section">
-        <div class="filter-title">{texts['minutes']}</div>
-    """, unsafe_allow_html=True)
-    
-    max_90s = float(df_base['90s'].max())
-    min_90s = st.slider(
-        f"**{texts['minutes']}**",
-        0.0,
-        max(max_90s, 1.0),
-        0.0,
-        step=0.5,
-        key="mins_slider",
-        format="%.1f"
-    )
-    
-    st.markdown("</div>", unsafe_allow_html=True)
-    
-    # ===== TOP N SECTION =====
-    st.markdown(f"""
-    <div class="filter-section">
-        <div class="filter-title">{texts['top']}</div>
-    """, unsafe_allow_html=True)
-    
-    top_n = st.selectbox(
-        f"**{texts['top']}**",
-        [10, 15, 20, 30, 50, 100],
-        index=2,
-        key="top_n",
         label_visibility="collapsed"
     )
     
-    st.markdown("</div>", unsafe_allow_html=True)
+    # ✅ تحميل البيانات (DF)
+    if uploaded is not None:
+        df_base = load_data(uploaded)
+        st.success(f"✅ {len(df_base)} {texts['players']}")
+    else:
+        st.warning("⚠️ الرجاء رفع الملف")
+        st.stop()
     
-    # ===== FORMULA SECTION =====
-    st.markdown(f"""
-    <div class="filter-section">
-        <div class="filter-title">{texts['formula']}</div>
-        <div style="font-size:0.7rem; color:#aaa; line-height:1.8;">
-            • Goals/90 × 0.30<br>
-            • Shot Acc × 0.18<br>
-            • Assists × 0.22<br>
-            • Prog Passes × 0.18<br>
-            • Schedule × 0.12<br>
-            <div style="margin-top:0.5rem; padding-top:0.5rem; border-top:1px solid rgba(224,58,62,0.3);">
-                <span style="color:#e03a3e;">÷ Market Value × Age Bonus</span>
-            </div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown("---")
     
-    # ===== APPLY/RESET BUTTONS =====
+    # ===== AGE FILTER =====
+    st.markdown(f"### {texts['age']}")
+    age_min, age_max = 18, 35
+    age_range = st.slider(
+        "range",
+        age_min, age_max, (age_min, age_max),
+        step=1,
+        label_visibility="collapsed",
+        key="age"
+    )
+    
+    # عدد اللاعبين في الفئة
+    age_count = len(df_base[(df_base['Age_num'] >= age_range[0]) & (df_base['Age_num'] <= age_range[1])])
+    st.caption(f"📊 {age_count} {texts['players']}")
+    
+    st.markdown("---")
+    
+    # ===== VALUE FILTER =====
+    st.markdown(f"### {texts['value']}")
+    max_val = float(df_base['Market_Value_M'].max())
+    budget = st.slider(
+        "value",
+        1.0, max_val, max_val,
+        format="€%.1fM",
+        label_visibility="collapsed",
+        key="value"
+    )
+    
+    st.markdown("---")
+    
+    # ===== MINUTES FILTER =====
+    st.markdown(f"### {texts['minutes']}")
+    max_90s = float(df_base['90s'].max())
+    min_90s = st.slider(
+        "minutes",
+        0.0, max_90s, 0.0,
+        step=0.5,
+        format="%.1f",
+        label_visibility="collapsed",
+        key="mins"
+    )
+    
+    st.markdown("---")
+    
+    # ===== TOP N =====
+    st.markdown(f"### {texts['top']}")
+    top_n = st.selectbox(
+        "top",
+        [10, 15, 20, 30, 50, 100],
+        index=2,
+        label_visibility="collapsed",
+        key="top"
+    )
+    
+    st.markdown("---")
+    
+    # ===== ✅ APPLY/RESET BUTTONS =====
     col1, col2 = st.columns(2)
     with col1:
-        if st.button("✅ " + texts['apply'], use_container_width=True):
+        if st.button(f"✅ {texts['apply']}", use_container_width=True):
             st.rerun()
     with col2:
-        if st.button("🔄 " + texts['reset'], use_container_width=True):
+        if st.button(f"🔄 {texts['reset']}", use_container_width=True):
+            # مسح كل عناصر session_state
             for key in list(st.session_state.keys()):
-                del st.session_state[key]
+                if key not in ['theme_toggle', 'lang']:
+                    del st.session_state[key]
             st.rerun()
     
     # ===== FOOTER =====
+    st.markdown("---")
     st.markdown("""
-    <div class="sidebar-footer">
-        <div style="display:flex; justify-content:center; gap:1rem; margin-bottom:0.5rem;">
-            <span style="color:#e03a3e;">⚽</span>
-            <span style="color:#444;">•</span>
-            <span style="color:#e03a3e;">📊</span>
-        </div>
-        <div>FBref + Transfermarkt</div>
-        <div style="font-size:0.6rem; color:#444; margin-top:0.3rem;">
-            © 2026 Brentford FC
-        </div>
+    <div style="text-align:center; font-size:0.6rem; color:#444; padding:1rem 0;">
+        FBref + Transfermarkt<br>
+        © 2026 Brentford FC
     </div>
     """, unsafe_allow_html=True)
     
-    if theme == "☀️ Light":
+    if theme == "☀️ Light Mode":
         st.markdown('</div>', unsafe_allow_html=True)
 
 
 # ============================================
-# ✅ إنشاء DF وتطبيق الفلاتر (بعد السايدبار)
+# ✅ DF - تطبيق الفلاتر
 # ============================================
 
+# نسخ البيانات الأساسية
 df = df_base.copy()
 
-if sel_league and 'League' in df.columns:
-    df = df[df['League'].isin(sel_league)]
-if sel_pos and 'Pos_primary' in df.columns:
-    df = df[df['Pos_primary'].isin(sel_pos)]
-if age_range:
-    df = df[(df['Age_num'] >= age_range[0]) & (df['Age_num'] <= age_range[1])]
-if budget:
-    df = df[df['Market_Value_M'] <= budget]
-if min_90s:
-    df = df[df['90s'] >= min_90s]
+# فلتر العمر (18-35)
+df = df[(df['Age_num'] >= age_range[0]) & (df['Age_num'] <= age_range[1])]
 
+# فلتر القيمة السوقية
+df = df[df['Market_Value_M'] <= budget]
+
+# فلتر الدقائق
+df = df[df['90s'] >= min_90s]
+
+# ترتيب النتائج
 df = df.sort_values('Final_Score', ascending=False).reset_index(drop=True)
+
+
 # ============================================
-# عرض KPIs
+# ✅ KPIs
 # ============================================
 if len(df) > 0:
     k1, k2, k3, k4, k5 = st.columns(5)
     
     with k1:
-        st.markdown(f'<div class="kpi-card"><div class="kpi-val">{len(df)}</div><div class="kpi-lbl">Players Scouted</div></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="kpi-card"><div class="kpi-val">{len(df)}</div><div class="kpi-lbl">Players</div></div>', unsafe_allow_html=True)
     with k2:
-        st.markdown(f'<div class="kpi-card"><div class="kpi-val">€{df["Market_Value_M"].mean():.1f}m</div><div class="kpi-lbl">Avg Market Value</div></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="kpi-card"><div class="kpi-val">€{df["Market_Value_M"].mean():.1f}M</div><div class="kpi-lbl">Avg Value</div></div>', unsafe_allow_html=True)
     with k3:
-        st.markdown(f'<div class="kpi-card"><div class="kpi-val">{df["Final_Score"].max():.0f}</div><div class="kpi-lbl">Top Value Score</div></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="kpi-card"><div class="kpi-val">{df["Final_Score"].max():.0f}</div><div class="kpi-lbl">Top Score</div></div>', unsafe_allow_html=True)
     with k4:
-        st.markdown(f'<div class="kpi-card"><div class="kpi-val">{df["Gls_p90"].mean():.2f}</div><div class="kpi-lbl">Avg Goals / 90</div></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="kpi-card"><div class="kpi-val">{df["Gls_p90"].mean():.2f}</div><div class="kpi-lbl">Goals/90</div></div>', unsafe_allow_html=True)
     with k5:
-        st.markdown(f'<div class="kpi-card"><div class="kpi-val">{df["SoT%"].mean():.1f}%</div><div class="kpi-lbl">Avg Shot Accuracy</div></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="kpi-card"><div class="kpi-val">{df["SoT%"].mean():.1f}%</div><div class="kpi-lbl">Shot Acc</div></div>', unsafe_allow_html=True)
     
     st.markdown("<br>", unsafe_allow_html=True)
-else:
-    st.warning("⚠️ No players match the current filters.")
+
 
 # ============================================
-# TABS
+# ✅ TABS
 # ============================================
 tab1, tab2, tab3, tab4 = st.tabs(["🎯  Top Targets", "📊  Value Analysis", "🔬  Deep Dive", "📋  Full Dataset"])
 
