@@ -452,9 +452,7 @@ st.markdown("""<style>
 /* باقي الكود CSS كما هو في ملفك */
 </style>""", unsafe_allow_html=True)
 
-# ============================================
-# دالة load_data المعدلة (لحل مشكلة المسار)
-# ============================================
+# ─── دالة load_data المعدلة (تستخدم المسار المباشر) ────────────────────────
 
 @st.cache_data
 def load_data(file=None):
@@ -464,45 +462,47 @@ def load_data(file=None):
             st.success(f"✅ تم تحميل الملف: {file.name}")
             return recalculate(pd.read_csv(file))
         
-        # ✅ المسار الصحيح للملف (من الصورة)
-        csv_path = "data/processed/lique1_final.csv"
+        # ✅ البحث في المسارات المختلفة
+        possible_paths = [
+            "data/processed/lique1_final.csv",
+            "lique1_final.csv",
+            "./lique1_final.csv",
+            "app/lique1_final.csv",
+            "../lique1_final.csv"
+        ]
         
-        # التحقق من وجود الملف
-        if os.path.exists(csv_path):
-            st.success(f"✅ تم تحميل البيانات من {csv_path}")
-            return recalculate(pd.read_csv(csv_path))
-        else:
-            st.warning(f"⚠️ الملف غير موجود في المسار: {csv_path}")
-            
-            # عرض محتويات المجلد للمساعدة
-            if os.path.exists("data/processed/"):
-                files = os.listdir("data/processed/")
-                st.info(f"📁 الملفات الموجودة: {files}")
-            else:
-                st.error("❌ مجلد data/processed/ غير موجود")
-                
+        for path in possible_paths:
+            if os.path.exists(path):
+                st.success(f"✅ تم تحميل البيانات من {path}")
+                return recalculate(pd.read_csv(path))
+        
+        # إذا لم يتم العثور على الملف
+        st.warning("⚠️ لم يتم العثور على ملف البيانات، سيتم استخدام بيانات تجريبية")
+        
+        # عرض محتويات المجلد الحالي للمساعدة
+        current_dir = os.listdir(".")
+        st.info(f"📁 الملفات الموجودة في المجلد الحالي: {current_dir[:10]}")
+        
     except Exception as e:
         st.error(f"❌ خطأ في تحميل الملف: {e}")
 
-    # Fallback sample dataset (بيانات تجريبية)
-    st.info("📊 استخدام بيانات تجريبية")
+    # بيانات تجريبية
     data = {
-        'Player':['Aubameyang','Ansu Fati','Wesley Said','Odsonne Edouard','Pavel Sulc','Elye Wahi','Adrien Thomasson','Gauthier Hein'],
-        'Nation':['GAB','ESP','FRA','FRA','CZE','FRA','FRA','FRA'],
-        'Pos_primary':['FW','MF','FW','FW','MF','FW','MF','MF'],
-        'Squad':['Marseille','Monaco','Lens','Lens','Brest','Lens','Lens','Auxerre'],
-        'Age_num':[36,23,28,27,24,22,32,29],
-        'League':['Ligue 1']*8,
-        '90s':[13.6,6.4,18.5,19.2,15.3,12.8,21.3,17.7],
-        'Gls':[6,8,10,9,10,8,2,6],
-        'Ast':[5,0,2,3,3,1,6,4],
-        'Gls_p90':[0.44,1.25,0.54,0.47,0.65,0.63,0.09,0.34],
-        'SoT%':[61.3,58.3,48.8,52.1,55.4,50.2,28.6,33.3],
-        'Market_Value_M':[4,6,8,12,12,12,5,5],
-        'Peak_Value_M':[40,20,8,20,40,40,5,5],
-        'PrgP_proxy':[0,0,2,3,4,1,6,2],
-        'Scoring_Context_Bonus':[0.077,0.153,0.083,0.094,0.088,0.083,0.123,0.039],
-        'Defense_Hardness':[0.59,0.41,0.69,0.69,0.52,0.69,0.69,0.35],
+        'Player': ['أوباميانج', 'أنسو فاتي', 'ويسلي سعيد', 'أودسون إدوارد', 'بافيل سولك', 'إيلي واهي', 'أدريان توماسون', 'غوتييه هاين'],
+        'Nation': ['GAB', 'ESP', 'FRA', 'FRA', 'CZE', 'FRA', 'FRA', 'FRA'],
+        'Pos_primary': ['FW', 'MF', 'FW', 'FW', 'MF', 'FW', 'MF', 'MF'],
+        'Squad': ['مارسيليا', 'موناكو', 'لنس', 'لنس', 'بريست', 'لنس', 'لنس', 'أوكسير'],
+        'Age_num': [36, 23, 28, 27, 24, 22, 32, 29],
+        'League': ['Ligue 1'] * 8,
+        '90s': [13.6, 6.4, 18.5, 19.2, 15.3, 12.8, 21.3, 17.7],
+        'Gls': [6, 8, 10, 9, 10, 8, 2, 6],
+        'Ast': [5, 0, 2, 3, 3, 1, 6, 4],
+        'Gls_p90': [0.44, 1.25, 0.54, 0.47, 0.65, 0.63, 0.09, 0.34],
+        'SoT%': [61.3, 58.3, 48.8, 52.1, 55.4, 50.2, 28.6, 33.3],
+        'Market_Value_M': [4, 6, 8, 12, 12, 12, 5, 5],
+        'PrgP_proxy': [0, 0, 2, 3, 4, 1, 6, 2],
+        'Scoring_Context_Bonus': [0.077, 0.153, 0.083, 0.094, 0.088, 0.083, 0.123, 0.039],
+        'Defense_Hardness': [0.59, 0.41, 0.69, 0.69, 0.52, 0.69, 0.69, 0.35],
     }
     return recalculate(pd.DataFrame(data))
 
@@ -515,9 +515,14 @@ if 'uploaded' not in locals():
     uploaded = None
 
 # تحميل البيانات
-df_base = load_data(uploaded)
+try:
+    df_base = load_data(uploaded)
+    st.write(f"✅ تم تحميل {len(df_base)} لاعب")
+except Exception as e:
+    st.error(f"❌ فشل تحميل البيانات: {e}")
+    st.stop()
 
-# تعريف المتغيرات إذا مش موجودة (من السايدبار)
+# تعريف المتغيرات إذا مش موجودة
 if 'sel_league' not in locals():
     sel_league = []
 if 'sel_pos' not in locals():
@@ -565,6 +570,8 @@ if len(df) > 0:
         st.markdown(f'<div class="kpi-card"><div class="kpi-val">{df["SoT%"].mean():.1f}%</div><div class="kpi-lbl">Avg Shot Accuracy</div></div>', unsafe_allow_html=True)
     
     st.markdown("<br>", unsafe_allow_html=True)
+else:
+    st.warning("⚠️ لا توجد بيانات تطابق معايير البحث")
 
 # ============================================
 # TABS - إنشاء التبويبات
