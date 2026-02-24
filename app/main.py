@@ -50,41 +50,464 @@ def inject_background():
 inject_background()
 
 
-# ─── INLINE CSS المعدل ─────────────────────────────────────────────────────
+# ─── INLINE CSS المعدل (بألوان تتناسب مع الخلفية) ───────────────────────────
 st.markdown("""<style>
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
     --primary: #e03a3e;
-    --primary-light: #ff5f5f;
+    --primary-light: #ff6b6b;
     --primary-dark: #b71c1c;
-    --primary-glow: rgba(224, 58, 62, 0.4);
-    --primary-dim: rgba(224, 58, 62, 0.15);
+    --primary-glow: rgba(224, 58, 62, 0.35);
+    --primary-dim: rgba(224, 58, 62, 0.12);
     
-    --bg-overlay: rgba(0, 0, 0, 0.65);
-    --bg-sidebar: rgba(8, 8, 8, 0.85);
-    --bg-card: rgba(12, 12, 12, 0.75);
-    --bg-card-hover: rgba(20, 20, 20, 0.85);
+    --bg-overlay: rgba(10, 10, 10, 0.6);
+    --bg-sidebar: rgba(15, 15, 15, 0.85);
+    --bg-card: rgba(18, 18, 18, 0.7);
+    --bg-card-hover: rgba(25, 25, 25, 0.8);
     
     --text-bright: #ffffff;
-    --text-primary: #f0f0f0;
-    --text-secondary: #b0b0b0;
-    --text-muted: #888888;
-    --text-dark: #444444;
+    --text-primary: #f5f5f5;
+    --text-secondary: #cccccc;
+    --text-muted: #999999;
+    --text-dark: #666666;
     
-    --border-light: rgba(224, 58, 62, 0.3);
-    --border-soft: rgba(255, 255, 255, 0.08);
+    --border-light: rgba(224, 58, 62, 0.25);
+    --border-soft: rgba(255, 255, 255, 0.06);
     
-    --blur: blur(15px);
-    --glow-red: 0 0 20px rgba(224, 58, 62, 0.3);
+    --blur: blur(12px);
+    --glow-red: 0 0 20px rgba(224, 58, 62, 0.25);
 }
 
-/* باقي الـ CSS كما هو */
-/* ... */
+/* ─── Global overlay ─── */
+.stApp::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: var(--bg-overlay);
+    backdrop-filter: blur(2px);
+    z-index: 0;
+    pointer-events: none;
+}
+
+.stApp > * { 
+    position: relative; 
+    z-index: 1; 
+}
+
+/* ─── Sidebar ─── */
+[data-testid="stSidebar"] {
+    background: var(--bg-sidebar) !important;
+    backdrop-filter: var(--blur) !important;
+    border-right: 2px solid var(--border-light) !important;
+    box-shadow: 5px 0 30px rgba(0, 0, 0, 0.5) !important;
+}
+
+[data-testid="stSidebar"] * { 
+    color: var(--text-primary) !important; 
+}
+
+[data-testid="stSidebar"] label {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.7rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1.8px !important;
+    color: var(--text-secondary) !important;
+    font-weight: 500 !important;
+}
+
+[data-testid="stSidebar"] hr {
+    border-color: var(--border-light) !important;
+}
+
+/* ─── Header ─── */
+.header-wrap {
+    background: linear-gradient(135deg, rgba(15, 15, 15, 0.8) 0%, rgba(25, 10, 10, 0.8) 100%);
+    backdrop-filter: var(--blur);
+    border: 1px solid var(--border-light);
+    border-radius: 20px;
+    padding: 1.8rem 2.5rem;
+    margin-bottom: 1.8rem;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+}
+
+.header-wrap::before {
+    content: '';
+    position: absolute;
+    top: -100px; 
+    right: -80px;
+    width: 450px; 
+    height: 450px;
+    background: radial-gradient(circle, var(--primary-glow) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.header-wrap::after {
+    content: '';
+    position: absolute;
+    bottom: 0; 
+    left: 0;
+    width: 100%; 
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--primary), transparent);
+}
+
+.header-logo {
+    width: 75px; 
+    height: 75px;
+    border-radius: 50%;
+    border: 2px solid var(--border-light);
+    object-fit: contain;
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    flex-shrink: 0;
+    box-shadow: var(--glow-red);
+}
+
+.header-logo:hover { 
+    transform: scale(1.12) rotate(5deg); 
+    box-shadow: 0 0 35px var(--primary); 
+    border-color: var(--primary);
+}
+
+.main-title { 
+    font-family: 'Bebas Neue', sans-serif; 
+    font-size: 3rem; 
+    color: var(--text-bright); 
+    letter-spacing: 5px; 
+    line-height: 1; 
+    margin: 0;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.main-title span { 
+    color: var(--primary); 
+    text-shadow: 0 0 15px var(--primary);
+}
+
+.main-sub { 
+    font-family: 'Inter', sans-serif; 
+    font-size: 0.72rem; 
+    color: var(--text-secondary); 
+    letter-spacing: 3px; 
+    text-transform: uppercase; 
+    margin-top: 0.5rem; 
+    font-weight: 300;
+}
+
+/* ─── Social Links ─── */
+.social-links { 
+    margin-top: 0.9rem; 
+    display: flex; 
+    gap: 0.6rem; 
+    flex-wrap: wrap; 
+}
+
+.social-btn {
+    display: inline-flex; 
+    align-items: center; 
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-soft);
+    color: var(--text-secondary) !important;
+    font-family: 'Inter', sans-serif; 
+    font-size: 0.68rem; 
+    font-weight: 500;
+    padding: 6px 16px; 
+    border-radius: 30px; 
+    text-decoration: none !important; 
+    transition: all 0.25s ease;
+    backdrop-filter: blur(5px);
+}
+
+.social-btn:hover { 
+    border-color: var(--primary); 
+    color: var(--text-bright) !important; 
+    background: var(--primary-dim); 
+    transform: translateY(-3px);
+    box-shadow: var(--glow-red);
+}
+
+/* ─── KPI Cards ─── */
+.kpi-card {
+    background: var(--bg-card);
+    backdrop-filter: var(--blur);
+    border: 1px solid var(--border-light);
+    border-radius: 16px; 
+    padding: 1.2rem 1.4rem;
+    position: relative; 
+    overflow: hidden; 
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+}
+
+.kpi-card:hover { 
+    transform: translateY(-5px); 
+    border-color: var(--primary); 
+    box-shadow: 0 15px 35px var(--primary-glow);
+    background: var(--bg-card-hover);
+}
+
+.kpi-card::after { 
+    content: ''; 
+    position: absolute; 
+    bottom: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 3px; 
+    background: linear-gradient(90deg, var(--primary), transparent); 
+}
+
+.kpi-val { 
+    font-family: 'Bebas Neue', sans-serif; 
+    font-size: 2.5rem; 
+    color: var(--text-bright); 
+    line-height: 1; 
+    text-shadow: 0 2px 8px var(--primary-glow);
+}
+
+.kpi-lbl { 
+    font-family: 'Inter', sans-serif; 
+    font-size: 0.66rem; 
+    color: var(--text-secondary); 
+    text-transform: uppercase; 
+    letter-spacing: 2.2px; 
+    margin-top: 0.4rem; 
+    font-weight: 500;
+}
+
+/* ─── Glass Card ─── */
+.glass-card {
+    background: var(--bg-card);
+    backdrop-filter: var(--blur); 
+    border: 1px solid var(--border-light);
+    border-radius: 16px; 
+    padding: 1.3rem; 
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+}
+
+.glass-card:hover { 
+    border-color: var(--primary); 
+    box-shadow: 0 12px 30px var(--primary-glow);
+    background: var(--bg-card-hover);
+    transform: translateY(-3px);
+}
+
+/* ─── Player Cards ─── */
+.pcard {
+    background: var(--bg-card);
+    backdrop-filter: var(--blur); 
+    border: 1px solid var(--border-soft);
+    border-radius: 16px; 
+    padding: 1.2rem 1.5rem; 
+    margin-bottom: 0.9rem;
+    position: relative; 
+    overflow: hidden; 
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+}
+
+.pcard::before { 
+    content: ''; 
+    position: absolute; 
+    top: 0; 
+    left: 0; 
+    width: 4px; 
+    height: 0; 
+    background: linear-gradient(180deg, var(--primary), var(--primary-light)); 
+    transition: height 0.4s ease; 
+}
+
+.pcard:hover::before { 
+    height: 100%; 
+}
+
+.pcard:hover { 
+    background: var(--bg-card-hover); 
+    border-color: var(--border-light); 
+    box-shadow: 0 12px 30px var(--primary-glow); 
+    transform: translateX(6px); 
+}
+
+.pname { 
+    font-family: 'Bebas Neue', sans-serif; 
+    font-size: 1.45rem; 
+    color: var(--text-bright); 
+    letter-spacing: 2px; 
+    margin-bottom: 0.2rem;
+}
+
+.pmeta { 
+    font-family: 'Inter', sans-serif; 
+    font-size: 0.73rem; 
+    color: var(--text-secondary); 
+    margin-top: 0.2rem; 
+    letter-spacing: 0.5px;
+}
+
+/* ─── Progress Bars ─── */
+.bar-bg { 
+    background: rgba(255, 255, 255, 0.08); 
+    border-radius: 8px; 
+    height: 6px; 
+    margin-top: 1rem; 
+    overflow: hidden; 
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.bar-fill { 
+    background: linear-gradient(90deg, var(--primary-dark), var(--primary), var(--primary-light)); 
+    border-radius: 8px; 
+    height: 6px; 
+    transition: width 0.5s ease;
+    box-shadow: 0 0 12px var(--primary);
+}
+
+/* ─── Badges ─── */
+.badge { 
+    display: inline-block; 
+    background: var(--primary-dim); 
+    border: 1px solid var(--border-light); 
+    color: var(--primary); 
+    font-size: 0.62rem; 
+    font-family: 'Inter', sans-serif; 
+    font-weight: 600; 
+    padding: 3px 12px; 
+    border-radius: 20px; 
+    text-transform: uppercase; 
+    letter-spacing: 1.5px; 
+    margin-right: 5px; 
+    backdrop-filter: blur(5px);
+}
+
+.badge-g { 
+    background: rgba(255, 255, 255, 0.05); 
+    border-color: var(--border-soft); 
+    color: var(--text-secondary); 
+}
+
+.badge-green { 
+    background: rgba(46, 204, 113, 0.15); 
+    border-color: rgba(46, 204, 113, 0.3); 
+    color: #2ecc71; 
+}
+
+.badge-yellow { 
+    background: rgba(243, 156, 18, 0.15); 
+    border-color: rgba(243, 156, 18, 0.3); 
+    color: #f39c12; 
+}
+
+/* ─── Section Title ─── */
+.sec-title { 
+    font-family: 'Bebas Neue', sans-serif; 
+    font-size: 1.7rem; 
+    color: var(--text-bright); 
+    letter-spacing: 4px; 
+    border-left: 4px solid var(--primary); 
+    padding-left: 1rem; 
+    margin: 1.8rem 0 1.2rem; 
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* ─── Tabs ─── */
+[data-testid="stTabs"] [data-baseweb="tab-list"] { 
+    background: rgba(8, 8, 8, 0.7) !important; 
+    border-radius: 14px !important; 
+    padding: 5px !important; 
+    backdrop-filter: var(--blur) !important; 
+    border: 1px solid var(--border-soft) !important;
+    gap: 5px !important;
+}
+
+[data-testid="stTabs"] [data-baseweb="tab"] { 
+    color: var(--text-secondary) !important; 
+    font-family: 'Inter', sans-serif !important; 
+    font-size: 0.78rem !important; 
+    font-weight: 600 !important; 
+    text-transform: uppercase !important; 
+    letter-spacing: 1.5px !important; 
+    border-radius: 12px !important; 
+    padding: 0.6rem 1.3rem !important;
+    transition: all 0.2s ease !important;
+}
+
+[data-testid="stTabs"] [data-baseweb="tab"]:hover { 
+    color: var(--text-bright) !important; 
+    background: var(--primary-dim) !important;
+}
+
+[data-testid="stTabs"] [aria-selected="true"] { 
+    color: var(--text-bright) !important; 
+    background: var(--primary-dim) !important; 
+    border-bottom: 3px solid var(--primary) !important;
+    box-shadow: 0 0 20px var(--primary-glow) !important;
+}
+
+/* باقي الكود CSS كما هو في ملفك */
 </style>""", unsafe_allow_html=True)
 
 # ============================================
-# بعد الـ CSS - تحميل البيانات وإنشاء df
+# دالة load_data المعدلة (لحل مشكلة المسار)
+# ============================================
+
+@st.cache_data
+def load_data(file=None):
+    """Load CSV data or fallback to default dataset, then recalculate metrics."""
+    try:
+        if file is not None:
+            st.success(f"✅ تم تحميل الملف: {file.name}")
+            return recalculate(pd.read_csv(file))
+        
+        # ✅ المسار الصحيح للملف (من الصورة)
+        csv_path = "data/processed/lique1_final.csv"
+        
+        # التحقق من وجود الملف
+        if os.path.exists(csv_path):
+            st.success(f"✅ تم تحميل البيانات من {csv_path}")
+            return recalculate(pd.read_csv(csv_path))
+        else:
+            st.warning(f"⚠️ الملف غير موجود في المسار: {csv_path}")
+            
+            # عرض محتويات المجلد للمساعدة
+            if os.path.exists("data/processed/"):
+                files = os.listdir("data/processed/")
+                st.info(f"📁 الملفات الموجودة: {files}")
+            else:
+                st.error("❌ مجلد data/processed/ غير موجود")
+                
+    except Exception as e:
+        st.error(f"❌ خطأ في تحميل الملف: {e}")
+
+    # Fallback sample dataset (بيانات تجريبية)
+    st.info("📊 استخدام بيانات تجريبية")
+    data = {
+        'Player':['Aubameyang','Ansu Fati','Wesley Said','Odsonne Edouard','Pavel Sulc','Elye Wahi','Adrien Thomasson','Gauthier Hein'],
+        'Nation':['GAB','ESP','FRA','FRA','CZE','FRA','FRA','FRA'],
+        'Pos_primary':['FW','MF','FW','FW','MF','FW','MF','MF'],
+        'Squad':['Marseille','Monaco','Lens','Lens','Brest','Lens','Lens','Auxerre'],
+        'Age_num':[36,23,28,27,24,22,32,29],
+        'League':['Ligue 1']*8,
+        '90s':[13.6,6.4,18.5,19.2,15.3,12.8,21.3,17.7],
+        'Gls':[6,8,10,9,10,8,2,6],
+        'Ast':[5,0,2,3,3,1,6,4],
+        'Gls_p90':[0.44,1.25,0.54,0.47,0.65,0.63,0.09,0.34],
+        'SoT%':[61.3,58.3,48.8,52.1,55.4,50.2,28.6,33.3],
+        'Market_Value_M':[4,6,8,12,12,12,5,5],
+        'Peak_Value_M':[40,20,8,20,40,40,5,5],
+        'PrgP_proxy':[0,0,2,3,4,1,6,2],
+        'Scoring_Context_Bonus':[0.077,0.153,0.083,0.094,0.088,0.083,0.123,0.039],
+        'Defense_Hardness':[0.59,0.41,0.69,0.69,0.52,0.69,0.69,0.35],
+    }
+    return recalculate(pd.DataFrame(data))
+
+# ============================================
+# تحميل البيانات وإنشاء df
 # ============================================
 
 # تأكد من وجود uploaded من السايدبار
@@ -147,7 +570,6 @@ if len(df) > 0:
 # TABS - إنشاء التبويبات
 # ============================================
 tab1, tab2, tab3, tab4 = st.tabs(["🎯  Top Targets", "📊  Value Analysis", "🔬  Deep Dive", "📋  Full Dataset"])
-
 # ============================================
 # باقي الكود (TAB 1, TAB 2, TAB 3, TAB 4)
 # ============================================
