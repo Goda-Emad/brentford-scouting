@@ -587,46 +587,86 @@ st.markdown(f"""
   </div>
 </div>""", unsafe_allow_html=True)
 
-
 # ─── SIDEBAR ─────────────────────────────────────────────────────────────────
 with st.sidebar:
     st.markdown('<div style="font-family:\'Bebas Neue\',sans-serif;font-size:1.3rem;color:white;letter-spacing:2.5px;margin-bottom:1.2rem;padding-bottom:0.8rem;border-bottom:1px solid rgba(224,58,62,0.2);">⚙️ SCOUT FILTERS</div>', unsafe_allow_html=True)
 
-    # رفع خلفية جديدة من داخل التطبيق
+    # ✅ Dark/Light Mode Toggle
+    theme = st.radio("🎨 Theme Mode", ["🌙 Dark Mode", "☀️ Light Mode"], horizontal=True)
+    
+    # تطبيق الوضع حسب الاختيار
+    if theme == "☀️ Light Mode":
+        st.markdown("""
+        <style>
+        :root {
+            --bg-overlay: rgba(255, 255, 255, 0.92);
+            --bg-sidebar: rgba(250, 250, 250, 0.95);
+            --bg-card: rgba(255, 255, 255, 0.9);
+            --bg-card-hover: rgba(245, 245, 245, 0.95);
+            --text-primary: #1a1a1a;
+            --text-secondary: #4a4a4a;
+            --text-muted: #666666;
+            --text-bright: #000000;
+            --border-red: rgba(224, 58, 62, 0.2);
+        }
+        .stApp::before {
+            background: rgba(255, 255, 255, 0.88);
+        }
+        .kpi-val, .main-title, .pname, .sec-title {
+            color: #1a1a1a !important;
+        }
+        .kpi-card, .pcard, .glass-card {
+            background: rgba(255, 255, 255, 0.9) !important;
+            border-color: rgba(224, 58, 62, 0.2) !important;
+        }
+        [data-testid="stSidebar"] {
+            background: rgba(250, 250, 250, 0.95) !important;
+        }
+        [data-testid="stSidebar"] * {
+            color: #1a1a1a !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+
+    # رفع خلفية جديدة
     with st.expander("🖼️ Change Background Image"):
         bg_file = st.file_uploader("Upload new background (.jpg/.png)", type=["jpg","jpeg","png"], key="bg_upload")
         if bg_file:
             st.session_state["bg_b64"] = base64.b64encode(bg_file.read()).decode()
-            st.success("✅ Background updated! Scroll up to see it.")
+            st.success("✅ Background updated!")
             st.rerun()
 
     st.markdown("---")
-    uploaded   = st.file_uploader("📂 Add New League CSV", type=["csv"])
-    df_base    = load_data(uploaded)
-    leagues    = sorted(df_base['League'].dropna().unique()) if 'League' in df_base.columns else ['Ligue 1']
+    
+    # تحميل البيانات
+    uploaded = st.file_uploader("📂 Add New League CSV", type=["csv"])
+    df_base = load_data(uploaded)
+    
+    # ✅ استخدام المراكز الموجودة في البيانات فقط
+    positions = sorted(df_base['Pos_primary'].dropna().unique()) if 'Pos_primary' in df_base.columns else ['FW', 'MF', 'DF']
+    
+    # الفلاتر
+    leagues = sorted(df_base['League'].dropna().unique()) if 'League' in df_base.columns else ['Ligue 1']
     sel_league = st.multiselect("🌍 League", leagues, default=leagues)
-    positions  = sorted(df_base['Pos_primary'].dropna().unique())
-    sel_pos    = st.multiselect("📍 Position", positions, default=positions)
+    sel_pos = st.multiselect("📍 Position", positions, default=positions)
+    
     age_min, age_max = int(df_base['Age_num'].min()), int(df_base['Age_num'].max())
-    age_range  = st.slider("🎂 Age Range", age_min, age_max, (age_min, age_max))
-    max_val    = float(df_base['Market_Value_M'].max())
-    budget     = st.slider("💶 Max Market Value (€m)", 1.0, max(max_val,1.1), max_val)
-    max_90s    = float(df_base['90s'].max())
-    min_90s    = st.slider("⏱️ Min 90s Played", 0.0, max(max_90s,1.0), 0.0, step=0.5)
+    age_range = st.slider("🎂 Age Range", age_min, age_max, (age_min, age_max))
+    
+    max_val = float(df_base['Market_Value_M'].max())
+    budget = st.slider("💶 Max Market Value (€m)", 1.0, max(max_val, 1.1), max_val)
+    
+    max_90s = float(df_base['90s'].max())
+    min_90s = st.slider("⏱️ Min 90s Played", 0.0, max(max_90s, 1.0), 0.0, step=0.5)
+    
     st.markdown("---")
-    top_n = st.selectbox("📊 Show Top N Targets", [10,15,20,30,50], index=2)
-    st.markdown("""<div style="margin-top:1.5rem;padding:1rem;background:rgba(224,58,62,0.06);border:1px solid rgba(224,58,62,0.16);border-radius:10px;">
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:0.88rem;color:#e03a3e;letter-spacing:1.5px;margin-bottom:0.6rem;">📐 VALUE SCORE FORMULA</div>
-    <div style="font-family:'Inter',sans-serif;font-size:0.63rem;color:#555;line-height:2.2;">
-    Goals/90 × 0.30<br>Shot Accuracy × 0.18<br>Assists × 0.22<br>Prog Passes × 0.18<br>Schedule Adj × 0.12<br>
-    <span style="color:#3a3a3a;margin-top:0.4rem;display:block;">÷ Market Value × Age Bonus</span></div></div>""", unsafe_allow_html=True)
+    top_n = st.selectbox("📊 Show Top N Targets", [10, 15, 20, 30, 50], index=2)
 
 
 # ============================================
-# بعد السايدبار - إنشاء df وتطبيق الفلاتر
+# ✅ إنشاء DF وتطبيق الفلاتر
 # ============================================
 
-# إنشاء df وتطبيق الفلاتر
 df = df_base.copy()
 
 if sel_league and 'League' in df.columns:
@@ -664,9 +704,8 @@ if len(df) > 0:
 else:
     st.warning("⚠️ No players match the current filters.")
 
-
 # ============================================
-# TABS - إنشاء التبويبات
+# TABS
 # ============================================
 tab1, tab2, tab3, tab4 = st.tabs(["🎯  Top Targets", "📊  Value Analysis", "🔬  Deep Dive", "📋  Full Dataset"])
 
